@@ -1,0 +1,245 @@
+import { n as __toESM } from "../_runtime.mjs";
+import { v as require_jsx_runtime } from "../_libs/@radix-ui/react-accordion+[...].mjs";
+import { t as Section } from "./Section-8HdnrJ18.mjs";
+import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
+import { t as Button } from "./button-Dg6i7XXP.mjs";
+import { n as CardContent, t as Card } from "./card-CH7CIgFY.mjs";
+import { h as Link } from "../_libs/@tanstack/react-router+[...].mjs";
+import { P as ArrowRight } from "../_libs/lucide-react.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/referenciak-Bi32tvg6.js
+var import_react = /* @__PURE__ */ __toESM(require_react());
+var import_jsx_runtime = require_jsx_runtime();
+var CATS = [
+	"Összes",
+	"Céges oldal",
+	"Vendéglátás",
+	"Egészségügy",
+	"Webshop"
+];
+var PROJECTS = [
+	{
+		title: "Belvárosi Fogorvosi Rendelő",
+		industry: "Fogorvosi rendelő",
+		cat: "Egészségügy",
+		challenge: "A régi oldal nem támogatta az online időpontfoglalást és mobilon nehéz volt navigálni.",
+		solution: "Modern, bizalomépítő dizájn átlátható szolgáltatás-térképpel és időpontfoglalással.",
+		features: [
+			"Reszponzív design",
+			"Időpontfoglalás",
+			"Szolgáltatás-oldalak",
+			"Csapat bemutatás"
+		],
+		result: "Több online foglalás és mobil látogató (helyőrző mérőszám)."
+	},
+	{
+		title: "Kisváros Bisztró",
+		industry: "Étterem",
+		cat: "Vendéglátás",
+		challenge: "A menü frissítése bonyolult volt és mobilon rosszul jelent meg.",
+		solution: "Egyszerűen szerkeszthető menükártya, foglalási modul és Google Maps integráció.",
+		features: [
+			"Menükártya CMS",
+			"Foglalás",
+			"Galéria",
+			"Nyitvatartás"
+		],
+		result: "Csökkent visszafordulási arány, több foglalás (helyőrző)."
+	},
+	{
+		title: "Dr. Minta Ügyvédi Iroda",
+		industry: "Jogi szolgáltatás",
+		cat: "Céges oldal",
+		challenge: "Az iroda szerette volna erősíteni a bizalmat és szakterületeit hangsúlyozni.",
+		solution: "Letisztult, professzionális dizájn szakterületek szerinti oldalstruktúrával.",
+		features: [
+			"Szakterületek",
+			"Csapat",
+			"Ajánlatkérő űrlap",
+			"Blog"
+		],
+		result: "Több minőségi ajánlatkérés (helyőrző)."
+	},
+	{
+		title: "Utcai Ízek Food Truck",
+		industry: "Food truck",
+		cat: "Vendéglátás",
+		challenge: "Ki kellett emelni a heti menüt és a napi helyszíneket.",
+		solution: "Élénk brand-oldal helyszín-térképpel, heti menüvel és Instagram integrációval.",
+		features: [
+			"Heti menü",
+			"Helyszín-térkép",
+			"Közösségi média",
+			"Kapcsolat"
+		],
+		result: "Növekvő közösségi elérés és forgalom (helyőrző)."
+	},
+	{
+		title: "Precíz Könyvelőiroda",
+		industry: "Könyvelés",
+		cat: "Céges oldal",
+		challenge: "Áttekinthető szolgáltatás-portfólió és ajánlatkérő űrlap hiányzott.",
+		solution: "Egyértelmű csomagok, ajánlatkérő űrlap és bizalomépítő tartalom.",
+		features: [
+			"Szolgáltatás-csomagok",
+			"Ajánlatkérés",
+			"GYIK",
+			"Kapcsolat"
+		],
+		result: "Egyszerűbb ajánlatkérés-kezelés (helyőrző)."
+	},
+	{
+		title: "Csendes Kert Vendégház",
+		industry: "Szálláshely",
+		cat: "Céges oldal",
+		challenge: "Vizuális, foglalás-orientált oldal kellett galériával.",
+		solution: "Prémium galéria, foglalási linkek és mobilra optimalizált navigáció.",
+		features: [
+			"Galéria",
+			"Foglalási linkek",
+			"Szobák oldal",
+			"Kapcsolat"
+		],
+		result: "Nőtt a direkt foglalások aránya (helyőrző)."
+	}
+];
+function Portfolio() {
+	const [active, setActive] = (0, import_react.useState)("Összes");
+	const filtered = (0, import_react.useMemo)(() => active === "Összes" ? PROJECTS : PROJECTS.filter((p) => p.cat === active), [active]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Section, {
+		eyebrow: "Referenciák",
+		title: "Válogatott munkáink",
+		description: "Az alábbi projektek helyőrző referenciák – valódi ügyfél-engedélyt követően cseréljük őket.",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				role: "tablist",
+				"aria-label": "Kategória szűrés",
+				className: "flex flex-wrap gap-2 mb-10",
+				children: CATS.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					role: "tab",
+					"aria-selected": active === c,
+					onClick: () => setActive(c),
+					className: `px-4 py-2 rounded-full text-sm font-medium border transition-all ${active === c ? "bg-brand text-brand-foreground border-brand shadow-sm" : "bg-white text-ink-soft border-ink/10 hover:text-brand hover:border-brand/40"}`,
+					children: c
+				}, c))
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "grid md:grid-cols-2 gap-5 md:gap-6",
+				children: filtered.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+					className: "overflow-hidden border shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-all h-full flex flex-col",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "aspect-[16/10] relative bg-gradient-to-br from-brand/10 via-brand/4 to-success/10 border-b",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "absolute inset-6 md:inset-8 rounded-lg bg-white shadow-elegant overflow-hidden",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "h-5 border-b bg-secondary/40 flex items-center gap-1 px-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-1.5 w-1.5 rounded-full bg-ink/15" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-1.5 w-1.5 rounded-full bg-ink/15" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-1.5 w-1.5 rounded-full bg-ink/15" })
+									]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "p-3 space-y-2",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-16 rounded-full bg-brand/70" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2.5 w-3/4 rounded bg-ink/80" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-1/2 rounded-full bg-ink/20" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid grid-cols-3 gap-1.5 pt-2",
+											children: [
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-square rounded bg-success/25" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-square rounded bg-brand/20" }),
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-square rounded bg-ink/10" })
+											]
+										})
+									]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "absolute bottom-3 right-4 w-14 h-24 rotate-3 rounded-[10px] border bg-white shadow-elegant overflow-hidden ring-4 ring-brand/5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 bg-ink/80" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "p-1.5 space-y-1",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1 w-3/4 rounded-full bg-ink/60" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1 w-1/2 rounded-full bg-ink/20" }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-8 rounded bg-gradient-to-br from-success/25 to-brand/15" })
+									]
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "absolute top-3 left-3 rounded-full bg-white/95 backdrop-blur border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-soft",
+								children: "Minta projekt"
+							})
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+						className: "p-6 md:p-7 flex-1 flex flex-col",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-[11px] font-semibold uppercase tracking-widest text-brand",
+								children: p.industry
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+								className: "mt-1.5 text-xl font-bold text-ink",
+								children: p.title
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "mt-4 space-y-3 text-sm text-ink-soft flex-1",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-semibold text-ink",
+											children: "Kihívás:"
+										}),
+										" ",
+										p.challenge
+									] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-semibold text-ink",
+											children: "Megoldás:"
+										}),
+										" ",
+										p.solution
+									] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "font-semibold text-ink mb-1.5",
+										children: "Átadott funkciók:"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "flex flex-wrap gap-1.5",
+										children: p.features.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "rounded-full bg-brand-soft/70 px-2.5 py-1 text-xs font-medium text-brand",
+											children: f
+										}, f))
+									})] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-semibold text-ink",
+											children: "Eredmény:"
+										}),
+										" ",
+										p.result
+									] })
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								asChild: true,
+								variant: "outline",
+								className: "mt-6 self-start",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+									to: "/kapcsolat",
+									children: ["Hasonlót szeretnék ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+								})
+							})
+						]
+					})]
+				}, p.title))
+			}),
+			filtered.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-center text-ink-soft py-16",
+				children: "Ebben a kategóriában még nincs projekt."
+			})
+		]
+	});
+}
+//#endregion
+export { Portfolio as component };

@@ -1,0 +1,790 @@
+import { n as __toESM } from "../_runtime.mjs";
+import { a as Trigger2, i as Root2, n as Header, r as Item, t as Content2, v as require_jsx_runtime } from "../_libs/@radix-ui/react-accordion+[...].mjs";
+import { t as Section } from "./Section-8HdnrJ18.mjs";
+import { t as cn } from "./utils-C_uf36nf.mjs";
+import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
+import { t as Button } from "./button-Dg6i7XXP.mjs";
+import { n as CardContent, t as Card } from "./card-CH7CIgFY.mjs";
+import { h as Link } from "../_libs/@tanstack/react-router+[...].mjs";
+import { M as Check, O as CodeXml, P as ArrowRight, T as Globe, a as Sparkles, b as LifeBuoy, f as RefreshCw, h as MessageSquare, i as TrendingUp, j as ChevronDown, l as Settings, o as Smartphone, r as Users, s as ShoppingBag, t as Zap, u as Search, x as Layers } from "../_libs/lucide-react.mjs";
+import { t as FAQS } from "./routes-nWr751Ku.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-DcT3kMPy.js
+var import_react = /* @__PURE__ */ __toESM(require_react());
+var import_jsx_runtime = require_jsx_runtime();
+var Accordion = Root2;
+var AccordionItem = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Item, {
+	ref,
+	className: cn("border-b", className),
+	...props
+}));
+AccordionItem.displayName = "AccordionItem";
+var AccordionTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {
+	className: "flex",
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Trigger2, {
+		ref,
+		className: cn("flex flex-1 items-center justify-between py-4 text-sm font-medium cursor-pointer transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180", className),
+		...props,
+		children: [children, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" })]
+	})
+}));
+AccordionTrigger.displayName = Trigger2.displayName;
+var AccordionContent = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2, {
+	ref,
+	className: "overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: cn("pb-4 pt-0", className),
+		children
+	})
+}));
+AccordionContent.displayName = Content2.displayName;
+function BrowserMockup() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "relative select-none",
+		"aria-hidden": true,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				"aria-hidden": true,
+				className: "absolute -inset-8 -z-10 rounded-[2.5rem] bg-gradient-to-br from-brand/15 via-success/10 to-transparent blur-3xl"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "rounded-2xl border bg-white shadow-elegant overflow-hidden",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2 px-4 py-3 border-b bg-secondary/40",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex gap-1.5",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-2.5 w-2.5 rounded-full bg-ink/15" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-2.5 w-2.5 rounded-full bg-ink/15" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-2.5 w-2.5 rounded-full bg-ink/15" })
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "ml-3 flex-1 max-w-[220px] mx-auto rounded-md bg-white border px-3 py-1 text-[11px] text-ink-soft text-center font-mono",
+						children: "pandadesign.hu"
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "p-7 md:p-9 bg-white",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-6 w-6 rounded-md bg-brand" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2.5 w-20 rounded-full bg-ink/70" })]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "hidden sm:flex items-center gap-3",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-8 rounded-full bg-ink/15" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-10 rounded-full bg-ink/15" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-6 rounded-full bg-ink/15" }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-6 w-20 rounded-md bg-success" })
+								]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mt-8 space-y-3",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-5 w-11/12 rounded bg-ink" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-5 w-8/12 rounded bg-ink/85" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2.5 w-9/12 rounded-full bg-ink/20 mt-3" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2.5 w-7/12 rounded-full bg-ink/20" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex gap-2 pt-4",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-9 w-32 rounded-lg bg-brand" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-9 w-28 rounded-lg border-2 border-ink/15" })]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-3 gap-3 mt-8",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-[4/5] rounded-xl bg-gradient-to-br from-brand/20 to-brand/5" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-[4/5] rounded-xl bg-gradient-to-br from-success/25 to-success/5" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-[4/5] rounded-xl bg-gradient-to-br from-ink/12 to-ink/0" })
+							]
+						})
+					]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "absolute -bottom-6 -left-4 md:-left-8 w-40 md:w-48 rotate-[-5deg] hidden sm:block",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "rounded-2xl border bg-white shadow-elegant overflow-hidden",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-5 bg-secondary/60 border-b" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "p-3.5 space-y-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2/3 rounded-full bg-ink/70" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-1/2 rounded-full bg-ink/20" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-16 rounded-lg bg-gradient-to-br from-success/25 to-brand/15" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center justify-between pt-1",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-8 rounded-full bg-ink/20" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-4 w-10 rounded-md bg-success" })]
+							})
+						]
+					})]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "absolute -top-4 -right-4 hidden md:block rotate-[6deg]",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "rounded-xl border bg-white shadow-elegant px-3.5 py-2.5 flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "h-6 w-6 rounded-full bg-success/20 grid place-items-center",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-2 w-2 rounded-full bg-success" })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-16 rounded-full bg-ink/70 mb-1" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-10 rounded-full bg-ink/20" })] })]
+				})
+			})
+		]
+	});
+}
+var TRUST = [
+	{
+		icon: Smartphone,
+		label: "Mobilbarát"
+	},
+	{
+		icon: Zap,
+		label: "Gyors betöltés"
+	},
+	{
+		icon: Search,
+		label: "Keresőbarát"
+	},
+	{
+		icon: Settings,
+		label: "Könnyen kezelhető"
+	}
+];
+var SERVICES = [
+	{
+		icon: Layers,
+		title: "Céges weboldalak",
+		desc: "Bizalmat építő bemutatkozó oldalak, tiszta struktúrával."
+	},
+	{
+		icon: Sparkles,
+		title: "Landing oldalak",
+		desc: "Egy célra fókuszáló, konverzióra hangolt kampányoldalak."
+	},
+	{
+		icon: ShoppingBag,
+		title: "Webshopok",
+		desc: "Biztonságos fizetéssel és egyszerű adminisztrációval."
+	},
+	{
+		icon: RefreshCw,
+		title: "Újratervezés",
+		desc: "Régi oldalak modernizálása, gyorsabb betöltéssel."
+	},
+	{
+		icon: LifeBuoy,
+		title: "WordPress karbantartás",
+		desc: "Frissítések, mentések, folyamatos technikai támogatás."
+	},
+	{
+		icon: CodeXml,
+		title: "Egyedi Next.js",
+		desc: "Prémium fejlesztések összetett üzleti folyamatokhoz."
+	}
+];
+var PROCESS = [
+	{
+		step: "01",
+		title: "Igényfelmérés",
+		desc: "Megismerjük a vállalkozásod, célközönséged és üzleti céljaid."
+	},
+	{
+		step: "02",
+		title: "Tervezés",
+		desc: "Átlátható struktúra és letisztult design minden képernyőre."
+	},
+	{
+		step: "03",
+		title: "Fejlesztés",
+		desc: "Gyors, biztonságos és keresőbarát kód, mobil elsőként."
+	},
+	{
+		step: "04",
+		title: "Átadás",
+		desc: "Betanítás, dokumentáció és hosszú távú támogatás."
+	}
+];
+var PORTFOLIO = [
+	{
+		title: "Fogorvosi rendelő",
+		industry: "Egészségügy",
+		cat: "Egészségügy",
+		desc: "Bizalomépítő oldal online időpontfoglalással."
+	},
+	{
+		title: "Étterem és bár",
+		industry: "Vendéglátás",
+		cat: "Vendéglátás",
+		desc: "Modern menükártya foglalással, mobilra hangolva."
+	},
+	{
+		title: "Ügyvédi iroda",
+		industry: "Jogi szolgáltatás",
+		cat: "Céges oldal",
+		desc: "Prémium bemutatkozás, szakterületek egy kattintásra."
+	},
+	{
+		title: "Food truck brand",
+		industry: "Vendéglátás",
+		cat: "Vendéglátás",
+		desc: "Élénk brand-oldal helyszín-térképpel és heti menüvel."
+	},
+	{
+		title: "Könyvelőiroda",
+		industry: "Pénzügy",
+		cat: "Céges oldal",
+		desc: "Átlátható szolgáltatás-portfólió, ajánlatkérővel."
+	},
+	{
+		title: "Boutique szálláshely",
+		industry: "Turizmus",
+		cat: "Céges oldal",
+		desc: "Vizuális, foglalás-orientált galériával."
+	}
+];
+var WHY = [
+	"Egyedi, modern megjelenés",
+	"Gyors és átlátható munkafolyamat",
+	"Mobilra optimalizált kialakítás",
+	"Könnyen kezelhető adminfelület",
+	"Magyar nyelvű támogatás",
+	"Hosszú távú együttműködés"
+];
+var TESTIMONIALS = [
+	{
+		name: "Kovács Anna",
+		role: "Ügyvezető, minta vállalkozás",
+		text: "A PandaDesign csapata figyelmes és profi volt, az új weboldalunk sokkal áttekinthetőbb lett, és több érdeklődő is érkezik rajta keresztül."
+	},
+	{
+		name: "Nagy Péter",
+		role: "Tulajdonos, minta étterem",
+		text: "Gyorsan, világosan kommunikáltak, és a menünk mostantól mobilon is jól kezelhető. Az online foglalás bevezetése óta több a vendégünk."
+	},
+	{
+		name: "Szabó Eszter",
+		role: "Marketing vezető, minta cég",
+		text: "A projekt minden szakaszában tudtuk, hol tartunk. Az új oldal gyors, letisztult, és könnyen tudjuk mi magunk is szerkeszteni."
+	}
+];
+function Home() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(HeroSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TrustSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ServicesSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProcessSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortfolioSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PricingSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(WhySection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TestimonialsSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FAQSection, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FinalCTA, {})
+	] });
+}
+function HeroSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+		className: "relative overflow-hidden pt-14 md:pt-24 pb-16 md:pb-28",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			"aria-hidden": true,
+			className: "absolute inset-0 -z-10 bg-[radial-gradient(1200px_600px_at_80%_-10%,color-mix(in_oklab,var(--brand)_10%,transparent),transparent),radial-gradient(800px_500px_at_-10%_10%,color-mix(in_oklab,var(--success)_8%,transparent),transparent)]"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "container-page grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-medium text-ink-soft shadow-soft",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-1.5 w-1.5 rounded-full bg-success" }), "Magyar web ügynökség"]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
+					className: "mt-5 text-[40px] leading-[1.05] sm:text-5xl lg:text-[64px] font-bold tracking-tight text-ink",
+					children: ["Weboldalak, amelyek ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "text-brand",
+						children: "ügyfeleket hoznak."
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-5 text-base md:text-lg text-ink-soft max-w-xl leading-relaxed",
+					children: "Gyors, mobilbarát és átlátható oldalak magyar vállalkozásoknak – az ötlettől a hosszú távú üzemeltetésig."
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "mt-7 flex flex-col sm:flex-row gap-3",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						asChild: true,
+						size: "lg",
+						variant: "cta",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/kapcsolat",
+							children: ["Díjmentes konzultáció ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+						})
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						asChild: true,
+						size: "lg",
+						variant: "outline",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: "/referenciak",
+							children: "Referenciák"
+						})
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+					className: "mt-8 md:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3",
+					children: TRUST.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+						className: "flex items-center gap-2 text-xs sm:text-sm text-ink-soft",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "grid h-7 w-7 place-items-center rounded-md bg-success-soft text-success shrink-0",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(t.icon, { className: "h-3.5 w-3.5" })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "truncate",
+							children: t.label
+						})]
+					}, t.label))
+				})
+			] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "relative order-first lg:order-last",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserMockup, {})
+			})]
+		})]
+	});
+}
+function TrustSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Section, {
+		eyebrow: "Miért fontos",
+		title: "Az első benyomás ma online születik",
+		description: "A látogatók pár másodperc alatt döntenek. Egy letisztult weboldal ezt az első benyomást fordítja eredményre.",
+		tone: "muted",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid md:grid-cols-3 gap-4 md:gap-5",
+			children: [
+				{
+					icon: Sparkles,
+					title: "Professzionális megjelenés",
+					desc: "Letisztult, modern arculat, ami első pillantásra bizalmat épít."
+				},
+				{
+					icon: TrendingUp,
+					title: "Több érdeklődő",
+					desc: "Világos üzenetek és jó helyen elhelyezett CTA-k – konverzióra hangolva."
+				},
+				{
+					icon: Globe,
+					title: "Erősebb online jelenlét",
+					desc: "Keresőbarát felépítés, mobil-optimalizáció, mérhető eredmények."
+				}
+			].map((i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "border shadow-soft h-full",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "p-7 md:p-8 h-full flex flex-col",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "grid h-11 w-11 place-items-center rounded-xl bg-brand-soft text-brand",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(i.icon, { className: "h-5 w-5" })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "mt-5 text-lg font-semibold text-ink",
+							children: i.title
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-2 text-sm text-ink-soft leading-relaxed",
+							children: i.desc
+						})
+					]
+				})
+			}, i.title))
+		})
+	});
+}
+function ServicesSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Section, {
+		eyebrow: "Szolgáltatások",
+		title: "Miben segítünk?",
+		description: "Egy helyen minden, ami egy modern online jelenléthez kell.",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5",
+			children: SERVICES.map((s) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "group border shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-all h-full",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "p-7 h-full flex flex-col",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "grid h-11 w-11 place-items-center rounded-xl bg-brand text-brand-foreground",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(s.icon, { className: "h-5 w-5" })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "mt-5 text-lg font-semibold text-ink",
+							children: s.title
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-2 text-sm text-ink-soft leading-relaxed flex-1",
+							children: s.desc
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							to: "/szolgaltatasok",
+							className: "mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand group-hover:gap-2 transition-all self-start",
+							children: ["Részletek ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+						})
+					]
+				})
+			}, s.title))
+		})
+	});
+}
+function ProcessSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Section, {
+		eyebrow: "Folyamat",
+		title: "Így dolgozunk",
+		description: "Négy egyszerű lépés az ötlettől az élesítésig.",
+		tone: "muted",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", {
+			className: "grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5",
+			children: PROCESS.map((p, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+				className: "relative rounded-2xl bg-white border p-7 shadow-soft h-full",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center justify-between",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "text-xs font-mono font-bold text-success tracking-widest",
+							children: p.step
+						}), i < PROCESS.length - 1 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							"aria-hidden": true,
+							className: "hidden lg:block h-px w-8 bg-ink/10"
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+						className: "mt-4 text-lg font-semibold text-ink",
+						children: p.title
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "mt-2 text-sm text-ink-soft leading-relaxed",
+						children: p.desc
+					})
+				]
+			}, p.step))
+		})
+	});
+}
+function PortfolioSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Section, {
+		eyebrow: "Munkáink",
+		title: "Válogatott munkáink",
+		description: "Az alábbi projektek helyőrző referenciák – éles ügyféladatokkal cseréljük őket.",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5",
+			children: PORTFOLIO.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PortfolioCard, { ...p }, p.title))
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "mt-10 flex justify-center",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				asChild: true,
+				variant: "outline",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+					to: "/referenciak",
+					children: ["Minden projekt ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+				})
+			})
+		})]
+	});
+}
+function PortfolioCard({ title, industry, desc }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "overflow-hidden border shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-all group h-full flex flex-col",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "aspect-[16/10] relative overflow-hidden bg-gradient-to-br from-brand/8 via-brand/4 to-success/8 border-b",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "absolute inset-5 rounded-lg bg-white shadow-soft overflow-hidden",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "h-4 border-b bg-secondary/40 flex items-center gap-1 px-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-1 w-1 rounded-full bg-ink/20" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "h-1 w-1 rounded-full bg-ink/20" })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "p-3 space-y-1.5",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-3/4 rounded-full bg-ink/70" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-1.5 w-1/2 rounded-full bg-ink/20" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-3 gap-1 pt-2",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-square rounded bg-success/25" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-square rounded bg-brand/20" }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "aspect-square rounded bg-ink/10" })
+							]
+						})
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "absolute top-3 left-3 rounded-full bg-white/95 backdrop-blur border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-soft",
+				children: "Minta"
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "p-6 flex-1 flex flex-col",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-[11px] font-semibold uppercase tracking-widest text-brand",
+					children: industry
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+					className: "mt-1.5 text-lg font-semibold text-ink",
+					children: title
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-2 text-sm text-ink-soft leading-relaxed flex-1",
+					children: desc
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+					to: "/referenciak",
+					className: "mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:gap-2 transition-all self-start",
+					children: ["Projekt megnyitása ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+				})
+			]
+		})]
+	});
+}
+function PricingSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Section, {
+		eyebrow: "Árak",
+		title: "Átlátható csomagok",
+		description: "Válaszd ki a hozzád illő csomagot – a végleges ár a projekt komplexitásától függ.",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5",
+			children: [
+				{
+					name: "Landing",
+					price: "69 000",
+					desc: "Egyoldalas kampányoldal",
+					features: [
+						"Egyoldalas felépítés",
+						"Reszponzív dizájn",
+						"Kapcsolatfelvételi űrlap",
+						"Alap SEO beállítás",
+						"Közösségi média linkek"
+					]
+				},
+				{
+					name: "Basic",
+					price: "119 000",
+					desc: "Klasszikus bemutatkozó oldal",
+					features: [
+						"Max. 5 aloldal",
+						"Reszponzív dizájn",
+						"Kapcsolatfelvételi űrlap",
+						"Alap SEO",
+						"Analitika beállítás",
+						"Könnyű adminisztráció"
+					]
+				},
+				{
+					name: "Medium",
+					price: "199 000",
+					desc: "Bővített prezentációs oldal",
+					featured: true,
+					features: [
+						"Max. 10 aloldal",
+						"Egyedi dizájn",
+						"Blog modul",
+						"Speciális űrlapok",
+						"Sebesség-optimalizálás",
+						"Analitika",
+						"Alap technikai SEO",
+						"Betanítás és átadás"
+					]
+				},
+				{
+					name: "Webshop",
+					price: "299 000",
+					desc: "Modern online áruház",
+					features: [
+						"Termékkatalógus",
+						"Kosár funkció",
+						"Online fizetés integráció",
+						"Szállítási opciók",
+						"Rendeléskezelés",
+						"Alap webshop betanítás"
+					]
+				}
+			].map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: `relative border shadow-soft h-full flex flex-col ${p.featured ? "border-brand border-2 shadow-elegant lg:scale-[1.02]" : ""}`,
+				children: [p.featured && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-success text-success-foreground px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm",
+					children: "Legnépszerűbb"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "p-7 flex flex-col h-full",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm font-semibold text-brand",
+							children: p.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-1 text-xs text-ink-soft min-h-8",
+							children: p.desc
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-4 flex items-baseline gap-1",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+								className: "text-3xl font-bold text-ink tracking-tight",
+								children: [p.price, " Ft"]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-ink-soft mt-0.5",
+							children: "-tól, +ÁFA"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+							className: "mt-6 space-y-2.5 flex-1",
+							children: p.features.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+								className: "flex items-start gap-2 text-sm text-ink-soft",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4 mt-0.5 shrink-0 text-success" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: f })]
+							}, f))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							asChild: true,
+							className: "mt-6 w-full",
+							variant: p.featured ? "cta" : "outline",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: "/kapcsolat",
+								children: "Ajánlatot kérek"
+							})
+						})
+					]
+				})]
+			}, p.name))
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+			className: "mt-8 text-center text-sm text-ink-soft",
+			children: ["A végleges ár a projekt összetettségétől és az egyedi igényektől függ. ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+				to: "/arak",
+				className: "text-brand font-semibold hover:underline",
+				children: "Részletes összehasonlítás →"
+			})]
+		})]
+	});
+}
+function WhySection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Section, {
+		eyebrow: "Miért mi",
+		title: "Miért a PandaDesign?",
+		tone: "muted",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4",
+			children: WHY.map((w) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-3 rounded-xl bg-white border p-5 shadow-soft h-full",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "grid h-9 w-9 place-items-center rounded-lg bg-success-soft text-success shrink-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-sm font-medium text-ink",
+					children: w
+				})]
+			}, w))
+		})
+	});
+}
+function TestimonialsSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Section, {
+		eyebrow: "Vélemények",
+		title: "Ügyfeleink véleménye",
+		description: "Az alábbi vélemények minta tartalmak, élesítés előtt valós visszajelzésekkel cseréljük.",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "grid md:grid-cols-3 gap-4 md:gap-5",
+			children: TESTIMONIALS.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "border shadow-soft h-full",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+					className: "p-7 h-full flex flex-col",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-6 w-6 text-brand" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+							className: "mt-4 text-ink leading-relaxed flex-1",
+							children: [
+								"„",
+								t.text,
+								"\""
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mt-6 pt-6 border-t",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm font-semibold text-ink",
+									children: t.name
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-xs text-ink-soft mt-0.5",
+									children: t.role
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "mt-2 inline-block text-[10px] font-semibold uppercase tracking-widest text-ink-soft/70",
+									children: "Minta tartalom"
+								})
+							]
+						})
+					]
+				})
+			}, t.name))
+		})
+	});
+}
+function FAQSection() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Section, {
+		eyebrow: "Kérdések",
+		title: "Gyakori kérdések",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "max-w-3xl",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Accordion, {
+				type: "single",
+				collapsible: true,
+				className: "space-y-2.5",
+				children: FAQS.map((f, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AccordionItem, {
+					value: `item-${i}`,
+					className: "border rounded-xl bg-white px-5 md:px-6 shadow-soft",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionTrigger, {
+						className: "text-left font-semibold text-ink hover:no-underline py-5",
+						children: f.q
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccordionContent, {
+						className: "text-ink-soft leading-relaxed pb-5",
+						children: f.a
+					})]
+				}, f.q))
+			})
+		})
+	});
+}
+function FinalCTA() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
+		className: "py-16 md:py-24",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "container-page",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative overflow-hidden rounded-3xl bg-brand text-brand-foreground p-8 md:p-16 shadow-elegant",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					"aria-hidden": true,
+					className: "absolute inset-0 -z-0 opacity-40 bg-[radial-gradient(600px_300px_at_100%_0%,color-mix(in_oklab,var(--success)_50%,transparent),transparent)]"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "relative max-w-2xl",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, { className: "h-3.5 w-3.5" }), " Ingyenes konzultáció"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+							className: "mt-5 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight",
+							children: "Készen állsz egy jobb weboldalra?"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-4 text-brand-foreground/80 text-base md:text-lg",
+							children: "Beszéljük át az elképzelésedet egy kötelezettségmentes konzultáción."
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							asChild: true,
+							size: "lg",
+							variant: "cta",
+							className: "mt-8",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+								to: "/kapcsolat",
+								children: ["Ajánlatot kérek ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" })]
+							})
+						})
+					]
+				})]
+			})
+		})
+	});
+}
+//#endregion
+export { Home as component };
