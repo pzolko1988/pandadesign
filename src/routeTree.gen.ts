@@ -18,8 +18,12 @@ import { Route as KapcsolatRouteImport } from './routes/kapcsolat'
 import { Route as ReferenciakRouteImport } from './routes/referenciak'
 import { Route as RolunkRouteImport } from './routes/rolunk'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SupabaseTestRouteImport } from './routes/supabase-test'
 import { Route as SutikRouteImport } from './routes/sutik'
 import { Route as SzolgaltatasokRouteImport } from './routes/szolgaltatasok'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminHeroRouteImport } from './routes/admin.hero'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -66,6 +70,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupabaseTestRoute = SupabaseTestRouteImport.update({
+  id: '/supabase-test',
+  path: '/supabase-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SutikRoute = SutikRouteImport.update({
   id: '/sutik',
   path: '/sutik',
@@ -74,6 +83,21 @@ const SutikRoute = SutikRouteImport.update({
 const SzolgaltatasokRoute = SzolgaltatasokRouteImport.update({
   id: '/szolgaltatasok',
   path: '/szolgaltatasok',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminHeroRoute = AdminHeroRouteImport.update({
+  id: '/admin/hero',
+  path: '/admin/hero',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -87,8 +111,12 @@ export interface FileRoutesByFullPath {
   '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/admin/hero': typeof AdminHeroRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,8 +128,12 @@ export interface FileRoutesByTo {
   '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/admin/hero': typeof AdminHeroRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,8 +146,12 @@ export interface FileRoutesById {
   '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/admin/hero': typeof AdminHeroRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,8 +165,12 @@ export interface FileRouteTypes {
     | '/referenciak'
     | '/rolunk'
     | '/sitemap.xml'
+    | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/admin/hero'
+    | '/admin/login'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,8 +182,12 @@ export interface FileRouteTypes {
     | '/referenciak'
     | '/rolunk'
     | '/sitemap.xml'
+    | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/admin/hero'
+    | '/admin/login'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -155,8 +199,12 @@ export interface FileRouteTypes {
     | '/referenciak'
     | '/rolunk'
     | '/sitemap.xml'
+    | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/admin/hero'
+    | '/admin/login'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,8 +217,12 @@ export interface RootRouteChildren {
   ReferenciakRoute: typeof ReferenciakRoute
   RolunkRoute: typeof RolunkRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SupabaseTestRoute: typeof SupabaseTestRoute
   SutikRoute: typeof SutikRoute
   SzolgaltatasokRoute: typeof SzolgaltatasokRoute
+  AdminHeroRoute: typeof AdminHeroRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -238,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/supabase-test': {
+      id: '/supabase-test'
+      path: '/supabase-test'
+      fullPath: '/supabase-test'
+      preLoaderRoute: typeof SupabaseTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sutik': {
       id: '/sutik'
       path: '/sutik'
@@ -250,6 +309,27 @@ declare module '@tanstack/react-router' {
       path: '/szolgaltatasok'
       fullPath: '/szolgaltatasok'
       preLoaderRoute: typeof SzolgaltatasokRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/hero': {
+      id: '/admin/hero'
+      path: '/admin/hero'
+      fullPath: '/admin/hero'
+      preLoaderRoute: typeof AdminHeroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -265,8 +345,12 @@ const rootRouteChildren: RootRouteChildren = {
   ReferenciakRoute: ReferenciakRoute,
   RolunkRoute: RolunkRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SupabaseTestRoute: SupabaseTestRoute,
   SutikRoute: SutikRoute,
   SzolgaltatasokRoute: SzolgaltatasokRoute,
+  AdminHeroRoute: AdminHeroRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

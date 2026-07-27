@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, Check, Smartphone, Zap, Search, Settings, Layers, ShoppingBag, RefreshCw, LifeBuoy, Code2, Sparkles, Users, TrendingUp, Globe, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Section } from "@/components/site/Section";
 import { BrowserMockup } from "@/components/site/BrowserMockup";
+import { supabase } from "@/lib/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -94,6 +96,27 @@ const FAQS = [
   { q: "Mi történik az átadás után?", a: "Betanítást, dokumentációt és opcionális karbantartási csomagot biztosítunk, hogy hosszú távon is biztonságban tudd az oldalad." },
 ];
 
+type HeroContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryButtonText: string;
+  primaryButtonUrl: string;
+  secondaryButtonText: string;
+  secondaryButtonUrl: string;
+};
+
+const DEFAULT_HERO: HeroContent = {
+  eyebrow: "Magyar web ügynökség",
+  title: "Weboldalak, amelyek ügyfeleket hoznak.",
+  description:
+    "Gyors, mobilbarát és átlátható oldalak magyar vállalkozásoknak – az ötlettől a hosszú távú üzemeltetésig.",
+  primaryButtonText: "Díjmentes konzultáció",
+  primaryButtonUrl: "/kapcsolat",
+  secondaryButtonText: "Referenciák",
+  secondaryButtonUrl: "/referenciak",
+};
+
 function Home() {
   return (
     <>
@@ -112,43 +135,107 @@ function Home() {
 }
 
 function HeroSection() {
+  const [hero, setHero] = useState<HeroContent>(DEFAULT_HERO);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadHero() {
+      const { data, error } = await supabase
+        .from("page_sections")
+        .select("content")
+        .eq("page_slug", "home")
+        .eq("section_key", "hero")
+        .maybeSingle();
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error("A Hero tartalma nem tölthető be:", error);
+        return;
+      }
+
+      if (data?.content) {
+        setHero({
+          ...DEFAULT_HERO,
+          ...(data.content as Partial<HeroContent>),
+        });
+      }
+    }
+
+    void loadHero();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const titleWords = hero.title.trim().split(/\s+/);
+  const highlightedTitle =
+    titleWords.length > 2 ? titleWords.slice(-2).join(" ") : hero.title;
+  const normalTitle =
+    titleWords.length > 2 ? titleWords.slice(0, -2).join(" ") : "";
+
   return (
     <section className="relative overflow-hidden pt-14 md:pt-24 pb-16 md:pb-28">
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[radial-gradient(1200px_600px_at_80%_-10%,color-mix(in_oklab,var(--brand)_10%,transparent),transparent),radial-gradient(800px_500px_at_-10%_10%,color-mix(in_oklab,var(--success)_8%,transparent),transparent)]"
       />
+
       <div className="container-page grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-medium text-ink-soft shadow-soft">
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            Magyar web ügynökség
+            {hero.eyebrow}
           </div>
+
           <h1 className="mt-5 text-[40px] leading-[1.05] sm:text-5xl lg:text-[64px] font-bold tracking-tight text-ink">
-            Weboldalak, amelyek <span className="text-brand">ügyfeleket hoznak.</span>
+            {normalTitle && `${normalTitle} `}
+            <span className="text-brand">{highlightedTitle}</span>
           </h1>
+
           <p className="mt-5 text-base md:text-lg text-ink-soft max-w-xl leading-relaxed">
-            Gyors, mobilbarát és átlátható oldalak magyar vállalkozásoknak – az ötlettől a hosszú távú üzemeltetésig.
+            {hero.description}
           </p>
+
           <div className="mt-7 flex flex-col sm:flex-row gap-3">
-            <Button asChild size="lg" variant="cta">
-              <Link to="/kapcsolat">Díjmentes konzultáció <ArrowRight className="h-4 w-4" /></Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link to="/referenciak">Referenciák</Link>
-            </Button>
+            {hero.primaryButtonText && hero.primaryButtonUrl && (
+              <Button asChild size="lg" variant="cta">
+                <a href={hero.primaryButtonUrl}>
+                  {hero.primaryButtonText}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+
+            {hero.secondaryButtonText && hero.secondaryButtonUrl && (
+              <Button asChild size="lg" variant="outline">
+                <a href={hero.secondaryButtonUrl}>
+                  {hero.secondaryButtonText}
+                </a>
+              </Button>
+            )}
           </div>
+
           <ul className="mt-8 md:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
             {TRUST.map((t) => (
-              <li key={t.label} className="flex items-center gap-2 text-xs sm:text-sm text-ink-soft">
+              <li
+                key={t.label}
+                className="flex items-center gap-2 text-xs sm:text-sm text-ink-soft"
+              >
                 <span className="grid h-7 w-7 place-items-center rounded-md bg-success-soft text-success shrink-0">
                   <t.icon className="h-3.5 w-3.5" />
                 </span>
+
                 <span className="truncate">{t.label}</span>
               </li>
             ))}
           </ul>
         </div>
+
         <div className="relative order-first lg:order-last">
           <BrowserMockup />
         </div>
