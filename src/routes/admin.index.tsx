@@ -153,7 +153,7 @@ function AdminDashboardPage() {
           </button>
         </header>
 
-        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <Link
             to="/admin/hero"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
@@ -205,7 +205,146 @@ function AdminDashboardPage() {
             </p>
           </Link>
 
-          <article className="rounded-2xl border bg-background p-6 shadow-sm opacity-70">
+          <Link
+            to="/admin/projects"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Tartalom
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Referenciák
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Projektek, képek, kategóriák és láthatóság kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/pricing"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Értékesítés
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Árak és csomagok
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Árak, csomagelemek, kiemelés, CTA és sorrend kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/why"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Főoldal
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Miért a PandaDesign?
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Szekciócím, leírás, előnyök, ikonok és sorrend kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/testimonials"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Bizalomépítés
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Véleménykezelő
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Ügyfélvélemények, értékelések, sorrend és láthatóság kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/cta"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Konverzió
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Záró CTA
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Kiemelt üzenet, gomb, ikon és láthatóság kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/faq"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Tartalom
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              GYIK szerkesztő
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Kérdések, válaszok, sorrend és láthatóság kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/leads"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Értékesítés
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Leadkezelő
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Ajánlatkérések, státuszok, prioritások és belső jegyzetek kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/blog"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Tartalommarketing
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Blog
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Blogbejegyzések, kiemelt képek, SEO és gazdag szöveges tartalom kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/settings"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
             <p className="text-sm text-muted-foreground">
               Beállítások
             </p>
@@ -215,9 +354,9 @@ function AdminDashboardPage() {
             </h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Hamarosan elérhető.
+              Arculat, kapcsolattartás, közösségi linkek, SEO és lábléc kezelése.
             </p>
-          </article>
+          </Link>
         </section>
       </div>
     </main>

@@ -22,11 +22,21 @@ import { Route as SupabaseTestRouteImport } from './routes/supabase-test'
 import { Route as SutikRouteImport } from './routes/sutik'
 import { Route as SzolgaltatasokRouteImport } from './routes/szolgaltatasok'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminBlogRouteImport } from './routes/admin.blog'
+import { Route as AdminCtaRouteImport } from './routes/admin.cta'
+import { Route as AdminFaqRouteImport } from './routes/admin.faq'
 import { Route as AdminHeroRouteImport } from './routes/admin.hero'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
 import { Route as AdminProcessRouteImport } from './routes/admin.process'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
+import { Route as AdminWhyRouteImport } from './routes/admin.why'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -93,14 +103,39 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/admin/blog',
+  path: '/admin/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCtaRoute = AdminCtaRouteImport.update({
+  id: '/admin/cta',
+  path: '/admin/cta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminFaqRoute = AdminFaqRouteImport.update({
+  id: '/admin/faq',
+  path: '/admin/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminHeroRoute = AdminHeroRouteImport.update({
   id: '/admin/hero',
   path: '/admin/hero',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPricingRoute = AdminPricingRouteImport.update({
+  id: '/admin/pricing',
+  path: '/admin/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProcessRoute = AdminProcessRouteImport.update({
@@ -118,13 +153,38 @@ const AdminServicesRoute = AdminServicesRouteImport.update({
   path: '/admin/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTestimonialsRoute = AdminTestimonialsRouteImport.update({
+  id: '/admin/testimonials',
+  path: '/admin/testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWhyRoute = AdminWhyRouteImport.update({
+  id: '/admin/why',
+  path: '/admin/why',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BlogRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/adatkezeles': typeof AdatkezelesRoute
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
-  '/blog': typeof BlogRoute
+  '/blog': typeof BlogRouteWithChildren
   '/kapcsolat': typeof KapcsolatRoute
   '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
@@ -132,19 +192,28 @@ export interface FileRoutesByFullPath {
   '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/cta': typeof AdminCtaRoute
+  '/admin/faq': typeof AdminFaqRoute
   '/admin/hero': typeof AdminHeroRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pricing': typeof AdminPricingRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/testimonials': typeof AdminTestimonialsRoute
+  '/admin/why': typeof AdminWhyRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/adatkezeles': typeof AdatkezelesRoute
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
-  '/blog': typeof BlogRoute
   '/kapcsolat': typeof KapcsolatRoute
   '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
@@ -152,12 +221,22 @@ export interface FileRoutesByTo {
   '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/cta': typeof AdminCtaRoute
+  '/admin/faq': typeof AdminFaqRoute
   '/admin/hero': typeof AdminHeroRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pricing': typeof AdminPricingRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/testimonials': typeof AdminTestimonialsRoute
+  '/admin/why': typeof AdminWhyRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -165,7 +244,7 @@ export interface FileRoutesById {
   '/adatkezeles': typeof AdatkezelesRoute
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
-  '/blog': typeof BlogRoute
+  '/blog': typeof BlogRouteWithChildren
   '/kapcsolat': typeof KapcsolatRoute
   '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
@@ -173,12 +252,22 @@ export interface FileRoutesById {
   '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/cta': typeof AdminCtaRoute
+  '/admin/faq': typeof AdminFaqRoute
   '/admin/hero': typeof AdminHeroRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/pricing': typeof AdminPricingRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/testimonials': typeof AdminTestimonialsRoute
+  '/admin/why': typeof AdminWhyRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -195,19 +284,28 @@ export interface FileRouteTypes {
     | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/admin/blog'
+    | '/admin/cta'
+    | '/admin/faq'
     | '/admin/hero'
+    | '/admin/leads'
     | '/admin/login'
+    | '/admin/pricing'
     | '/admin/process'
     | '/admin/projects'
     | '/admin/services'
+    | '/admin/settings'
+    | '/admin/testimonials'
+    | '/admin/why'
+    | '/blog/$slug'
     | '/admin/'
+    | '/blog/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/adatkezeles'
     | '/arak'
     | '/aszf'
-    | '/blog'
     | '/kapcsolat'
     | '/referenciak'
     | '/rolunk'
@@ -215,12 +313,22 @@ export interface FileRouteTypes {
     | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/admin/blog'
+    | '/admin/cta'
+    | '/admin/faq'
     | '/admin/hero'
+    | '/admin/leads'
     | '/admin/login'
+    | '/admin/pricing'
     | '/admin/process'
     | '/admin/projects'
     | '/admin/services'
+    | '/admin/settings'
+    | '/admin/testimonials'
+    | '/admin/why'
+    | '/blog/$slug'
     | '/admin'
+    | '/blog'
   id:
     | '__root__'
     | '/'
@@ -235,12 +343,22 @@ export interface FileRouteTypes {
     | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/admin/blog'
+    | '/admin/cta'
+    | '/admin/faq'
     | '/admin/hero'
+    | '/admin/leads'
     | '/admin/login'
+    | '/admin/pricing'
     | '/admin/process'
     | '/admin/projects'
     | '/admin/services'
+    | '/admin/settings'
+    | '/admin/testimonials'
+    | '/admin/why'
+    | '/blog/$slug'
     | '/admin/'
+    | '/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -248,7 +366,7 @@ export interface RootRouteChildren {
   AdatkezelesRoute: typeof AdatkezelesRoute
   ArakRoute: typeof ArakRoute
   AszfRoute: typeof AszfRoute
-  BlogRoute: typeof BlogRoute
+  BlogRoute: typeof BlogRouteWithChildren
   KapcsolatRoute: typeof KapcsolatRoute
   ReferenciakRoute: typeof ReferenciakRoute
   RolunkRoute: typeof RolunkRoute
@@ -256,11 +374,19 @@ export interface RootRouteChildren {
   SupabaseTestRoute: typeof SupabaseTestRoute
   SutikRoute: typeof SutikRoute
   SzolgaltatasokRoute: typeof SzolgaltatasokRoute
+  AdminBlogRoute: typeof AdminBlogRoute
+  AdminCtaRoute: typeof AdminCtaRoute
+  AdminFaqRoute: typeof AdminFaqRoute
   AdminHeroRoute: typeof AdminHeroRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPricingRoute: typeof AdminPricingRoute
   AdminProcessRoute: typeof AdminProcessRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
   AdminServicesRoute: typeof AdminServicesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminTestimonialsRoute: typeof AdminTestimonialsRoute
+  AdminWhyRoute: typeof AdminWhyRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -357,6 +483,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/blog': {
+      id: '/admin/blog'
+      path: '/admin/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/cta': {
+      id: '/admin/cta'
+      path: '/admin/cta'
+      fullPath: '/admin/cta'
+      preLoaderRoute: typeof AdminCtaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/faq': {
+      id: '/admin/faq'
+      path: '/admin/faq'
+      fullPath: '/admin/faq'
+      preLoaderRoute: typeof AdminFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/hero': {
       id: '/admin/hero'
       path: '/admin/hero'
@@ -364,11 +511,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHeroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pricing': {
+      id: '/admin/pricing'
+      path: '/admin/pricing'
+      fullPath: '/admin/pricing'
+      preLoaderRoute: typeof AdminPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/process': {
@@ -392,15 +553,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/testimonials': {
+      id: '/admin/testimonials'
+      path: '/admin/testimonials'
+      fullPath: '/admin/testimonials'
+      preLoaderRoute: typeof AdminTestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/why': {
+      id: '/admin/why'
+      path: '/admin/why'
+      fullPath: '/admin/why'
+      preLoaderRoute: typeof AdminWhyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
   }
 }
+
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdatkezelesRoute: AdatkezelesRoute,
   ArakRoute: ArakRoute,
   AszfRoute: AszfRoute,
-  BlogRoute: BlogRoute,
+  BlogRoute: BlogRouteWithChildren,
   KapcsolatRoute: KapcsolatRoute,
   ReferenciakRoute: ReferenciakRoute,
   RolunkRoute: RolunkRoute,
@@ -408,11 +616,19 @@ const rootRouteChildren: RootRouteChildren = {
   SupabaseTestRoute: SupabaseTestRoute,
   SutikRoute: SutikRoute,
   SzolgaltatasokRoute: SzolgaltatasokRoute,
+  AdminBlogRoute: AdminBlogRoute,
+  AdminCtaRoute: AdminCtaRoute,
+  AdminFaqRoute: AdminFaqRoute,
   AdminHeroRoute: AdminHeroRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPricingRoute: AdminPricingRoute,
   AdminProcessRoute: AdminProcessRoute,
   AdminProjectsRoute: AdminProjectsRoute,
   AdminServicesRoute: AdminServicesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminTestimonialsRoute: AdminTestimonialsRoute,
+  AdminWhyRoute: AdminWhyRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport

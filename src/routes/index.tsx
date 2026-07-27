@@ -1,12 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, Smartphone, Zap, Search, Settings, Layers, ShoppingBag, RefreshCw, LifeBuoy, Code2, Sparkles, Users, TrendingUp, Globe, MessageSquare, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, Smartphone, Zap, Search, Settings, Layers, ShoppingBag, RefreshCw, LifeBuoy, Code2, Sparkles, Users, TrendingUp, Globe, MessageSquare, Star, Rocket, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Section } from "@/components/site/Section";
 import { BrowserMockup } from "@/components/site/BrowserMockup";
 import { supabase } from "@/lib/supabase/client";
+import {
+  DEFAULT_SITE_SETTINGS,
+  getSiteAssetUrl,
+  loadSiteSettings,
+} from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,7 +29,7 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: FAQS.map((f) => ({
+          mainEntity: DEFAULT_FAQS.map((f) => ({
             "@type": "Question",
             name: f.q,
             acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -63,6 +68,23 @@ const SERVICE_ICONS: Record<string, LucideIcon> = {
   code: Code2,
 };
 
+const WHY_ICONS: Record<string, LucideIcon> = {
+  check: Check,
+  sparkles: Sparkles,
+  zap: Zap,
+  smartphone: Smartphone,
+  settings: Settings,
+  "message-square": MessageSquare,
+  refresh: RefreshCw,
+};
+
+const FINAL_CTA_ICONS: Record<string, LucideIcon> = {
+  users: Users,
+  "message-square": MessageSquare,
+  sparkles: Sparkles,
+  rocket: Rocket,
+};
+
 type ProcessStep = {
   id: string;
   step_number: string;
@@ -72,33 +94,185 @@ type ProcessStep = {
   is_visible: boolean;
 };
 
-const PORTFOLIO = [
-  { title: "Fogorvosi rendelő", industry: "Egészségügy", cat: "Egészségügy", desc: "Bizalomépítő oldal online időpontfoglalással." },
-  { title: "Étterem és bár", industry: "Vendéglátás", cat: "Vendéglátás", desc: "Modern menükártya foglalással, mobilra hangolva." },
-  { title: "Ügyvédi iroda", industry: "Jogi szolgáltatás", cat: "Céges oldal", desc: "Prémium bemutatkozás, szakterületek egy kattintásra." },
-  { title: "Food truck brand", industry: "Vendéglátás", cat: "Vendéglátás", desc: "Élénk brand-oldal helyszín-térképpel és heti menüvel." },
-  { title: "Könyvelőiroda", industry: "Pénzügy", cat: "Céges oldal", desc: "Átlátható szolgáltatás-portfólió, ajánlatkérővel." },
-  { title: "Boutique szálláshely", industry: "Turizmus", cat: "Céges oldal", desc: "Vizuális, foglalás-orientált galériával." },
+type PortfolioProject = {
+  id: string;
+  slug: string;
+  title: string;
+  industry: string;
+  category: string;
+  description: string;
+  image_path: string | null;
+  project_url: string;
+  sort_order: number;
+  is_concept: boolean;
+  is_visible: boolean;
+};
+
+type PricingPackage = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  price_label: string;
+  currency: string;
+  price_suffix: string;
+  badge_text: string;
+  cta_text: string;
+  cta_url: string;
+  features: string[];
+  sort_order: number;
+  is_featured: boolean;
+  is_visible: boolean;
+};
+
+
+type WhySectionSettings = {
+  id: number;
+  eyebrow: string;
+  title: string;
+  description: string;
+  is_visible: boolean;
+};
+
+type WhyItem = {
+  id: string;
+  title: string;
+  description: string;
+  icon_key: string;
+  sort_order: number;
+  is_visible: boolean;
+};
+
+const DEFAULT_WHY_SECTION: WhySectionSettings = {
+  id: 1,
+  eyebrow: "Miért mi",
+  title: "Miért a PandaDesign?",
+  description: "",
+  is_visible: true,
+};
+
+const DEFAULT_WHY_ITEMS: WhyItem[] = [
+  {
+    id: "fallback-why-1",
+    title: "Egyedi, modern megjelenés",
+    description: "",
+    icon_key: "sparkles",
+    sort_order: 10,
+    is_visible: true,
+  },
+  {
+    id: "fallback-why-2",
+    title: "Gyors és átlátható munkafolyamat",
+    description: "",
+    icon_key: "zap",
+    sort_order: 20,
+    is_visible: true,
+  },
+  {
+    id: "fallback-why-3",
+    title: "Mobilra optimalizált kialakítás",
+    description: "",
+    icon_key: "smartphone",
+    sort_order: 30,
+    is_visible: true,
+  },
+  {
+    id: "fallback-why-4",
+    title: "Könnyen kezelhető adminfelület",
+    description: "",
+    icon_key: "settings",
+    sort_order: 40,
+    is_visible: true,
+  },
+  {
+    id: "fallback-why-5",
+    title: "Magyar nyelvű támogatás",
+    description: "",
+    icon_key: "message-square",
+    sort_order: 50,
+    is_visible: true,
+  },
+  {
+    id: "fallback-why-6",
+    title: "Hosszú távú együttműködés",
+    description: "",
+    icon_key: "refresh",
+    sort_order: 60,
+    is_visible: true,
+  },
 ];
 
-const PORTFOLIO_CATS = ["Összes", "Céges oldal", "Vendéglátás", "Egészségügy", "Webshop"] as const;
+type TestimonialSectionSettings = {
+  id: number;
+  eyebrow: string;
+  title: string;
+  description: string;
+  is_visible: boolean;
+};
 
-const WHY = [
-  "Egyedi, modern megjelenés",
-  "Gyors és átlátható munkafolyamat",
-  "Mobilra optimalizált kialakítás",
-  "Könnyen kezelhető adminfelület",
-  "Magyar nyelvű támogatás",
-  "Hosszú távú együttműködés",
+type Testimonial = {
+  id: string;
+  name: string;
+  role: string;
+  testimonial_text: string;
+  rating: number;
+  is_sample: boolean;
+  sort_order: number;
+  is_visible: boolean;
+};
+
+const DEFAULT_TESTIMONIAL_SECTION: TestimonialSectionSettings = {
+  id: 1,
+  eyebrow: "Vélemények",
+  title: "Ügyfeleink véleménye",
+  description:
+    "Az alábbi vélemények minta tartalmak, élesítés előtt valós visszajelzésekkel cseréljük.",
+  is_visible: true,
+};
+
+const DEFAULT_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "fallback-testimonial-1",
+    name: "Kovács Anna",
+    role: "Ügyvezető, minta vállalkozás",
+    testimonial_text:
+      "A PandaDesign csapata figyelmes és profi volt, az új weboldalunk sokkal áttekinthetőbb lett, és több érdeklődő is érkezik rajta keresztül.",
+    rating: 5,
+    is_sample: true,
+    sort_order: 10,
+    is_visible: true,
+  },
+  {
+    id: "fallback-testimonial-2",
+    name: "Nagy Péter",
+    role: "Tulajdonos, minta étterem",
+    testimonial_text:
+      "Gyorsan, világosan kommunikáltak, és a menünk mostantól mobilon is jól kezelhető. Az online foglalás bevezetése óta több a vendégünk.",
+    rating: 5,
+    is_sample: true,
+    sort_order: 20,
+    is_visible: true,
+  },
+  {
+    id: "fallback-testimonial-3",
+    name: "Szabó Eszter",
+    role: "Marketingvezető, minta cég",
+    testimonial_text:
+      "A projekt minden szakaszában tudtuk, hol tartunk. Az új oldal gyors, letisztult, és könnyen tudjuk mi magunk is szerkeszteni.",
+    rating: 5,
+    is_sample: true,
+    sort_order: 30,
+    is_visible: true,
+  },
 ];
+type FaqItem = {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+};
 
-const TESTIMONIALS = [
-  { name: "Kovács Anna", role: "Ügyvezető, minta vállalkozás", text: "A PandaDesign csapata figyelmes és profi volt, az új weboldalunk sokkal áttekinthetőbb lett, és több érdeklődő is érkezik rajta keresztül." },
-  { name: "Nagy Péter", role: "Tulajdonos, minta étterem", text: "Gyorsan, világosan kommunikáltak, és a menünk mostantól mobilon is jól kezelhető. Az online foglalás bevezetése óta több a vendégünk." },
-  { name: "Szabó Eszter", role: "Marketing vezető, minta cég", text: "A projekt minden szakaszában tudtuk, hol tartunk. Az új oldal gyors, letisztult, és könnyen tudjuk mi magunk is szerkeszteni." },
-];
-
-const FAQS = [
+const DEFAULT_FAQS = [
   { q: "Mennyi idő alatt készül el egy weboldal?", a: "A tipikus átfutási idő 2–6 hét a projekt összetettségétől és a tartalom rendelkezésre állásától függően. A pontos ütemezést a kezdeti egyeztetés során rögzítjük." },
   { q: "Mennyibe kerül egy weboldal?", a: "A landing oldalak 69 000 Ft-tól, a klasszikus céges weboldalak 119 000 Ft-tól, a nagyobb prezentációs oldalak 199 000 Ft-tól, a webshopok pedig 299 000 Ft-tól indulnak. A végleges ár az egyedi igényektől függ." },
   { q: "Nekem kell biztosítanom a szöveget és a képeket?", a: "Alapesetben igen, de segítünk a struktúrálásban, és opcióként copywritinget, valamint képválogatást is vállalunk." },
@@ -108,6 +282,29 @@ const FAQS = [
   { q: "Tudtok webáruházat is készíteni?", a: "Igen, WooCommerce vagy egyedi megoldás alapján is készítünk webshopokat online fizetéssel és szállítási integrációval." },
   { q: "Mi történik az átadás után?", a: "Betanítást, dokumentációt és opcionális karbantartási csomagot biztosítunk, hogy hosszú távon is biztonságban tudd az oldalad." },
 ];
+
+type FinalCtaSettings = {
+  id: number;
+  badge_text: string;
+  title: string;
+  description: string;
+  button_text: string;
+  button_url: string;
+  icon_key: string;
+  is_visible: boolean;
+};
+
+const DEFAULT_FINAL_CTA: FinalCtaSettings = {
+  id: 1,
+  badge_text: "Ingyenes konzultáció",
+  title: "Készen állsz egy jobb weboldalra?",
+  description:
+    "Beszéljük át az elképzelésedet egy kötelezettségmentes konzultáción.",
+  button_text: "Ajánlatot kérek",
+  button_url: "/kapcsolat",
+  icon_key: "users",
+  is_visible: true,
+};
 
 type HeroContent = {
   eyebrow: string;
@@ -133,6 +330,7 @@ const DEFAULT_HERO: HeroContent = {
 function Home() {
   return (
     <>
+      <SiteSettingsHeadSync />
       <HeroSection />
       <TrustSection />
       <ServicesSection />
@@ -145,6 +343,190 @@ function Home() {
       <FinalCTA />
     </>
   );
+}
+
+
+function SiteSettingsHeadSync() {
+  useEffect(() => {
+    let active = true;
+
+    function setMeta(
+      selector: string,
+      attribute: "name" | "property",
+      key: string,
+      content: string,
+    ) {
+      let element =
+        document.head.querySelector<HTMLMetaElement>(
+          selector,
+        );
+
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(attribute, key);
+        document.head.appendChild(element);
+      }
+
+      element.content = content;
+    }
+
+    async function synchronizeHead() {
+      try {
+        const settings = await loadSiteSettings();
+
+        if (!active) {
+          return;
+        }
+
+        document.title =
+          settings.default_meta_title ||
+          DEFAULT_SITE_SETTINGS.default_meta_title;
+
+        const description =
+          settings.default_meta_description ||
+          DEFAULT_SITE_SETTINGS.default_meta_description;
+
+        setMeta(
+          'meta[name="description"]',
+          "name",
+          "description",
+          description,
+        );
+
+        setMeta(
+          'meta[property="og:title"]',
+          "property",
+          "og:title",
+          document.title,
+        );
+
+        setMeta(
+          'meta[property="og:description"]',
+          "property",
+          "og:description",
+          description,
+        );
+
+        if (settings.base_url) {
+          setMeta(
+            'meta[property="og:url"]',
+            "property",
+            "og:url",
+            settings.base_url,
+          );
+        }
+
+        const ogImageUrl =
+          getSiteAssetUrl(settings.og_image_path);
+
+        if (ogImageUrl) {
+          setMeta(
+            'meta[property="og:image"]',
+            "property",
+            "og:image",
+            ogImageUrl,
+          );
+        }
+
+        const faviconUrl =
+          getSiteAssetUrl(settings.favicon_path);
+
+        if (faviconUrl) {
+          let favicon =
+            document.head.querySelector<HTMLLinkElement>(
+              'link[rel="icon"]',
+            );
+
+          if (!favicon) {
+            favicon = document.createElement("link");
+            favicon.rel = "icon";
+            document.head.appendChild(favicon);
+          }
+
+          favicon.href = faviconUrl;
+        }
+
+        const logoUrl =
+          getSiteAssetUrl(settings.logo_path);
+
+        const sameAs = [
+          settings.facebook_url,
+          settings.instagram_url,
+          settings.linkedin_url,
+        ].filter(Boolean);
+
+        const structuredData = {
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          name: settings.site_name,
+          legalName:
+            settings.legal_name || undefined,
+          url: settings.base_url || undefined,
+          logo: logoUrl || undefined,
+          image: ogImageUrl || undefined,
+          email:
+            settings.show_contact_details &&
+            settings.email
+              ? settings.email
+              : undefined,
+          telephone:
+            settings.show_contact_details &&
+            settings.phone
+              ? settings.phone
+              : undefined,
+          address:
+            settings.show_contact_details &&
+            (
+              settings.address_line ||
+              settings.city ||
+              settings.postal_code
+            )
+              ? {
+                  "@type": "PostalAddress",
+                  streetAddress:
+                    settings.address_line || undefined,
+                  postalCode:
+                    settings.postal_code || undefined,
+                  addressLocality:
+                    settings.city || undefined,
+                  addressCountry:
+                    settings.country || undefined,
+                }
+              : undefined,
+          sameAs:
+            sameAs.length > 0 ? sameAs : undefined,
+        };
+
+        let script =
+          document.head.querySelector<HTMLScriptElement>(
+            "#pandadesign-business-jsonld",
+          );
+
+        if (!script) {
+          script = document.createElement("script");
+          script.id = "pandadesign-business-jsonld";
+          script.type = "application/ld+json";
+          document.head.appendChild(script);
+        }
+
+        script.textContent =
+          JSON.stringify(structuredData);
+      } catch (error) {
+        console.error(
+          "Az általános weboldal-beállítások nem tölthetők be:",
+          error,
+        );
+      }
+    }
+
+    void synchronizeHead();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return null;
 }
 
 function HeroSection() {
@@ -499,188 +881,800 @@ function ProcessSection() {
 }
 
 function PortfolioSection() {
+  const [projects, setProjects] = useState<PortfolioProject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProjects() {
+      const { data, error } = await supabase
+        .from("projects")
+        .select(
+          "id, slug, title, industry, category, description, image_path, project_url, sort_order, is_concept, is_visible",
+        )
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true })
+        .limit(6);
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error("A referenciák nem tölthetők be:", error);
+        setErrorMessage("A referenciák átmenetileg nem tölthetők be.");
+        setLoading(false);
+        return;
+      }
+
+      setProjects((data ?? []) as PortfolioProject[]);
+      setLoading(false);
+    }
+
+    void loadProjects();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <Section eyebrow="Munkáink" title="Válogatott munkáink" description="Az alábbi projektek helyőrző referenciák – éles ügyféladatokkal cseréljük őket.">
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-        {PORTFOLIO.map((p) => (
-          <PortfolioCard key={p.title} {...p} />
-        ))}
-      </div>
+    <Section
+      eyebrow="Munkáink"
+      title="Válogatott munkáink"
+      description="Koncepcióprojektek és elkészült ügyfélmunkák egy helyen."
+    >
+      {loading && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-80 animate-pulse rounded-2xl border bg-secondary/40"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && errorMessage && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
+      {!loading && !errorMessage && projects.length === 0 && (
+        <div className="rounded-2xl border bg-white p-8 text-center text-ink-soft shadow-soft">
+          Jelenleg nincs megjeleníthető referencia.
+        </div>
+      )}
+
+      {!loading && !errorMessage && projects.length > 0 && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {projects.map((project) => (
+            <PortfolioCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
+
       <div className="mt-10 flex justify-center">
         <Button asChild variant="outline">
-          <Link to="/referenciak">Minden projekt <ArrowRight className="h-4 w-4" /></Link>
+          <Link to="/referenciak">
+            Minden projekt <ArrowRight className="h-4 w-4" />
+          </Link>
         </Button>
       </div>
     </Section>
   );
 }
 
-function PortfolioCard({ title, industry, desc }: { title: string; industry: string; desc: string }) {
+function PortfolioCard({ project }: { project: PortfolioProject }) {
+  const imageUrl = project.image_path
+    ? supabase.storage
+        .from("portfolio")
+        .getPublicUrl(project.image_path).data.publicUrl
+    : "";
+
   return (
     <Card className="overflow-hidden border shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-all group h-full flex flex-col">
       <div className="aspect-[16/10] relative overflow-hidden bg-gradient-to-br from-brand/8 via-brand/4 to-success/8 border-b">
-        <div className="absolute inset-5 rounded-lg bg-white shadow-soft overflow-hidden">
-          <div className="h-4 border-b bg-secondary/40 flex items-center gap-1 px-2">
-            <span className="h-1 w-1 rounded-full bg-ink/20" />
-            <span className="h-1 w-1 rounded-full bg-ink/20" />
-          </div>
-          <div className="p-3 space-y-1.5">
-            <div className="h-1.5 w-3/4 rounded-full bg-ink/70" />
-            <div className="h-1.5 w-1/2 rounded-full bg-ink/20" />
-            <div className="grid grid-cols-3 gap-1 pt-2">
-              <div className="aspect-square rounded bg-success/25" />
-              <div className="aspect-square rounded bg-brand/20" />
-              <div className="aspect-square rounded bg-ink/10" />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={project.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="absolute inset-5 rounded-lg bg-white shadow-soft overflow-hidden">
+            <div className="h-4 border-b bg-secondary/40 flex items-center gap-1 px-2">
+              <span className="h-1 w-1 rounded-full bg-ink/20" />
+              <span className="h-1 w-1 rounded-full bg-ink/20" />
+            </div>
+
+            <div className="p-3 space-y-1.5">
+              <div className="h-1.5 w-3/4 rounded-full bg-ink/70" />
+              <div className="h-1.5 w-1/2 rounded-full bg-ink/20" />
+              <div className="grid grid-cols-3 gap-1 pt-2">
+                <div className="aspect-square rounded bg-success/25" />
+                <div className="aspect-square rounded bg-brand/20" />
+                <div className="aspect-square rounded bg-ink/10" />
+              </div>
             </div>
           </div>
-        </div>
-        <span className="absolute top-3 left-3 rounded-full bg-white/95 backdrop-blur border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
-          Minta
-        </span>
+        )}
+
+        {project.is_concept && (
+          <span className="absolute top-3 left-3 rounded-full bg-white/95 backdrop-blur border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
+            Koncepció
+          </span>
+        )}
       </div>
+
       <CardContent className="p-6 flex-1 flex flex-col">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-brand">{industry}</p>
-        <h3 className="mt-1.5 text-lg font-semibold text-ink">{title}</h3>
-        <p className="mt-2 text-sm text-ink-soft leading-relaxed flex-1">{desc}</p>
-        <Link to="/referenciak" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:gap-2 transition-all self-start">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-brand">
+          {project.industry}
+        </p>
+
+        <h3 className="mt-1.5 text-lg font-semibold text-ink">
+          {project.title}
+        </h3>
+
+        <p className="mt-2 text-sm text-ink-soft leading-relaxed flex-1">
+          {project.description}
+        </p>
+
+        <a
+          href={project.project_url || "/referenciak"}
+          className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:gap-2 transition-all self-start"
+        >
           Projekt megnyitása <ArrowRight className="h-4 w-4" />
-        </Link>
+        </a>
       </CardContent>
     </Card>
   );
 }
 
 function PricingSection() {
-  const plans = [
-    { name: "Landing", price: "69 000", desc: "Egyoldalas kampányoldal", features: ["Egyoldalas felépítés", "Reszponzív dizájn", "Kapcsolatfelvételi űrlap", "Alap SEO beállítás", "Közösségi média linkek"] },
-    { name: "Basic", price: "119 000", desc: "Klasszikus bemutatkozó oldal", features: ["Max. 5 aloldal", "Reszponzív dizájn", "Kapcsolatfelvételi űrlap", "Alap SEO", "Analitika beállítás", "Könnyű adminisztráció"] },
-    { name: "Medium", price: "199 000", desc: "Bővített prezentációs oldal", featured: true, features: ["Max. 10 aloldal", "Egyedi dizájn", "Blog modul", "Speciális űrlapok", "Sebesség-optimalizálás", "Analitika", "Alap technikai SEO", "Betanítás és átadás"] },
-    { name: "Webshop", price: "299 000", desc: "Modern online áruház", features: ["Termékkatalógus", "Kosár funkció", "Online fizetés integráció", "Szállítási opciók", "Rendeléskezelés", "Alap webshop betanítás"] },
-  ];
+  const [plans, setPlans] = useState<PricingPackage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadPricing() {
+      const { data, error } = await supabase
+        .from("pricing_packages")
+        .select(
+          "id, slug, name, description, price_label, currency, price_suffix, badge_text, cta_text, cta_url, features, sort_order, is_featured, is_visible",
+        )
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true });
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error("Az árcsomagok nem tölthetők be:", error);
+        setErrorMessage("Az árcsomagok átmenetileg nem tölthetők be.");
+        setLoading(false);
+        return;
+      }
+
+      setPlans(
+        (data ?? []).map((item) => ({
+          ...item,
+          features: Array.isArray(item.features)
+            ? (item.features as string[])
+            : [],
+        })) as PricingPackage[],
+      );
+      setLoading(false);
+    }
+
+    void loadPricing();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <Section eyebrow="Árak" title="Átlátható csomagok" description="Válaszd ki a hozzád illő csomagot – a végleges ár a projekt komplexitásától függ.">
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-        {plans.map((p) => (
-          <Card
-            key={p.name}
-            className={`relative border shadow-soft h-full flex flex-col ${p.featured ? "border-brand border-2 shadow-elegant lg:scale-[1.02]" : ""}`}
-          >
-            {p.featured && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-success text-success-foreground px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm">
-                Legnépszerűbb
-              </span>
-            )}
-            <CardContent className="p-7 flex flex-col h-full">
-              <p className="text-sm font-semibold text-brand">{p.name}</p>
-              <p className="mt-1 text-xs text-ink-soft min-h-8">{p.desc}</p>
-              <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-ink tracking-tight">{p.price} Ft</span>
-              </p>
-              <p className="text-xs text-ink-soft mt-0.5">-tól, +ÁFA</p>
-              <ul className="mt-6 space-y-2.5 flex-1">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-ink-soft">
-                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-success" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button asChild className="mt-6 w-full" variant={p.featured ? "cta" : "outline"}>
-                <Link to="/kapcsolat">Ajánlatot kérek</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    <Section
+      eyebrow="Árak"
+      title="Átlátható csomagok"
+      description="Válaszd ki a hozzád illő csomagot – a végleges ár a projekt komplexitásától függ."
+    >
+      {loading && (
+        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-[470px] animate-pulse rounded-2xl border bg-secondary/40"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && errorMessage && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
+      {!loading && !errorMessage && plans.length === 0 && (
+        <div className="rounded-2xl border bg-white p-8 text-center text-ink-soft shadow-soft">
+          Jelenleg nincs megjeleníthető árcsomag.
+        </div>
+      )}
+
+      {!loading && !errorMessage && plans.length > 0 && (
+        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
+          {plans.map((plan) => (
+            <Card
+              key={plan.id}
+              className={`relative border shadow-soft h-full flex flex-col ${
+                plan.is_featured
+                  ? "border-brand border-2 shadow-elegant xl:scale-[1.02]"
+                  : ""
+              }`}
+            >
+              {plan.is_featured && plan.badge_text && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-success text-success-foreground px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm">
+                  {plan.badge_text}
+                </span>
+              )}
+
+              <CardContent className="p-7 flex flex-col h-full">
+                <p className="text-sm font-semibold text-brand">
+                  {plan.name}
+                </p>
+
+                <p className="mt-1 text-xs text-ink-soft min-h-8">
+                  {plan.description}
+                </p>
+
+                <p className="mt-4 flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-ink tracking-tight">
+                    {plan.price_label}
+                  </span>
+
+                  {plan.currency && (
+                    <span className="text-lg font-semibold text-ink">
+                      {plan.currency}
+                    </span>
+                  )}
+                </p>
+
+                {plan.price_suffix && (
+                  <p className="text-xs text-ink-soft mt-0.5">
+                    {plan.price_suffix}
+                  </p>
+                )}
+
+                <ul className="mt-6 space-y-2.5 flex-1">
+                  {plan.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-2 text-sm text-ink-soft"
+                    >
+                      <Check className="h-4 w-4 mt-0.5 shrink-0 text-success" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  className="mt-6 w-full"
+                  variant={plan.is_featured ? "cta" : "outline"}
+                >
+                  <a href={plan.cta_url || "/kapcsolat"}>
+                    {plan.cta_text || "Ajánlatot kérek"}
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       <p className="mt-8 text-center text-sm text-ink-soft">
-        A végleges ár a projekt összetettségétől és az egyedi igényektől függ. <Link to="/arak" className="text-brand font-semibold hover:underline">Részletes összehasonlítás →</Link>
+        A végleges ár a projekt összetettségétől és az egyedi igényektől függ.{" "}
+        <Link
+          to="/arak"
+          className="text-brand font-semibold hover:underline"
+        >
+          Részletes összehasonlítás →
+        </Link>
       </p>
     </Section>
   );
 }
 
 function WhySection() {
+  const [section, setSection] =
+    useState<WhySectionSettings>(DEFAULT_WHY_SECTION);
+  const [items, setItems] =
+    useState<WhyItem[]>(DEFAULT_WHY_ITEMS);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadWhySection() {
+      const [
+        { data: settingsData, error: settingsError },
+        { data: itemsData, error: itemsError },
+      ] = await Promise.all([
+        supabase
+          .from("why_section_settings")
+          .select("id, eyebrow, title, description, is_visible")
+          .eq("id", 1)
+          .maybeSingle(),
+        supabase
+          .from("why_items")
+          .select(
+            "id, title, description, icon_key, sort_order, is_visible",
+          )
+          .eq("is_visible", true)
+          .order("sort_order", { ascending: true }),
+      ]);
+
+      if (!active) {
+        return;
+      }
+
+      if (settingsError || itemsError) {
+        console.error(
+          "A „Miért a PandaDesign?” szekció nem tölthető be:",
+          settingsError ?? itemsError,
+        );
+
+        setErrorMessage(
+          "A friss tartalom átmenetileg nem tölthető be. A tartalék elemeket jelenítjük meg.",
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (settingsData) {
+        setSection(settingsData as WhySectionSettings);
+      }
+
+      setItems((itemsData ?? []) as WhyItem[]);
+      setErrorMessage("");
+      setLoading(false);
+    }
+
+    void loadWhySection();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!loading && !section.is_visible) {
+    return null;
+  }
+
   return (
-    <Section eyebrow="Miért mi" title="Miért a PandaDesign?" tone="muted">
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-        {WHY.map((w) => (
-          <div key={w} className="flex items-center gap-3 rounded-xl bg-white border p-5 shadow-soft h-full">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-success-soft text-success shrink-0">
-              <Check className="h-4 w-4" />
-            </span>
-            <p className="text-sm font-medium text-ink">{w}</p>
-          </div>
-        ))}
-      </div>
+    <Section
+      eyebrow={section.eyebrow}
+      title={section.title}
+      description={section.description || undefined}
+      tone="muted"
+    >
+      {loading && (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 md:gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-28 animate-pulse rounded-xl border bg-white/70"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && errorMessage && (
+        <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {errorMessage}
+        </p>
+      )}
+
+      {!loading && items.length === 0 && (
+        <div className="rounded-xl border bg-white p-8 text-center text-sm text-ink-soft shadow-soft">
+          Jelenleg nincs megjeleníthető előny.
+        </div>
+      )}
+
+      {!loading && items.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 md:gap-4">
+          {items.map((item) => {
+            const Icon = WHY_ICONS[item.icon_key] ?? Check;
+
+            return (
+              <div
+                key={item.id}
+                className="flex h-full gap-4 rounded-xl border bg-white p-5 shadow-soft"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-success-soft text-success">
+                  <Icon className="h-4 w-4" />
+                </span>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-ink">
+                    {item.title}
+                  </h3>
+
+                  {item.description && (
+                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </Section>
   );
 }
 
 function TestimonialsSection() {
+  const [section, setSection] =
+    useState<TestimonialSectionSettings>(
+      DEFAULT_TESTIMONIAL_SECTION,
+    );
+  const [testimonials, setTestimonials] =
+    useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadTestimonials() {
+      const [
+        { data: settingsData, error: settingsError },
+        { data: testimonialsData, error: testimonialsError },
+      ] = await Promise.all([
+        supabase
+          .from("testimonial_section_settings")
+          .select("id, eyebrow, title, description, is_visible")
+          .eq("id", 1)
+          .maybeSingle(),
+        supabase
+          .from("testimonials")
+          .select(
+            "id, name, role, testimonial_text, rating, is_sample, sort_order, is_visible",
+          )
+          .eq("is_visible", true)
+          .order("sort_order", { ascending: true }),
+      ]);
+
+      if (!active) {
+        return;
+      }
+
+      if (settingsError || testimonialsError) {
+        console.error(
+          "A véleményszekció nem tölthető be:",
+          settingsError ?? testimonialsError,
+        );
+
+        setErrorMessage(
+          "A friss vélemények átmenetileg nem tölthetők be. A tartalék elemeket jelenítjük meg.",
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (settingsData) {
+        setSection(
+          settingsData as TestimonialSectionSettings,
+        );
+      }
+
+      setTestimonials(
+        (testimonialsData ?? []) as Testimonial[],
+      );
+      setErrorMessage("");
+      setLoading(false);
+    }
+
+    void loadTestimonials();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!loading && !section.is_visible) {
+    return null;
+  }
+
   return (
-    <Section eyebrow="Vélemények" title="Ügyfeleink véleménye" description="Az alábbi vélemények minta tartalmak, élesítés előtt valós visszajelzésekkel cseréljük.">
-      <div className="grid md:grid-cols-3 gap-4 md:gap-5">
-        {TESTIMONIALS.map((t) => (
-          <Card key={t.name} className="border shadow-soft h-full">
-            <CardContent className="p-7 h-full flex flex-col">
-              <MessageSquare className="h-6 w-6 text-brand" />
-              <p className="mt-4 text-ink leading-relaxed flex-1">„{t.text}"</p>
-              <div className="mt-6 pt-6 border-t">
-                <p className="text-sm font-semibold text-ink">{t.name}</p>
-                <p className="text-xs text-ink-soft mt-0.5">{t.role}</p>
-                <span className="mt-2 inline-block text-[10px] font-semibold uppercase tracking-widest text-ink-soft/70">Minta tartalom</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    <Section
+      eyebrow={section.eyebrow}
+      title={section.title}
+      description={section.description || undefined}
+    >
+      {loading && (
+        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-72 animate-pulse rounded-2xl border bg-secondary/40"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && errorMessage && (
+        <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {errorMessage}
+        </p>
+      )}
+
+      {!loading && testimonials.length === 0 && (
+        <div className="rounded-2xl border bg-white p-8 text-center text-sm text-ink-soft shadow-soft">
+          Jelenleg nincs megjeleníthető ügyfélvélemény.
+        </div>
+      )}
+
+      {!loading && testimonials.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+          {testimonials.map((testimonial) => (
+            <Card
+              key={testimonial.id}
+              className="h-full border shadow-soft"
+            >
+              <CardContent className="flex h-full flex-col p-7">
+                <div className="flex items-center justify-between gap-4">
+                  <MessageSquare className="h-6 w-6 text-brand" />
+
+                  <div
+                    className="flex items-center gap-1"
+                    aria-label={`${testimonial.rating} csillagos értékelés`}
+                  >
+                    {Array.from({ length: 5 }).map(
+                      (_, starIndex) => (
+                        <Star
+                          key={starIndex}
+                          className={`h-4 w-4 ${
+                            starIndex < testimonial.rating
+                              ? "fill-current text-amber-500"
+                              : "text-ink-soft/20"
+                          }`}
+                        />
+                      ),
+                    )}
+                  </div>
+                </div>
+
+                <p className="mt-4 flex-1 whitespace-pre-line leading-relaxed text-ink">
+                  „{testimonial.testimonial_text}”
+                </p>
+
+                <div className="mt-6 border-t pt-6">
+                  <p className="text-sm font-semibold text-ink">
+                    {testimonial.name}
+                  </p>
+
+                  {testimonial.role && (
+                    <p className="mt-0.5 text-xs text-ink-soft">
+                      {testimonial.role}
+                    </p>
+                  )}
+
+                  {testimonial.is_sample && (
+                    <span className="mt-2 inline-block text-[10px] font-semibold uppercase tracking-widest text-ink-soft/70">
+                      Minta tartalom
+                    </span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </Section>
   );
 }
 
 function FAQSection() {
+  const fallbackFaqs: FaqItem[] = DEFAULT_FAQS.map((faq, index) => ({
+    id: `fallback-${index}`,
+    question: faq.q,
+    answer: faq.a,
+    sort_order: (index + 1) * 10,
+  }));
+
+  const [faqs, setFaqs] = useState<FaqItem[]>(fallbackFaqs);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadFaqs() {
+      const { data, error } = await supabase
+        .from("faq_items")
+        .select("id, question, answer, sort_order")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error("A GYIK-elemek nem tölthetők be:", error);
+        setErrorMessage(
+          "A friss GYIK-tartalom átmenetileg nem tölthető be. A tartalék kérdéseket jelenítjük meg.",
+        );
+        setLoading(false);
+        return;
+      }
+
+      setFaqs((data ?? []) as FaqItem[]);
+      setErrorMessage("");
+      setLoading(false);
+    }
+
+    void loadFaqs();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <Section eyebrow="Kérdések" title="Gyakori kérdések">
       <div className="max-w-3xl">
-        <Accordion type="single" collapsible className="space-y-2.5">
-          {FAQS.map((f, i) => (
-            <AccordionItem key={f.q} value={`item-${i}`} className="border rounded-xl bg-white px-5 md:px-6 shadow-soft">
-              <AccordionTrigger className="text-left font-semibold text-ink hover:no-underline py-5">
-                {f.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-ink-soft leading-relaxed pb-5">
-                {f.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        {loading && (
+          <div className="space-y-2.5" aria-label="GYIK betöltése">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="h-16 animate-pulse rounded-xl border bg-secondary/40"
+              />
+            ))}
+          </div>
+        )}
+
+        {!loading && errorMessage && (
+          <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {errorMessage}
+          </p>
+        )}
+
+        {!loading && faqs.length === 0 && (
+          <div className="rounded-xl border bg-white px-5 py-6 text-sm text-ink-soft shadow-soft">
+            Jelenleg nincs megjeleníthető gyakori kérdés.
+          </div>
+        )}
+
+        {!loading && faqs.length > 0 && (
+          <Accordion type="single" collapsible className="space-y-2.5">
+            {faqs.map((faq, index) => (
+              <AccordionItem
+                key={faq.id}
+                value={`faq-${faq.id}-${index}`}
+                className="rounded-xl border bg-white px-5 shadow-soft md:px-6"
+              >
+                <AccordionTrigger className="py-5 text-left font-semibold text-ink hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+
+                <AccordionContent className="whitespace-pre-line pb-5 leading-relaxed text-ink-soft">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
       </div>
     </Section>
   );
 }
 
 function FinalCTA() {
+  const [cta, setCta] =
+    useState<FinalCtaSettings>(DEFAULT_FINAL_CTA);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadFinalCta() {
+      const { data, error } = await supabase
+        .from("final_cta_settings")
+        .select(
+          "id, badge_text, title, description, button_text, button_url, icon_key, is_visible",
+        )
+        .eq("id", 1)
+        .maybeSingle();
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error(
+          "A záró CTA nem tölthető be:",
+          error,
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (data) {
+        setCta(data as FinalCtaSettings);
+      }
+
+      setLoading(false);
+    }
+
+    void loadFinalCta();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!loading && !cta.is_visible) {
+    return null;
+  }
+
+  const Icon =
+    FINAL_CTA_ICONS[cta.icon_key] ?? Users;
+
   return (
     <section className="py-16 md:py-24">
       <div className="container-page">
-        <div className="relative overflow-hidden rounded-3xl bg-brand text-brand-foreground p-8 md:p-16 shadow-elegant">
+        <div className="relative overflow-hidden rounded-3xl bg-brand p-8 text-brand-foreground shadow-elegant md:p-16">
           <div
             aria-hidden
-            className="absolute inset-0 -z-0 opacity-40 bg-[radial-gradient(600px_300px_at_100%_0%,color-mix(in_oklab,var(--success)_50%,transparent),transparent)]"
+            className="absolute inset-0 opacity-40 bg-[radial-gradient(600px_300px_at_100%_0%,color-mix(in_oklab,var(--success)_50%,transparent),transparent)]"
           />
+
           <div className="relative max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium">
-              <Users className="h-3.5 w-3.5" /> Ingyenes konzultáció
-            </div>
-            <h2 className="mt-5 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-              Készen állsz egy jobb weboldalra?
+            {cta.badge_text && (
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium">
+                <Icon className="h-3.5 w-3.5" />
+                {cta.badge_text}
+              </div>
+            )}
+
+            <h2 className="mt-5 whitespace-pre-line text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+              {cta.title}
             </h2>
-            <p className="mt-4 text-brand-foreground/80 text-base md:text-lg">
-              Beszéljük át az elképzelésedet egy kötelezettségmentes konzultáción.
-            </p>
-            <Button asChild size="lg" variant="cta" className="mt-8">
-              <Link to="/kapcsolat">Ajánlatot kérek <ArrowRight className="h-4 w-4" /></Link>
-            </Button>
+
+            {cta.description && (
+              <p className="mt-4 whitespace-pre-line text-base text-brand-foreground/80 md:text-lg">
+                {cta.description}
+              </p>
+            )}
+
+            {cta.button_text && cta.button_url && (
+              <Button
+                asChild
+                size="lg"
+                variant="cta"
+                className="mt-8"
+              >
+                <a href={cta.button_url}>
+                  {cta.button_text}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>
