@@ -58,3 +58,8 @@ supabase/functions/.env.lead-notification.local
 supabase/functions/.env*.local
 supabase/.temp/
 supabase/.branches/
+
+# Ignore all environment files by default
+.env*
+!.env.example
+!.env.*.example
