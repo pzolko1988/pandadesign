@@ -11,8 +11,10 @@ import {
 } from "react";
 import {
   Archive,
+  BellRing,
   CheckCircle2,
   ChevronRight,
+  CircleAlert,
   CircleDollarSign,
   Clock3,
   Download,
@@ -72,6 +74,25 @@ type ContactLead = {
   user_agent: string;
   viewed_at: string | null;
   last_contacted_at: string | null;
+  notification_status:
+    | "pending"
+    | "sent"
+    | "failed"
+    | "skipped";
+  notification_sent_at: string | null;
+  notification_last_attempt_at: string | null;
+  notification_attempts: number;
+  notification_email_id: string | null;
+  notification_error: string | null;
+  autoreply_status:
+    | "disabled"
+    | "pending"
+    | "sent"
+    | "failed"
+    | "skipped";
+  autoreply_sent_at: string | null;
+  autoreply_email_id: string | null;
+  autoreply_error: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -150,6 +171,10 @@ function AdminLeadsPage() {
     useState(false);
   const [saving, setSaving] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
+  const [
+    sendingNotificationId,
+    setSendingNotificationId,
+  ] = useState<string | null>(null);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] =
@@ -280,7 +305,7 @@ function AdminLeadsPage() {
     const { data, error } = await supabase
       .from("contact_leads")
       .select(
-        "id, name, email, phone, company, service_type, budget_range, message, status, priority, privacy_accepted, privacy_accepted_at, privacy_policy_version, marketing_consent, marketing_consent_at, source_page, referrer, utm_source, utm_medium, utm_campaign, utm_content, utm_term, user_agent, viewed_at, last_contacted_at, created_at, updated_at",
+        "id, name, email, phone, company, service_type, budget_range, message, status, priority, privacy_accepted, privacy_accepted_at, privacy_policy_version, marketing_consent, marketing_consent_at, source_page, referrer, utm_source, utm_medium, utm_campaign, utm_content, utm_term, user_agent, viewed_at, last_contacted_at, notification_status, notification_sent_at, notification_last_attempt_at, notification_attempts, notification_email_id, notification_error, autoreply_status, autoreply_sent_at, autoreply_email_id, autoreply_error, created_at, updated_at",
       )
       .order("created_at", {
         ascending: false,
@@ -530,6 +555,54 @@ function AdminLeadsPage() {
           ? error.message
           : "A jegyzet törlése nem sikerült.",
       );
+    }
+  }
+
+  async function resendLeadNotification(
+    leadId: string,
+  ) {
+    setSendingNotificationId(leadId);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+      const { data, error } =
+        await supabase.functions.invoke(
+          "lead-notification",
+          {
+            body: {
+              mode: "manual",
+              lead_id: leadId,
+            },
+          },
+        );
+
+      if (error) {
+        throw error;
+      }
+
+      if (
+        data &&
+        typeof data === "object" &&
+        "error" in data &&
+        data.error
+      ) {
+        throw new Error(String(data.error));
+      }
+
+      await loadLeads();
+
+      setSuccessMessage(
+        "A leadértesítő e-mail sikeresen elküldve.",
+      );
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Az e-mail-értesítés újraküldése nem sikerült.",
+      );
+    } finally {
+      setSendingNotificationId(null);
     }
   }
 
@@ -860,6 +933,12 @@ function AdminLeadsPage() {
                               Magas prioritás
                             </span>
                           )}
+
+                          <NotificationBadge
+                            status={
+                              lead.notification_status
+                            }
+                          />
                         </div>
 
                         <p className="mt-1 truncate text-sm text-muted-foreground">
@@ -918,6 +997,10 @@ function AdminLeadsPage() {
                 detailLoading={detailLoading}
                 saving={saving}
                 addingNote={addingNote}
+                sendingNotification={
+                  sendingNotificationId ===
+                  selectedLead.id
+                }
                 onNoteTextChange={setNoteText}
                 onStatusChange={(status) =>
                   void updateLead(
@@ -936,6 +1019,11 @@ function AdminLeadsPage() {
                 onAddNote={addNote}
                 onDeleteNote={(note) =>
                   void deleteNote(note)
+                }
+                onResendNotification={() =>
+                  void resendLeadNotification(
+                    selectedLead.id,
+                  )
                 }
                 onDeleteLead={() =>
                   void deleteLead(selectedLead)
@@ -988,6 +1076,7 @@ type LeadDetailProps = {
   detailLoading: boolean;
   saving: boolean;
   addingNote: boolean;
+  sendingNotification: boolean;
   onNoteTextChange: (value: string) => void;
   onStatusChange: (status: LeadStatus) => void;
   onPriorityChange: (
@@ -997,6 +1086,7 @@ type LeadDetailProps = {
     event: FormEvent<HTMLFormElement>,
   ) => void;
   onDeleteNote: (note: LeadNote) => void;
+  onResendNotification: () => void;
   onDeleteLead: () => void;
 };
 
@@ -1007,11 +1097,13 @@ function LeadDetail({
   detailLoading,
   saving,
   addingNote,
+  sendingNotification,
   onNoteTextChange,
   onStatusChange,
   onPriorityChange,
   onAddNote,
   onDeleteNote,
+  onResendNotification,
   onDeleteLead,
 }: LeadDetailProps) {
   return (
@@ -1165,6 +1257,83 @@ function LeadDetail({
           />
         </div>
 
+        <section className="rounded-2xl border p-4">
+          <div className="flex items-start gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
+              <BellRing className="h-4 w-4" />
+            </span>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-bold">
+                  E-mail-értesítés
+                </h3>
+
+                <NotificationBadge
+                  status={
+                    lead.notification_status
+                  }
+                />
+              </div>
+
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {notificationDescription(lead)}
+              </p>
+
+              {lead.notification_error && (
+                <div className="mt-3 flex gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-700">
+                  <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span className="break-words">
+                    {lead.notification_error}
+                  </span>
+                </div>
+              )}
+
+              <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                <span>
+                  Kísérletek:{" "}
+                  {lead.notification_attempts}
+                </span>
+
+                <span>
+                  Utolsó próbálkozás:{" "}
+                  {lead.notification_last_attempt_at
+                    ? formatDate(
+                        lead.notification_last_attempt_at,
+                      )
+                    : "—"}
+                </span>
+
+                <span>
+                  Érdeklődő visszaigazolása:{" "}
+                  {autoreplyLabel(
+                    lead.autoreply_status,
+                  )}
+                </span>
+
+                <span>
+                  Resend azonosító:{" "}
+                  {lead.notification_email_id ||
+                    "—"}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                disabled={sendingNotification}
+                onClick={onResendNotification}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Send className="h-4 w-4" />
+
+                {sendingNotification
+                  ? "E-mail küldése..."
+                  : "Értesítés újraküldése"}
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section>
           <div className="mb-3">
             <h3 className="font-bold">
@@ -1258,6 +1427,74 @@ function LeadDetail({
       </div>
     </div>
   );
+}
+
+function NotificationBadge({
+  status,
+}: {
+  status: ContactLead["notification_status"];
+}) {
+  const styles = {
+    pending:
+      "bg-amber-100 text-amber-800",
+    sent:
+      "bg-green-100 text-green-800",
+    failed:
+      "bg-red-100 text-red-800",
+    skipped:
+      "bg-slate-100 text-slate-700",
+  };
+
+  const labels = {
+    pending: "E-mail függőben",
+    sent: "E-mail elküldve",
+    failed: "E-mail hiba",
+    skipped: "Nincs értesítés",
+  };
+
+  return (
+    <span
+      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles[status]}`}
+    >
+      {labels[status]}
+    </span>
+  );
+}
+
+function notificationDescription(
+  lead: ContactLead,
+) {
+  switch (lead.notification_status) {
+    case "sent":
+      return lead.notification_sent_at
+        ? `A PandaDesign értesítése elküldve: ${formatDate(
+            lead.notification_sent_at,
+          )}.`
+        : "A PandaDesign értesítése sikeresen elküldve.";
+    case "failed":
+      return "Az automatikus e-mail küldése hibával leállt. A hiba elhárítása után kézzel újraküldhető.";
+    case "pending":
+      return "A lead mentése megtörtént, az e-mail-értesítés még küldésre vár.";
+    default:
+      return "Ehhez a leadhez nem tartozik automatikus e-mail-értesítés.";
+  }
+}
+
+function autoreplyLabel(
+  status: ContactLead["autoreply_status"],
+) {
+  switch (status) {
+    case "sent":
+      return "elküldve";
+    case "failed":
+      return "hiba";
+    case "pending":
+      return "függőben";
+    case "skipped":
+      return "kihagyva";
+    default:
+      return "kikapcsolva";
+  }
 }
 
 type DetailLinkProps = {

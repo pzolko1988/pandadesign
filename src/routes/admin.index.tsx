@@ -342,6 +342,23 @@ function AdminDashboardPage() {
           </Link>
 
           <Link
+            to="/admin/navigation"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Globális megjelenés
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Fejléc és lábléc
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Menüpontok, mobilmenü, értesítési sáv, CTA és lábléccsoportok.
+            </p>
+          </Link>
+
+          <Link
             to="/admin/settings"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >

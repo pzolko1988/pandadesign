@@ -895,6 +895,7 @@ function PortfolioSection() {
           "id, slug, title, industry, category, description, image_path, project_url, sort_order, is_concept, is_visible",
         )
         .eq("is_visible", true)
+        .eq("status", "published")
         .order("sort_order", { ascending: true })
         .limit(6);
 
@@ -1024,12 +1025,15 @@ function PortfolioCard({ project }: { project: PortfolioProject }) {
           {project.description}
         </p>
 
-        <a
-          href={project.project_url || "/referenciak"}
+        <Link
+          to="/referenciak/$slug"
+          params={{
+            slug: project.slug,
+          }}
           className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:gap-2 transition-all self-start"
         >
-          Projekt megnyitása <ArrowRight className="h-4 w-4" />
-        </a>
+          Projekt részletei <ArrowRight className="h-4 w-4" />
+        </Link>
       </CardContent>
     </Card>
   );

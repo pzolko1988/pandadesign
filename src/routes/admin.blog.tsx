@@ -1145,6 +1145,16 @@ function AdminBlogPage() {
                         </Link>
                       )}
 
+                      <Link
+                        to="/admin/blog-history/$id"
+                        params={{
+                          id: post.id,
+                        }}
+                        className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted"
+                      >
+                        Előnézet és verziók
+                      </Link>
+
                       <button
                         type="button"
                         onClick={() =>

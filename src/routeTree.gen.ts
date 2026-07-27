@@ -28,6 +28,7 @@ import { Route as AdminFaqRouteImport } from './routes/admin.faq'
 import { Route as AdminHeroRouteImport } from './routes/admin.hero'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminNavigationRouteImport } from './routes/admin.navigation'
 import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
 import { Route as AdminProcessRouteImport } from './routes/admin.process'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
@@ -37,6 +38,12 @@ import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonia
 import { Route as AdminWhyRouteImport } from './routes/admin.why'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ReferenciakIndexRouteImport } from './routes/referenciak.index'
+import { Route as ReferenciakSlugRouteImport } from './routes/referenciak.$slug'
+import { Route as AdminBlogHistoryIdRouteImport } from './routes/admin.blog-history.$id'
+import { Route as AdminProjectHistoryIdRouteImport } from './routes/admin.project-history.$id'
+import { Route as PreviewBlogTokenRouteImport } from './routes/preview.blog.$token'
+import { Route as PreviewProjectTokenRouteImport } from './routes/preview.project.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -133,6 +140,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNavigationRoute = AdminNavigationRouteImport.update({
+  id: '/admin/navigation',
+  path: '/admin/navigation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPricingRoute = AdminPricingRouteImport.update({
   id: '/admin/pricing',
   path: '/admin/pricing',
@@ -178,6 +190,36 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const ReferenciakIndexRoute = ReferenciakIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ReferenciakRoute,
+} as any)
+const ReferenciakSlugRoute = ReferenciakSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ReferenciakRoute,
+} as any)
+const AdminBlogHistoryIdRoute = AdminBlogHistoryIdRouteImport.update({
+  id: '/admin/blog-history/$id',
+  path: '/admin/blog-history/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProjectHistoryIdRoute = AdminProjectHistoryIdRouteImport.update({
+  id: '/admin/project-history/$id',
+  path: '/admin/project-history/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewBlogTokenRoute = PreviewBlogTokenRouteImport.update({
+  id: '/preview/blog/$token',
+  path: '/preview/blog/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewProjectTokenRoute = PreviewProjectTokenRouteImport.update({
+  id: '/preview/project/$token',
+  path: '/preview/project/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -186,7 +228,7 @@ export interface FileRoutesByFullPath {
   '/aszf': typeof AszfRoute
   '/blog': typeof BlogRouteWithChildren
   '/kapcsolat': typeof KapcsolatRoute
-  '/referenciak': typeof ReferenciakRoute
+  '/referenciak': typeof ReferenciakRouteWithChildren
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supabase-test': typeof SupabaseTestRoute
@@ -198,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/admin/hero': typeof AdminHeroRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/navigation': typeof AdminNavigationRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRoute
@@ -206,8 +249,14 @@ export interface FileRoutesByFullPath {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/why': typeof AdminWhyRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/referenciak/$slug': typeof ReferenciakSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/referenciak/': typeof ReferenciakIndexRoute
+  '/admin/blog-history/$id': typeof AdminBlogHistoryIdRoute
+  '/admin/project-history/$id': typeof AdminProjectHistoryIdRoute
+  '/preview/blog/$token': typeof PreviewBlogTokenRoute
+  '/preview/project/$token': typeof PreviewProjectTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -215,7 +264,6 @@ export interface FileRoutesByTo {
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
   '/kapcsolat': typeof KapcsolatRoute
-  '/referenciak': typeof ReferenciakRoute
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supabase-test': typeof SupabaseTestRoute
@@ -227,6 +275,7 @@ export interface FileRoutesByTo {
   '/admin/hero': typeof AdminHeroRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/navigation': typeof AdminNavigationRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRoute
@@ -235,8 +284,14 @@ export interface FileRoutesByTo {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/why': typeof AdminWhyRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/referenciak/$slug': typeof ReferenciakSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/referenciak': typeof ReferenciakIndexRoute
+  '/admin/blog-history/$id': typeof AdminBlogHistoryIdRoute
+  '/admin/project-history/$id': typeof AdminProjectHistoryIdRoute
+  '/preview/blog/$token': typeof PreviewBlogTokenRoute
+  '/preview/project/$token': typeof PreviewProjectTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -246,7 +301,7 @@ export interface FileRoutesById {
   '/aszf': typeof AszfRoute
   '/blog': typeof BlogRouteWithChildren
   '/kapcsolat': typeof KapcsolatRoute
-  '/referenciak': typeof ReferenciakRoute
+  '/referenciak': typeof ReferenciakRouteWithChildren
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supabase-test': typeof SupabaseTestRoute
@@ -258,6 +313,7 @@ export interface FileRoutesById {
   '/admin/hero': typeof AdminHeroRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/navigation': typeof AdminNavigationRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRoute
@@ -266,8 +322,14 @@ export interface FileRoutesById {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/why': typeof AdminWhyRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/referenciak/$slug': typeof ReferenciakSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/referenciak/': typeof ReferenciakIndexRoute
+  '/admin/blog-history/$id': typeof AdminBlogHistoryIdRoute
+  '/admin/project-history/$id': typeof AdminProjectHistoryIdRoute
+  '/preview/blog/$token': typeof PreviewBlogTokenRoute
+  '/preview/project/$token': typeof PreviewProjectTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -290,6 +352,7 @@ export interface FileRouteTypes {
     | '/admin/hero'
     | '/admin/leads'
     | '/admin/login'
+    | '/admin/navigation'
     | '/admin/pricing'
     | '/admin/process'
     | '/admin/projects'
@@ -298,8 +361,14 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/why'
     | '/blog/$slug'
+    | '/referenciak/$slug'
     | '/admin/'
     | '/blog/'
+    | '/referenciak/'
+    | '/admin/blog-history/$id'
+    | '/admin/project-history/$id'
+    | '/preview/blog/$token'
+    | '/preview/project/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -307,7 +376,6 @@ export interface FileRouteTypes {
     | '/arak'
     | '/aszf'
     | '/kapcsolat'
-    | '/referenciak'
     | '/rolunk'
     | '/sitemap.xml'
     | '/supabase-test'
@@ -319,6 +387,7 @@ export interface FileRouteTypes {
     | '/admin/hero'
     | '/admin/leads'
     | '/admin/login'
+    | '/admin/navigation'
     | '/admin/pricing'
     | '/admin/process'
     | '/admin/projects'
@@ -327,8 +396,14 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/why'
     | '/blog/$slug'
+    | '/referenciak/$slug'
     | '/admin'
     | '/blog'
+    | '/referenciak'
+    | '/admin/blog-history/$id'
+    | '/admin/project-history/$id'
+    | '/preview/blog/$token'
+    | '/preview/project/$token'
   id:
     | '__root__'
     | '/'
@@ -349,6 +424,7 @@ export interface FileRouteTypes {
     | '/admin/hero'
     | '/admin/leads'
     | '/admin/login'
+    | '/admin/navigation'
     | '/admin/pricing'
     | '/admin/process'
     | '/admin/projects'
@@ -357,8 +433,14 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/why'
     | '/blog/$slug'
+    | '/referenciak/$slug'
     | '/admin/'
     | '/blog/'
+    | '/referenciak/'
+    | '/admin/blog-history/$id'
+    | '/admin/project-history/$id'
+    | '/preview/blog/$token'
+    | '/preview/project/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -368,7 +450,7 @@ export interface RootRouteChildren {
   AszfRoute: typeof AszfRoute
   BlogRoute: typeof BlogRouteWithChildren
   KapcsolatRoute: typeof KapcsolatRoute
-  ReferenciakRoute: typeof ReferenciakRoute
+  ReferenciakRoute: typeof ReferenciakRouteWithChildren
   RolunkRoute: typeof RolunkRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SupabaseTestRoute: typeof SupabaseTestRoute
@@ -380,6 +462,7 @@ export interface RootRouteChildren {
   AdminHeroRoute: typeof AdminHeroRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminNavigationRoute: typeof AdminNavigationRoute
   AdminPricingRoute: typeof AdminPricingRoute
   AdminProcessRoute: typeof AdminProcessRoute
   AdminProjectsRoute: typeof AdminProjectsRoute
@@ -388,6 +471,10 @@ export interface RootRouteChildren {
   AdminTestimonialsRoute: typeof AdminTestimonialsRoute
   AdminWhyRoute: typeof AdminWhyRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminBlogHistoryIdRoute: typeof AdminBlogHistoryIdRoute
+  AdminProjectHistoryIdRoute: typeof AdminProjectHistoryIdRoute
+  PreviewBlogTokenRoute: typeof PreviewBlogTokenRoute
+  PreviewProjectTokenRoute: typeof PreviewProjectTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -525,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/navigation': {
+      id: '/admin/navigation'
+      path: '/admin/navigation'
+      fullPath: '/admin/navigation'
+      preLoaderRoute: typeof AdminNavigationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/pricing': {
       id: '/admin/pricing'
       path: '/admin/pricing'
@@ -588,6 +682,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/referenciak/': {
+      id: '/referenciak/'
+      path: '/'
+      fullPath: '/referenciak/'
+      preLoaderRoute: typeof ReferenciakIndexRouteImport
+      parentRoute: typeof ReferenciakRoute
+    }
+    '/referenciak/$slug': {
+      id: '/referenciak/$slug'
+      path: '/$slug'
+      fullPath: '/referenciak/$slug'
+      preLoaderRoute: typeof ReferenciakSlugRouteImport
+      parentRoute: typeof ReferenciakRoute
+    }
+    '/admin/blog-history/$id': {
+      id: '/admin/blog-history/$id'
+      path: '/admin/blog-history/$id'
+      fullPath: '/admin/blog-history/$id'
+      preLoaderRoute: typeof AdminBlogHistoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/project-history/$id': {
+      id: '/admin/project-history/$id'
+      path: '/admin/project-history/$id'
+      fullPath: '/admin/project-history/$id'
+      preLoaderRoute: typeof AdminProjectHistoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/blog/$token': {
+      id: '/preview/blog/$token'
+      path: '/preview/blog/$token'
+      fullPath: '/preview/blog/$token'
+      preLoaderRoute: typeof PreviewBlogTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/project/$token': {
+      id: '/preview/project/$token'
+      path: '/preview/project/$token'
+      fullPath: '/preview/project/$token'
+      preLoaderRoute: typeof PreviewProjectTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -603,6 +739,20 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface ReferenciakRouteChildren {
+  ReferenciakSlugRoute: typeof ReferenciakSlugRoute
+  ReferenciakIndexRoute: typeof ReferenciakIndexRoute
+}
+
+const ReferenciakRouteChildren: ReferenciakRouteChildren = {
+  ReferenciakSlugRoute: ReferenciakSlugRoute,
+  ReferenciakIndexRoute: ReferenciakIndexRoute,
+}
+
+const ReferenciakRouteWithChildren = ReferenciakRoute._addFileChildren(
+  ReferenciakRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdatkezelesRoute: AdatkezelesRoute,
@@ -610,7 +760,7 @@ const rootRouteChildren: RootRouteChildren = {
   AszfRoute: AszfRoute,
   BlogRoute: BlogRouteWithChildren,
   KapcsolatRoute: KapcsolatRoute,
-  ReferenciakRoute: ReferenciakRoute,
+  ReferenciakRoute: ReferenciakRouteWithChildren,
   RolunkRoute: RolunkRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SupabaseTestRoute: SupabaseTestRoute,
@@ -622,6 +772,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminHeroRoute: AdminHeroRoute,
   AdminLeadsRoute: AdminLeadsRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminNavigationRoute: AdminNavigationRoute,
   AdminPricingRoute: AdminPricingRoute,
   AdminProcessRoute: AdminProcessRoute,
   AdminProjectsRoute: AdminProjectsRoute,
@@ -630,6 +781,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminTestimonialsRoute: AdminTestimonialsRoute,
   AdminWhyRoute: AdminWhyRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminBlogHistoryIdRoute: AdminBlogHistoryIdRoute,
+  AdminProjectHistoryIdRoute: AdminProjectHistoryIdRoute,
+  PreviewBlogTokenRoute: PreviewBlogTokenRoute,
+  PreviewProjectTokenRoute: PreviewProjectTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

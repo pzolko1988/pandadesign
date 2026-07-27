@@ -50,3 +50,11 @@ dist/
 .vscode/
 .DS_Store
 Thumbs.db
+# Supabase Edge Function helyi titkok
+supabase/functions/.env.lead-notification.local
+supabase/functions/.env*.local
+# Supabase Edge Function helyi titkok
+supabase/functions/.env.lead-notification.local
+supabase/functions/.env*.local
+supabase/.temp/
+supabase/.branches/
