@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, Smartphone, Zap, Search, Settings, Layers, ShoppingBag, RefreshCw, LifeBuoy, Code2, Sparkles, Users, TrendingUp, Globe, MessageSquare } from "lucide-react";
+import { ArrowRight, Check, Smartphone, Zap, Search, Settings, Layers, ShoppingBag, RefreshCw, LifeBuoy, Code2, Sparkles, Users, TrendingUp, Globe, MessageSquare, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -43,14 +43,25 @@ const TRUST = [
   { icon: Settings, label: "Könnyen kezelhető" },
 ];
 
-const SERVICES = [
-  { icon: Layers, title: "Céges weboldalak", desc: "Bizalmat építő bemutatkozó oldalak, tiszta struktúrával." },
-  { icon: Sparkles, title: "Landing oldalak", desc: "Egy célra fókuszáló, konverzióra hangolt kampányoldalak." },
-  { icon: ShoppingBag, title: "Webshopok", desc: "Biztonságos fizetéssel és egyszerű adminisztrációval." },
-  { icon: RefreshCw, title: "Újratervezés", desc: "Régi oldalak modernizálása, gyorsabb betöltéssel." },
-  { icon: LifeBuoy, title: "WordPress karbantartás", desc: "Frissítések, mentések, folyamatos technikai támogatás." },
-  { icon: Code2, title: "Egyedi Next.js", desc: "Prémium fejlesztések összetett üzleti folyamatokhoz." },
-];
+type ServiceItem = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  icon_key: string;
+  link_url: string;
+  sort_order: number;
+  is_visible: boolean;
+};
+
+const SERVICE_ICONS: Record<string, LucideIcon> = {
+  layers: Layers,
+  sparkles: Sparkles,
+  "shopping-bag": ShoppingBag,
+  refresh: RefreshCw,
+  "life-buoy": LifeBuoy,
+  code: Code2,
+};
 
 const PROCESS = [
   { step: "01", title: "Igényfelmérés", desc: "Megismerjük a vállalkozásod, célközönséged és üzleti céljaid." },
@@ -275,27 +286,108 @@ function TrustSection() {
 }
 
 function ServicesSection() {
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadServices() {
+      const { data, error } = await supabase
+        .from("services")
+        .select(
+          "id, slug, title, description, icon_key, link_url, sort_order, is_visible",
+        )
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true });
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error("A szolgáltatások nem tölthetők be:", error);
+        setErrorMessage("A szolgáltatások átmenetileg nem tölthetők be.");
+        setLoading(false);
+        return;
+      }
+
+      setServices((data ?? []) as ServiceItem[]);
+      setLoading(false);
+    }
+
+    void loadServices();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <Section eyebrow="Szolgáltatások" title="Miben segítünk?" description="Egy helyen minden, ami egy modern online jelenléthez kell.">
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-        {SERVICES.map((s) => (
-          <Card key={s.title} className="group border shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-all h-full">
-            <CardContent className="p-7 h-full flex flex-col">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand text-brand-foreground">
-                <s.icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-5 text-lg font-semibold text-ink">{s.title}</h3>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed flex-1">{s.desc}</p>
-              <Link
-                to="/szolgaltatasok"
-                className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand group-hover:gap-2 transition-all self-start"
+    <Section
+      eyebrow="Szolgáltatások"
+      title="Miben segítünk?"
+      description="Egy helyen minden, ami egy modern online jelenléthez kell."
+    >
+      {loading && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-64 animate-pulse rounded-2xl border bg-secondary/40"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && errorMessage && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
+      {!loading && !errorMessage && services.length === 0 && (
+        <div className="rounded-2xl border bg-white p-8 text-center text-ink-soft shadow-soft">
+          Jelenleg nincs megjeleníthető szolgáltatás.
+        </div>
+      )}
+
+      {!loading && !errorMessage && services.length > 0 && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {services.map((service) => {
+            const Icon = SERVICE_ICONS[service.icon_key] ?? Layers;
+
+            return (
+              <Card
+                key={service.id}
+                className="group border shadow-soft hover:shadow-elegant hover:-translate-y-0.5 transition-all h-full"
               >
-                Részletek <ArrowRight className="h-4 w-4" />
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <CardContent className="p-7 h-full flex flex-col">
+                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand text-brand-foreground">
+                    <Icon className="h-5 w-5" />
+                  </span>
+
+                  <h3 className="mt-5 text-lg font-semibold text-ink">
+                    {service.title}
+                  </h3>
+
+                  <p className="mt-2 text-sm text-ink-soft leading-relaxed flex-1">
+                    {service.description}
+                  </p>
+
+                  <a
+                    href={service.link_url || "/szolgaltatasok"}
+                    className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand group-hover:gap-2 transition-all self-start"
+                  >
+                    Részletek <ArrowRight className="h-4 w-4" />
+                  </a>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </Section>
   );
 }

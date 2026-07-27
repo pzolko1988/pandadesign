@@ -46,6 +46,27 @@ function AdminDashboardPage() {
           return;
         }
 
+        const { data: isAdmin, error: adminError } =
+          await supabase.rpc("is_admin");
+
+        if (!active) {
+          return;
+        }
+
+        if (adminError) {
+          setErrorMessage(adminError.message);
+          setLoading(false);
+          return;
+        }
+
+        if (!isAdmin) {
+          setErrorMessage(
+            "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
+          );
+          setLoading(false);
+          return;
+        }
+
         setEmail(session.user.email ?? "");
         setLoading(false);
       } catch (error: unknown) {
@@ -150,7 +171,10 @@ function AdminDashboardPage() {
             </p>
           </Link>
 
-          <article className="rounded-2xl border bg-background p-6 shadow-sm opacity-70">
+          <Link
+            to="/admin/services"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
             <p className="text-sm text-muted-foreground">
               Tartalom
             </p>
@@ -160,9 +184,9 @@ function AdminDashboardPage() {
             </h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Hamarosan elérhető.
+              Hozzáadás, szerkesztés, sorrend és láthatóság.
             </p>
-          </article>
+          </Link>
 
           <article className="rounded-2xl border bg-background p-6 shadow-sm opacity-70">
             <p className="text-sm text-muted-foreground">
