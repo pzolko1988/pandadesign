@@ -24,6 +24,7 @@ import { Route as SzolgaltatasokRouteImport } from './routes/szolgaltatasok'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminHeroRouteImport } from './routes/admin.hero'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminProcessRouteImport } from './routes/admin.process'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 
 const IndexRoute = IndexRouteImport.update({
@@ -101,6 +102,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProcessRoute = AdminProcessRouteImport.update({
+  id: '/admin/process',
+  path: '/admin/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminServicesRoute = AdminServicesRouteImport.update({
   id: '/admin/services',
   path: '/admin/services',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/szolgaltatasok': typeof SzolgaltatasokRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/process': typeof AdminProcessRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/szolgaltatasok': typeof SzolgaltatasokRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/process': typeof AdminProcessRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/szolgaltatasok': typeof SzolgaltatasokRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/process': typeof AdminProcessRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/szolgaltatasok'
     | '/admin/hero'
     | '/admin/login'
+    | '/admin/process'
     | '/admin/services'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/szolgaltatasok'
     | '/admin/hero'
     | '/admin/login'
+    | '/admin/process'
     | '/admin/services'
     | '/admin'
   id:
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/szolgaltatasok'
     | '/admin/hero'
     | '/admin/login'
+    | '/admin/process'
     | '/admin/services'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -234,6 +246,7 @@ export interface RootRouteChildren {
   SzolgaltatasokRoute: typeof SzolgaltatasokRoute
   AdminHeroRoute: typeof AdminHeroRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminProcessRoute: typeof AdminProcessRoute
   AdminServicesRoute: typeof AdminServicesRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/process': {
+      id: '/admin/process'
+      path: '/admin/process'
+      fullPath: '/admin/process'
+      preLoaderRoute: typeof AdminProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/services': {
       id: '/admin/services'
       path: '/admin/services'
@@ -370,6 +390,7 @@ const rootRouteChildren: RootRouteChildren = {
   SzolgaltatasokRoute: SzolgaltatasokRoute,
   AdminHeroRoute: AdminHeroRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminProcessRoute: AdminProcessRoute,
   AdminServicesRoute: AdminServicesRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

@@ -63,12 +63,14 @@ const SERVICE_ICONS: Record<string, LucideIcon> = {
   code: Code2,
 };
 
-const PROCESS = [
-  { step: "01", title: "Igényfelmérés", desc: "Megismerjük a vállalkozásod, célközönséged és üzleti céljaid." },
-  { step: "02", title: "Tervezés", desc: "Átlátható struktúra és letisztult design minden képernyőre." },
-  { step: "03", title: "Fejlesztés", desc: "Gyors, biztonságos és keresőbarát kód, mobil elsőként." },
-  { step: "04", title: "Átadás", desc: "Betanítás, dokumentáció és hosszú távú támogatás." },
-];
+type ProcessStep = {
+  id: string;
+  step_number: string;
+  title: string;
+  description: string;
+  sort_order: number;
+  is_visible: boolean;
+};
 
 const PORTFOLIO = [
   { title: "Fogorvosi rendelő", industry: "Egészségügy", cat: "Egészségügy", desc: "Bizalomépítő oldal online időpontfoglalással." },
@@ -393,22 +395,105 @@ function ServicesSection() {
 }
 
 function ProcessSection() {
+  const [steps, setSteps] = useState<ProcessStep[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadSteps() {
+      const { data, error } = await supabase
+        .from("process_steps")
+        .select(
+          "id, step_number, title, description, sort_order, is_visible",
+        )
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true });
+
+      if (!active) {
+        return;
+      }
+
+      if (error) {
+        console.error("A munkafolyamat nem tölthető be:", error);
+        setErrorMessage("A munkafolyamat átmenetileg nem tölthető be.");
+        setLoading(false);
+        return;
+      }
+
+      setSteps((data ?? []) as ProcessStep[]);
+      setLoading(false);
+    }
+
+    void loadSteps();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <Section eyebrow="Folyamat" title="Így dolgozunk" description="Négy egyszerű lépés az ötlettől az élesítésig." tone="muted">
-      <ol className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-        {PROCESS.map((p, i) => (
-          <li key={p.step} className="relative rounded-2xl bg-white border p-7 shadow-soft h-full">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-success tracking-widest">{p.step}</span>
-              {i < PROCESS.length - 1 && (
-                <span aria-hidden className="hidden lg:block h-px w-8 bg-ink/10" />
-              )}
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-ink">{p.title}</h3>
-            <p className="mt-2 text-sm text-ink-soft leading-relaxed">{p.desc}</p>
-          </li>
-        ))}
-      </ol>
+    <Section
+      eyebrow="Folyamat"
+      title="Így dolgozunk"
+      description="Négy egyszerű lépés az ötlettől az élesítésig."
+      tone="muted"
+    >
+      {loading && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-52 animate-pulse rounded-2xl border bg-white/70"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && errorMessage && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
+      {!loading && !errorMessage && steps.length === 0 && (
+        <div className="rounded-2xl border bg-white p-8 text-center text-ink-soft shadow-soft">
+          Jelenleg nincs megjeleníthető munkafolyamat-lépés.
+        </div>
+      )}
+
+      {!loading && !errorMessage && steps.length > 0 && (
+        <ol className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+          {steps.map((step, index) => (
+            <li
+              key={step.id}
+              className="relative rounded-2xl bg-white border p-7 shadow-soft h-full"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-bold text-success tracking-widest">
+                  {step.step_number}
+                </span>
+
+                {index < steps.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="hidden lg:block h-px w-8 bg-ink/10"
+                  />
+                )}
+              </div>
+
+              <h3 className="mt-4 text-lg font-semibold text-ink">
+                {step.title}
+              </h3>
+
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+                {step.description}
+              </p>
+            </li>
+          ))}
+        </ol>
+      )}
     </Section>
   );
 }

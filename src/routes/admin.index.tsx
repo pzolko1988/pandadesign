@@ -153,7 +153,7 @@ function AdminDashboardPage() {
           </button>
         </header>
 
-        <section className="grid gap-5 md:grid-cols-3">
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <Link
             to="/admin/hero"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
@@ -185,6 +185,23 @@ function AdminDashboardPage() {
 
             <p className="mt-3 text-sm text-muted-foreground">
               Hozzáadás, szerkesztés, sorrend és láthatóság.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/process"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <p className="text-sm text-muted-foreground">
+              Főoldal
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Munkafolyamat
+            </h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Lépések hozzáadása, szerkesztése és sorrendezése.
             </p>
           </Link>
 
