@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/faq")({
@@ -23,6 +23,14 @@ const emptyForm: FaqForm = {
   is_active: true,
 };
 
+function getNextSortOrder(items: FaqItem[]) {
+  if (items.length === 0) {
+    return 10;
+  }
+
+  return Math.max(...items.map((item) => item.sort_order)) + 10;
+}
+
 function AdminFaqPage() {
   const navigate = useNavigate();
 
@@ -37,19 +45,26 @@ function AdminFaqPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    void initializePage();
-  }, []);
+  const loadFaqItems = useCallback(async (): Promise<FaqItem[] | null> => {
+    const { data, error } = await supabase
+      .from("faq_items")
+      .select("id, question, answer, sort_order, is_active")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
 
-  function getNextSortOrder(items: FaqItem[]) {
-    if (items.length === 0) {
-      return 10;
+    if (error) {
+      setErrorMessage(error.message);
+      return null;
     }
 
-    return Math.max(...items.map((item) => item.sort_order)) + 10;
-  }
+    const items = (data ?? []) as FaqItem[];
 
-  async function initializePage() {
+    setFaqItems(items);
+
+    return items;
+  }, []);
+
+  const initializePage = useCallback(async () => {
     setLoading(true);
     setErrorMessage("");
 
@@ -103,26 +118,11 @@ function AdminFaqPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [loadFaqItems, navigate]);
 
-  async function loadFaqItems(): Promise<FaqItem[] | null> {
-    const { data, error } = await supabase
-      .from("faq_items")
-      .select("id, question, answer, sort_order, is_active")
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      setErrorMessage(error.message);
-      return null;
-    }
-
-    const items = (data ?? []) as FaqItem[];
-
-    setFaqItems(items);
-
-    return items;
-  }
+  useEffect(() => {
+    void initializePage();
+  }, [initializePage]);
 
   function updateField<K extends keyof FaqForm>(field: K, value: FaqForm[K]) {
     setForm((current) => ({
