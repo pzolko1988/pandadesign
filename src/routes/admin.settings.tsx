@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -49,11 +50,7 @@ function AdminSettingsPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    void initializePage();
-  }, []);
-
-  async function initializePage() {
+  const initializePage = useCallback(async () => {
     setLoading(true);
     setErrorMessage("");
 
@@ -115,7 +112,11 @@ function AdminSettingsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [navigate]);
+
+  useEffect(() => {
+    void initializePage();
+  }, [initializePage]);
 
   function updateField<K extends keyof SiteSettings>(
     field: K,
