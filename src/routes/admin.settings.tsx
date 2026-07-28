@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   useEffect,
   useMemo,
@@ -33,10 +29,7 @@ export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
 });
 
-type AssetField =
-  | "logo_path"
-  | "favicon_path"
-  | "og_image_path";
+type AssetField = "logo_path" | "favicon_path" | "og_image_path";
 
 const ASSET_LABELS: Record<AssetField, string> = {
   logo_path: "Logó",
@@ -47,17 +40,14 @@ const ASSET_LABELS: Record<AssetField, string> = {
 function AdminSettingsPage() {
   const navigate = useNavigate();
 
-  const [form, setForm] =
-    useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [form, setForm] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingField, setUploadingField] =
-    useState<AssetField | null>(null);
+  const [uploadingField, setUploadingField] = useState<AssetField | null>(null);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -156,10 +146,7 @@ function AdminSettingsPage() {
   }
 
   function getExtension(file: File) {
-    const fromName = file.name
-      .split(".")
-      .pop()
-      ?.toLowerCase();
+    const fromName = file.name.split(".").pop()?.toLowerCase();
 
     if (fromName && /^[a-z0-9]+$/.test(fromName)) {
       return fromName;
@@ -192,16 +179,12 @@ function AdminSettingsPage() {
     }
 
     if (!file.type.startsWith("image/")) {
-      setErrorMessage(
-        "Csak képfájl tölthető fel.",
-      );
+      setErrorMessage("Csak képfájl tölthető fel.");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setErrorMessage(
-        "A kép mérete legfeljebb 5 MB lehet.",
-      );
+      setErrorMessage("A kép mérete legfeljebb 5 MB lehet.");
       return;
     }
 
@@ -212,8 +195,7 @@ function AdminSettingsPage() {
     const previousPath = form[field];
     const extension = getExtension(file);
     const folder = field.replace("_path", "");
-    const newPath =
-      `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+    const newPath = `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
 
     try {
       const { error: uploadError } = await supabase.storage
@@ -236,9 +218,7 @@ function AdminSettingsPage() {
         .eq("id", 1);
 
       if (settingsError) {
-        await supabase.storage
-          .from("site-assets")
-          .remove([newPath]);
+        await supabase.storage.from("site-assets").remove([newPath]);
 
         throw settingsError;
       }
@@ -249,16 +229,12 @@ function AdminSettingsPage() {
       }));
 
       if (previousPath) {
-        const { error: deleteError } =
-          await supabase.storage
-            .from("site-assets")
-            .remove([previousPath]);
+        const { error: deleteError } = await supabase.storage
+          .from("site-assets")
+          .remove([previousPath]);
 
         if (deleteError) {
-          console.warn(
-            "A korábbi fájl nem törölhető:",
-            deleteError,
-          );
+          console.warn("A korábbi fájl nem törölhető:", deleteError);
         }
       }
 
@@ -323,29 +299,22 @@ function AdminSettingsPage() {
         [field]: null,
       }));
 
-      setSuccessMessage(
-        `${ASSET_LABELS[field]} sikeresen törölve.`,
-      );
+      setSuccessMessage(`${ASSET_LABELS[field]} sikeresen törölve.`);
     } catch (error: unknown) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "A fájl törlése nem sikerült.",
+        error instanceof Error ? error.message : "A fájl törlése nem sikerült.",
       );
     } finally {
       setUploadingField(null);
     }
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const siteName = form.site_name.trim();
     const metaTitle = form.default_meta_title.trim();
-    const metaDescription =
-      form.default_meta_description.trim();
+    const metaDescription = form.default_meta_description.trim();
 
     if (siteName.length < 2) {
       setErrorMessage(
@@ -380,8 +349,7 @@ function AdminSettingsPage() {
       tagline: form.tagline.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
-      contact_recipient_email:
-        form.contact_recipient_email.trim(),
+      contact_recipient_email: form.contact_recipient_email.trim(),
       address_line: form.address_line.trim(),
       postal_code: form.postal_code.trim(),
       city: form.city.trim(),
@@ -398,11 +366,9 @@ function AdminSettingsPage() {
     };
 
     try {
-      const { error } = await supabase
-        .from("site_settings")
-        .upsert(payload, {
-          onConflict: "id",
-        });
+      const { error } = await supabase.from("site_settings").upsert(payload, {
+        onConflict: "id",
+      });
 
       if (error) {
         throw error;
@@ -464,8 +430,8 @@ function AdminSettingsPage() {
           </h1>
 
           <p className="mt-2 max-w-3xl text-muted-foreground">
-            A PandaDesign alapvető arculati, kapcsolattartási,
-            közösségi és keresőoptimalizálási adatainak kezelése.
+            A PandaDesign alapvető arculati, kapcsolattartási, közösségi és
+            keresőoptimalizálási adatainak kezelése.
           </p>
         </header>
 
@@ -487,10 +453,7 @@ function AdminSettingsPage() {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-8"
-        >
+        <form onSubmit={handleSubmit} className="space-y-8">
           <SettingsSection
             icon={Building2}
             title="Márka és vállalkozás"
@@ -502,18 +465,14 @@ function AdminSettingsPage() {
                 label="Weboldal neve"
                 required
                 value={form.site_name}
-                onChange={(value) =>
-                  updateField("site_name", value)
-                }
+                onChange={(value) => updateField("site_name", value)}
               />
 
               <TextField
                 id="legal-name"
                 label="Hivatalos cégnév"
                 value={form.legal_name}
-                onChange={(value) =>
-                  updateField("legal_name", value)
-                }
+                onChange={(value) => updateField("legal_name", value)}
                 placeholder="Például: PandaDesign Kft."
               />
 
@@ -522,9 +481,7 @@ function AdminSettingsPage() {
                   id="tagline"
                   label="Rövid szlogen"
                   value={form.tagline}
-                  onChange={(value) =>
-                    updateField("tagline", value)
-                  }
+                  onChange={(value) => updateField("tagline", value)}
                   placeholder="Modern weboldalak magyar vállalkozásoknak"
                 />
               </div>
@@ -542,12 +499,8 @@ function AdminSettingsPage() {
                 description="PNG, WebP vagy SVG. Átlátszó háttér ajánlott."
                 imageUrl={logoUrl}
                 busy={uploadingField === "logo_path"}
-                onUpload={(event) =>
-                  void uploadAsset("logo_path", event)
-                }
-                onRemove={() =>
-                  void removeAsset("logo_path")
-                }
+                onUpload={(event) => void uploadAsset("logo_path", event)}
+                onRemove={() => void removeAsset("logo_path")}
               />
 
               <AssetUploader
@@ -556,12 +509,8 @@ function AdminSettingsPage() {
                 imageUrl={faviconUrl}
                 busy={uploadingField === "favicon_path"}
                 contain
-                onUpload={(event) =>
-                  void uploadAsset("favicon_path", event)
-                }
-                onRemove={() =>
-                  void removeAsset("favicon_path")
-                }
+                onUpload={(event) => void uploadAsset("favicon_path", event)}
+                onRemove={() => void removeAsset("favicon_path")}
               />
 
               <AssetUploader
@@ -569,12 +518,8 @@ function AdminSettingsPage() {
                 description="Facebookhoz és más megosztásokhoz. Ajánlott: 1200×630 px."
                 imageUrl={ogImageUrl}
                 busy={uploadingField === "og_image_path"}
-                onUpload={(event) =>
-                  void uploadAsset("og_image_path", event)
-                }
-                onRemove={() =>
-                  void removeAsset("og_image_path")
-                }
+                onUpload={(event) => void uploadAsset("og_image_path", event)}
+                onRemove={() => void removeAsset("og_image_path")}
               />
             </div>
           </SettingsSection>
@@ -590,18 +535,14 @@ function AdminSettingsPage() {
                 label="Nyilvános e-mail-cím"
                 type="email"
                 value={form.email}
-                onChange={(value) =>
-                  updateField("email", value)
-                }
+                onChange={(value) => updateField("email", value)}
               />
 
               <TextField
                 id="phone"
                 label="Telefonszám"
                 value={form.phone}
-                onChange={(value) =>
-                  updateField("phone", value)
-                }
+                onChange={(value) => updateField("phone", value)}
                 placeholder="+36 30 123 4567"
               />
 
@@ -611,10 +552,7 @@ function AdminSettingsPage() {
                 type="email"
                 value={form.contact_recipient_email}
                 onChange={(value) =>
-                  updateField(
-                    "contact_recipient_email",
-                    value,
-                  )
+                  updateField("contact_recipient_email", value)
                 }
                 description="Ide érkezhetnek majd a kapcsolatfelvételi értesítések."
               />
@@ -623,9 +561,7 @@ function AdminSettingsPage() {
                 id="opening-hours"
                 label="Elérhetőségi idő"
                 value={form.opening_hours}
-                onChange={(value) =>
-                  updateField("opening_hours", value)
-                }
+                onChange={(value) => updateField("opening_hours", value)}
                 placeholder="H–P: 09:00–17:00"
               />
             </div>
@@ -635,10 +571,7 @@ function AdminSettingsPage() {
                 type="checkbox"
                 checked={form.show_contact_details}
                 onChange={(event) =>
-                  updateField(
-                    "show_contact_details",
-                    event.target.checked,
-                  )
+                  updateField("show_contact_details", event.target.checked)
                 }
                 className="h-4 w-4"
               />
@@ -649,8 +582,8 @@ function AdminSettingsPage() {
                 </span>
 
                 <span className="mt-1 block text-xs text-muted-foreground">
-                  Kikapcsolva a nyilvános e-mail, telefonszám és
-                  cím elrejthető a publikus felületeken.
+                  Kikapcsolva a nyilvános e-mail, telefonszám és cím elrejthető
+                  a publikus felületeken.
                 </span>
               </span>
             </label>
@@ -667,9 +600,7 @@ function AdminSettingsPage() {
                   id="address-line"
                   label="Utca, házszám"
                   value={form.address_line}
-                  onChange={(value) =>
-                    updateField("address_line", value)
-                  }
+                  onChange={(value) => updateField("address_line", value)}
                 />
               </div>
 
@@ -677,27 +608,21 @@ function AdminSettingsPage() {
                 id="postal-code"
                 label="Irányítószám"
                 value={form.postal_code}
-                onChange={(value) =>
-                  updateField("postal_code", value)
-                }
+                onChange={(value) => updateField("postal_code", value)}
               />
 
               <TextField
                 id="city"
                 label="Település"
                 value={form.city}
-                onChange={(value) =>
-                  updateField("city", value)
-                }
+                onChange={(value) => updateField("city", value)}
               />
 
               <TextField
                 id="country"
                 label="Ország"
                 value={form.country}
-                onChange={(value) =>
-                  updateField("country", value)
-                }
+                onChange={(value) => updateField("country", value)}
               />
             </div>
           </SettingsSection>
@@ -712,9 +637,7 @@ function AdminSettingsPage() {
                 id="facebook-url"
                 label="Facebook"
                 value={form.facebook_url}
-                onChange={(value) =>
-                  updateField("facebook_url", value)
-                }
+                onChange={(value) => updateField("facebook_url", value)}
                 placeholder="https://facebook.com/..."
               />
 
@@ -722,9 +645,7 @@ function AdminSettingsPage() {
                 id="instagram-url"
                 label="Instagram"
                 value={form.instagram_url}
-                onChange={(value) =>
-                  updateField("instagram_url", value)
-                }
+                onChange={(value) => updateField("instagram_url", value)}
                 placeholder="https://instagram.com/..."
               />
 
@@ -732,9 +653,7 @@ function AdminSettingsPage() {
                 id="linkedin-url"
                 label="LinkedIn"
                 value={form.linkedin_url}
-                onChange={(value) =>
-                  updateField("linkedin_url", value)
-                }
+                onChange={(value) => updateField("linkedin_url", value)}
                 placeholder="https://linkedin.com/company/..."
               />
             </div>
@@ -751,9 +670,7 @@ function AdminSettingsPage() {
                 label="Éles weboldalcím"
                 required
                 value={form.base_url}
-                onChange={(value) =>
-                  updateField("base_url", value)
-                }
+                onChange={(value) => updateField("base_url", value)}
                 placeholder="https://pandadesign.hu"
               />
 
@@ -762,12 +679,7 @@ function AdminSettingsPage() {
                 label="Alap SEO-cím"
                 required
                 value={form.default_meta_title}
-                onChange={(value) =>
-                  updateField(
-                    "default_meta_title",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("default_meta_title", value)}
                 description={`${form.default_meta_title.length} karakter – általában 50–60 karakter körül ideális.`}
               />
 
@@ -786,34 +698,27 @@ function AdminSettingsPage() {
                   rows={5}
                   value={form.default_meta_description}
                   onChange={(event) =>
-                    updateField(
-                      "default_meta_description",
-                      event.target.value,
-                    )
+                    updateField("default_meta_description", event.target.value)
                   }
                   className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
                 />
 
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {form.default_meta_description.length} karakter –
-                  általában 140–160 karakter körül ideális.
+                  {form.default_meta_description.length} karakter – általában
+                  140–160 karakter körül ideális.
                 </p>
               </div>
             </div>
 
             <div className="mt-6 rounded-2xl border bg-white p-5 shadow-sm">
-              <p className="text-sm text-muted-foreground">
-                Google-előnézet
-              </p>
+              <p className="text-sm text-muted-foreground">Google-előnézet</p>
 
               <p className="mt-3 text-lg text-blue-700">
-                {form.default_meta_title ||
-                  "Az oldal SEO-címe"}
+                {form.default_meta_title || "Az oldal SEO-címe"}
               </p>
 
               <p className="mt-1 text-sm text-green-700">
-                {form.base_url ||
-                  "https://pandadesign.hu"}
+                {form.base_url || "https://pandadesign.hu"}
               </p>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -842,10 +747,7 @@ function AdminSettingsPage() {
                   rows={4}
                   value={form.footer_text}
                   onChange={(event) =>
-                    updateField(
-                      "footer_text",
-                      event.target.value,
-                    )
+                    updateField("footer_text", event.target.value)
                   }
                   className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
                 />
@@ -864,10 +766,7 @@ function AdminSettingsPage() {
                   rows={4}
                   value={form.copyright_text}
                   onChange={(event) =>
-                    updateField(
-                      "copyright_text",
-                      event.target.value,
-                    )
+                    updateField("copyright_text", event.target.value)
                   }
                   className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
                 />
@@ -881,9 +780,7 @@ function AdminSettingsPage() {
               disabled={saving || uploadingField !== null}
               className="rounded-xl bg-brand px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving
-                ? "Mentés..."
-                : "Összes beállítás mentése"}
+              {saving ? "Mentés..." : "Összes beállítás mentése"}
             </button>
           </div>
         </form>
@@ -913,13 +810,9 @@ function SettingsSection({
         </span>
 
         <div>
-          <h2 className="text-xl font-bold">
-            {title}
-          </h2>
+          <h2 className="text-xl font-bold">{title}</h2>
 
-          <p className="mt-1 text-sm text-muted-foreground">
-            {description}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </div>
       </div>
 
@@ -951,10 +844,7 @@ function TextField({
 }: TextFieldProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold">
         {label}
       </label>
 
@@ -963,17 +853,13 @@ function TextField({
         type={type}
         required={required}
         value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
       />
 
       {description && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{description}</p>
       )}
     </div>
   );
@@ -985,9 +871,7 @@ type AssetUploaderProps = {
   imageUrl: string;
   busy: boolean;
   contain?: boolean;
-  onUpload: (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => void;
+  onUpload: (event: ChangeEvent<HTMLInputElement>) => void;
   onRemove: () => void;
 };
 
@@ -1008,9 +892,7 @@ function AssetUploader({
             src={imageUrl}
             alt={label}
             className={`h-full w-full ${
-              contain
-                ? "object-contain p-5"
-                : "object-cover"
+              contain ? "object-contain p-5" : "object-cover"
             }`}
           />
         ) : (
@@ -1018,9 +900,7 @@ function AssetUploader({
         )}
       </div>
 
-      <h3 className="mt-4 font-bold">
-        {label}
-      </h3>
+      <h3 className="mt-4 font-bold">{label}</h3>
 
       <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">
         {description}
@@ -1030,11 +910,7 @@ function AssetUploader({
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted">
           <Upload className="h-4 w-4" />
 
-          {busy
-            ? "Feltöltés..."
-            : imageUrl
-              ? "Csere"
-              : "Feltöltés"}
+          {busy ? "Feltöltés..." : imageUrl ? "Csere" : "Feltöltés"}
 
           <input
             type="file"

@@ -57,16 +57,12 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   show_contact_details: true,
 };
 
-export function getSiteAssetUrl(
-  path: string | null | undefined,
-): string {
+export function getSiteAssetUrl(path: string | null | undefined): string {
   if (!path) {
     return "";
   }
 
-  return supabase.storage
-    .from("site-assets")
-    .getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from("site-assets").getPublicUrl(path).data.publicUrl;
 }
 
 export async function loadSiteSettings(): Promise<SiteSettings> {

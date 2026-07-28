@@ -1,12 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Clock3,
   Copy,
@@ -18,9 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 
-export const Route = createFileRoute(
-  "/admin/project-history/$id",
-)({
+export const Route = createFileRoute("/admin/project-history/$id")({
   component: AdminProjectHistoryPage,
 });
 
@@ -57,22 +48,16 @@ function AdminProjectHistoryPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
 
-  const [project, setProject] =
-    useState<Project | null>(null);
-  const [revisions, setRevisions] =
-    useState<ProjectRevision[]>([]);
+  const [project, setProject] = useState<Project | null>(null);
+  const [revisions, setRevisions] = useState<ProjectRevision[]>([]);
 
-  const [validHours, setValidHours] =
-    useState(168);
-  const [previewUrl, setPreviewUrl] =
-    useState("");
+  const [validHours, setValidHours] = useState(168);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -139,9 +124,7 @@ function AdminProjectHistoryPage() {
         .maybeSingle(),
       supabase
         .from("project_revisions")
-        .select(
-          "id, revision_number, snapshot, created_by, created_at",
-        )
+        .select("id, revision_number, snapshot, created_by, created_at")
         .eq("project_id", id)
         .order("revision_number", {
           ascending: false,
@@ -157,25 +140,18 @@ function AdminProjectHistoryPage() {
     }
 
     if (!projectData) {
-      throw new Error(
-        "A projekt nem található.",
-      );
+      throw new Error("A projekt nem található.");
     }
 
-    const loaded =
-      projectData as Project;
+    const loaded = projectData as Project;
 
     setProject(loaded);
-    setRevisions(
-      (revisionData ?? []) as ProjectRevision[],
-    );
+    setRevisions((revisionData ?? []) as ProjectRevision[]);
 
     if (
       loaded.preview_token &&
       loaded.preview_expires_at &&
-      new Date(
-        loaded.preview_expires_at,
-      ).getTime() > Date.now()
+      new Date(loaded.preview_expires_at).getTime() > Date.now()
     ) {
       setPreviewUrl(
         `${window.location.origin}/preview/project/${loaded.preview_token}`,
@@ -207,20 +183,15 @@ function AdminProjectHistoryPage() {
         throw error;
       }
 
-      const url =
-        `${window.location.origin}/preview/project/${String(data)}`;
+      const url = `${window.location.origin}/preview/project/${String(data)}`;
 
       setPreviewUrl(url);
 
       try {
         await navigator.clipboard.writeText(url);
-        setSuccessMessage(
-          "Az előnézeti link elkészült és a vágólapra került.",
-        );
+        setSuccessMessage("Az előnézeti link elkészült és a vágólapra került.");
       } catch {
-        setSuccessMessage(
-          "Az előnézeti link elkészült.",
-        );
+        setSuccessMessage("Az előnézeti link elkészült.");
       }
 
       await loadData();
@@ -241,17 +212,11 @@ function AdminProjectHistoryPage() {
     }
 
     try {
-      await navigator.clipboard.writeText(
-        previewUrl,
-      );
+      await navigator.clipboard.writeText(previewUrl);
 
-      setSuccessMessage(
-        "Az előnézeti link a vágólapra került.",
-      );
+      setSuccessMessage("Az előnézeti link a vágólapra került.");
     } catch {
-      setErrorMessage(
-        "A hivatkozás nem másolható automatikusan.",
-      );
+      setErrorMessage("A hivatkozás nem másolható automatikusan.");
     }
   }
 
@@ -265,21 +230,16 @@ function AdminProjectHistoryPage() {
     setSuccessMessage("");
 
     try {
-      const { error } = await supabase.rpc(
-        "revoke_project_preview_token",
-        {
-          p_project_id: project.id,
-        },
-      );
+      const { error } = await supabase.rpc("revoke_project_preview_token", {
+        p_project_id: project.id,
+      });
 
       if (error) {
         throw error;
       }
 
       setPreviewUrl("");
-      setSuccessMessage(
-        "Az előnézeti link visszavonva.",
-      );
+      setSuccessMessage("Az előnézeti link visszavonva.");
       await loadData();
     } catch (error: unknown) {
       setErrorMessage(
@@ -292,9 +252,7 @@ function AdminProjectHistoryPage() {
     }
   }
 
-  async function restoreRevision(
-    revision: ProjectRevision,
-  ) {
+  async function restoreRevision(revision: ProjectRevision) {
     const confirmed = window.confirm(
       `Biztosan visszaállítod a(z) ${revision.revision_number}. verziót?\n\nA jelenlegi állapot nem vész el, új verzióként bekerül az előzményekbe.`,
     );
@@ -308,12 +266,9 @@ function AdminProjectHistoryPage() {
     setSuccessMessage("");
 
     try {
-      const { error } = await supabase.rpc(
-        "restore_project_revision",
-        {
-          p_revision_id: revision.id,
-        },
-      );
+      const { error } = await supabase.rpc("restore_project_revision", {
+        p_revision_id: revision.id,
+      });
 
       if (error) {
         throw error;
@@ -349,8 +304,7 @@ function AdminProjectHistoryPage() {
     return (
       <main className="min-h-screen px-6 py-20">
         <p className="text-center text-red-600">
-          {errorMessage ||
-            "A projekt nem található."}
+          {errorMessage || "A projekt nem található."}
         </p>
       </main>
     );
@@ -367,28 +321,14 @@ function AdminProjectHistoryPage() {
             ← Vissza a projektkezelőhöz
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Előnézet és verziók
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Előnézet és verziók</h1>
 
-          <p className="mt-2 text-muted-foreground">
-            {project.title}
-          </p>
+          <p className="mt-2 text-muted-foreground">{project.title}</p>
         </header>
 
-        {errorMessage && (
-          <Message
-            type="error"
-            text={errorMessage}
-          />
-        )}
+        {errorMessage && <Message type="error" text={errorMessage} />}
 
-        {successMessage && (
-          <Message
-            type="success"
-            text={successMessage}
-          />
-        )}
+        {successMessage && <Message type="success" text={successMessage} />}
 
         <section className="mb-8 rounded-2xl border bg-background p-6 shadow-sm">
           <div className="flex items-start gap-4">
@@ -397,13 +337,11 @@ function AdminProjectHistoryPage() {
             </span>
 
             <div>
-              <h2 className="text-xl font-bold">
-                Titkos előnézeti link
-              </h2>
+              <h2 className="text-xl font-bold">Titkos előnézeti link</h2>
 
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                Az elrejtett projekt belépés nélkül is
-                megtekinthető az időkorlátos linkkel.
+                Az elrejtett projekt belépés nélkül is megtekinthető az
+                időkorlátos linkkel.
               </p>
             </div>
           </div>
@@ -420,11 +358,7 @@ function AdminProjectHistoryPage() {
               <select
                 id="project-preview-hours"
                 value={validHours}
-                onChange={(event) =>
-                  setValidHours(
-                    Number(event.target.value),
-                  )
-                }
+                onChange={(event) => setValidHours(Number(event.target.value))}
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               >
                 <option value={24}>24 óra</option>
@@ -439,9 +373,7 @@ function AdminProjectHistoryPage() {
               <button
                 type="button"
                 disabled={working}
-                onClick={() =>
-                  void generatePreview()
-                }
+                onClick={() => void generatePreview()}
                 className="rounded-xl bg-brand px-5 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-50"
               >
                 {previewUrl
@@ -453,9 +385,7 @@ function AdminProjectHistoryPage() {
                 <>
                   <button
                     type="button"
-                    onClick={() =>
-                      void copyPreviewUrl()
-                    }
+                    onClick={() => void copyPreviewUrl()}
                     className="inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted"
                   >
                     <Copy className="h-4 w-4" />
@@ -475,9 +405,7 @@ function AdminProjectHistoryPage() {
                   <button
                     type="button"
                     disabled={working}
-                    onClick={() =>
-                      void revokePreview()
-                    }
+                    onClick={() => void revokePreview()}
                     className="inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50"
                   >
                     <XCircle className="h-4 w-4" />
@@ -490,17 +418,12 @@ function AdminProjectHistoryPage() {
 
           {previewUrl && (
             <div className="mt-5 rounded-xl border bg-muted/30 p-4">
-              <p className="break-all font-mono text-xs">
-                {previewUrl}
-              </p>
+              <p className="break-all font-mono text-xs">{previewUrl}</p>
 
               {project.preview_expires_at && (
                 <p className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock3 className="h-3.5 w-3.5" />
-                  Lejár:{" "}
-                  {formatDate(
-                    project.preview_expires_at,
-                  )}
+                  Lejár: {formatDate(project.preview_expires_at)}
                 </p>
               )}
             </div>
@@ -515,13 +438,10 @@ function AdminProjectHistoryPage() {
               </span>
 
               <div>
-                <h2 className="text-xl font-bold">
-                  Verzióelőzmények
-                </h2>
+                <h2 className="text-xl font-bold">Verzióelőzmények</h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Minden tartalmi mentés automatikusan új
-                  verziót hoz létre.
+                  Minden tartalmi mentés automatikusan új verziót hoz létre.
                 </p>
               </div>
             </div>
@@ -534,10 +454,7 @@ function AdminProjectHistoryPage() {
           ) : (
             <div className="divide-y">
               {revisions.map((revision, index) => (
-                <article
-                  key={revision.id}
-                  className="p-5"
-                >
+                <article key={revision.id} className="p-5">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -552,15 +469,12 @@ function AdminProjectHistoryPage() {
                         )}
 
                         <span className="text-xs text-muted-foreground">
-                          {formatDate(
-                            revision.created_at,
-                          )}
+                          {formatDate(revision.created_at)}
                         </span>
                       </div>
 
                       <h3 className="mt-3 font-bold">
-                        {revision.snapshot.title ||
-                          "Cím nélküli változat"}
+                        {revision.snapshot.title || "Cím nélküli változat"}
                       </h3>
 
                       <p className="mt-1 text-sm text-muted-foreground">
@@ -581,11 +495,7 @@ function AdminProjectHistoryPage() {
                       <button
                         type="button"
                         disabled={working}
-                        onClick={() =>
-                          void restoreRevision(
-                            revision,
-                          )
-                        }
+                        onClick={() => void restoreRevision(revision)}
                         className="inline-flex shrink-0 items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted disabled:opacity-50"
                       >
                         <RotateCcw className="h-4 w-4" />
@@ -603,13 +513,7 @@ function AdminProjectHistoryPage() {
   );
 }
 
-function Message({
-  type,
-  text,
-}: {
-  type: "error" | "success";
-  text: string;
-}) {
+function Message({ type, text }: { type: "error" | "success"; text: string }) {
   return (
     <div
       className={`mb-6 rounded-xl border px-5 py-4 text-sm font-medium ${

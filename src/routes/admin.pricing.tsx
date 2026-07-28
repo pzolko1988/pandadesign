@@ -1,21 +1,6 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-  type ReactNode,
-} from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  Copy,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { ArrowDown, ArrowUp, Copy, Plus, Trash2 } from "lucide-react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/pricing")({
@@ -95,8 +80,7 @@ function AdminPricingPage() {
       return;
     }
 
-    const { data: isAdmin, error: adminError } =
-      await supabase.rpc("is_admin");
+    const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
 
     if (adminError) {
       setErrorMessage(adminError.message);
@@ -105,9 +89,7 @@ function AdminPricingPage() {
     }
 
     if (!isAdmin) {
-      setErrorMessage(
-        "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
-      );
+      setErrorMessage("Ehhez az oldalhoz nincs adminisztrátori jogosultságod.");
       setLoading(false);
       return;
     }
@@ -193,10 +175,7 @@ function AdminPricingPage() {
     setForm((current) => {
       const nextIndex = index + direction;
 
-      if (
-        nextIndex < 0 ||
-        nextIndex >= current.features.length
-      ) {
+      if (nextIndex < 0 || nextIndex >= current.features.length) {
         return current;
       }
 
@@ -225,8 +204,7 @@ function AdminPricingPage() {
       badge_text: item.badge_text,
       cta_text: item.cta_text,
       cta_url: item.cta_url,
-      features:
-        item.features.length > 0 ? [...item.features] : [""],
+      features: item.features.length > 0 ? [...item.features] : [""],
       sort_order: item.sort_order,
       is_featured: item.is_featured,
       is_visible: item.is_visible,
@@ -248,16 +226,13 @@ function AdminPricingPage() {
       badge_text: item.badge_text,
       cta_text: item.cta_text,
       cta_url: item.cta_url,
-      features:
-        item.features.length > 0 ? [...item.features] : [""],
+      features: item.features.length > 0 ? [...item.features] : [""],
       sort_order: packages.length + 1,
       is_featured: false,
       is_visible: false,
     });
     setErrorMessage("");
-    setSuccessMessage(
-      "A csomag másolata betöltve. Mentéssel hozhatod létre.",
-    );
+    setSuccessMessage("A csomag másolata betöltve. Mentéssel hozhatod létre.");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -272,9 +247,7 @@ function AdminPricingPage() {
     setSuccessMessage("");
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setSaving(true);
@@ -299,9 +272,7 @@ function AdminPricingPage() {
     }
 
     if (!form.price_label.trim()) {
-      setErrorMessage(
-        "Adj meg árat vagy például ezt: Egyedi ajánlat.",
-      );
+      setErrorMessage("Adj meg árat vagy például ezt: Egyedi ajánlat.");
       setSaving(false);
       return;
     }
@@ -363,9 +334,7 @@ function AdminPricingPage() {
 
       setSuccessMessage("A csomag sikeresen frissítve.");
     } else {
-      const { error } = await supabase
-        .from("pricing_packages")
-        .insert(payload);
+      const { error } = await supabase.from("pricing_packages").insert(payload);
 
       if (error) {
         setErrorMessage(error.message);
@@ -403,9 +372,7 @@ function AdminPricingPage() {
     }
 
     setSuccessMessage(
-      item.is_visible
-        ? "A csomag elrejtve."
-        : "A csomag láthatóvá téve.",
+      item.is_visible ? "A csomag elrejtve." : "A csomag láthatóvá téve.",
     );
     await loadPackages();
   }
@@ -457,13 +424,11 @@ function AdminPricingPage() {
             ← Vissza az áttekintéshez
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Árak és csomagok
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Árak és csomagok</h1>
 
           <p className="mt-2 max-w-3xl text-muted-foreground">
-            Kezeld az árakat, a csomag tartalmát, a kiemelést,
-            a CTA-gombot, a sorrendet és a láthatóságot.
+            Kezeld az árakat, a csomag tartalmát, a kiemelést, a CTA-gombot, a
+            sorrendet és a láthatóságot.
           </p>
         </header>
 
@@ -474,9 +439,7 @@ function AdminPricingPage() {
           >
             <div className="flex items-center justify-between gap-4">
               <h2 className="text-xl font-bold">
-                {editingId
-                  ? "Csomag szerkesztése"
-                  : "Új csomag"}
+                {editingId ? "Csomag szerkesztése" : "Új csomag"}
               </h2>
 
               {(editingId || form.name) && (
@@ -506,9 +469,7 @@ function AdminPricingPage() {
               label="URL-azonosító"
               value={form.slug}
               required
-              onChange={(value) =>
-                updateField("slug", createSlug(value))
-              }
+              onChange={(value) => updateField("slug", createSlug(value))}
             />
 
             <div>
@@ -531,18 +492,14 @@ function AdminPricingPage() {
                 value={form.price_label}
                 required
                 placeholder="199 000 vagy Egyedi ajánlat"
-                onChange={(value) =>
-                  updateField("price_label", value)
-                }
+                onChange={(value) => updateField("price_label", value)}
               />
 
               <FormField
                 label="Pénznem"
                 value={form.currency}
                 placeholder="Ft"
-                onChange={(value) =>
-                  updateField("currency", value)
-                }
+                onChange={(value) => updateField("currency", value)}
               />
             </div>
 
@@ -550,17 +507,13 @@ function AdminPricingPage() {
               label="Ár alatti megjegyzés"
               value={form.price_suffix}
               placeholder="-tól, +ÁFA"
-              onChange={(value) =>
-                updateField("price_suffix", value)
-              }
+              onChange={(value) => updateField("price_suffix", value)}
             />
 
             <div className="rounded-2xl border p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold">
-                    Csomag tartalma
-                  </p>
+                  <p className="text-sm font-semibold">Csomag tartalma</p>
                   <p className="text-xs text-muted-foreground">
                     A nyilakkal a sorrend is módosítható.
                   </p>
@@ -577,10 +530,7 @@ function AdminPricingPage() {
 
               <div className="space-y-3">
                 {form.features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-[1fr_auto] gap-2"
-                  >
+                  <div key={index} className="grid grid-cols-[1fr_auto] gap-2">
                     <input
                       type="text"
                       value={feature}
@@ -602,9 +552,7 @@ function AdminPricingPage() {
 
                       <IconButton
                         label="Lefelé"
-                        disabled={
-                          index === form.features.length - 1
-                        }
+                        disabled={index === form.features.length - 1}
                         onClick={() => moveFeature(index, 1)}
                       >
                         <ArrowDown className="h-4 w-4" />
@@ -627,9 +575,7 @@ function AdminPricingPage() {
               label="Kiemelés felirata"
               value={form.badge_text}
               placeholder="Legnépszerűbb"
-              onChange={(value) =>
-                updateField("badge_text", value)
-              }
+              onChange={(value) => updateField("badge_text", value)}
             />
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -637,18 +583,14 @@ function AdminPricingPage() {
                 label="CTA-gomb szövege"
                 value={form.cta_text}
                 required
-                onChange={(value) =>
-                  updateField("cta_text", value)
-                }
+                onChange={(value) => updateField("cta_text", value)}
               />
 
               <FormField
                 label="CTA-gomb hivatkozása"
                 value={form.cta_url}
                 required
-                onChange={(value) =>
-                  updateField("cta_url", value)
-                }
+                onChange={(value) => updateField("cta_url", value)}
               />
             </div>
 
@@ -661,10 +603,7 @@ function AdminPricingPage() {
                 min={0}
                 value={form.sort_order}
                 onChange={(event) =>
-                  updateField(
-                    "sort_order",
-                    Number(event.target.value),
-                  )
+                  updateField("sort_order", Number(event.target.value))
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               />
@@ -675,18 +614,14 @@ function AdminPricingPage() {
                 label="Kiemelt csomag"
                 description="Egyszerre egy csomag legyen kiemelt."
                 checked={form.is_featured}
-                onChange={(checked) =>
-                  updateField("is_featured", checked)
-                }
+                onChange={(checked) => updateField("is_featured", checked)}
               />
 
               <ToggleField
                 label="Megjelenjen az oldalon"
                 description="Kikapcsolva piszkozatként megmarad."
                 checked={form.is_visible}
-                onChange={(checked) =>
-                  updateField("is_visible", checked)
-                }
+                onChange={(checked) => updateField("is_visible", checked)}
               />
             </div>
 
@@ -717,9 +652,7 @@ function AdminPricingPage() {
 
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">
-                Meglévő csomagok
-              </h2>
+              <h2 className="text-xl font-bold">Meglévő csomagok</h2>
               <span className="text-sm text-muted-foreground">
                 {packages.length} elem
               </span>
@@ -730,9 +663,7 @@ function AdminPricingPage() {
                 <article
                   key={item.id}
                   className={`relative rounded-2xl border bg-background p-6 shadow-sm ${
-                    item.is_featured
-                      ? "border-brand ring-1 ring-brand/20"
-                      : ""
+                    item.is_featured ? "border-brand ring-1 ring-brand/20" : ""
                   }`}
                 >
                   {item.is_featured && (
@@ -743,9 +674,7 @@ function AdminPricingPage() {
 
                   <div className="pr-24">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-xl font-bold">
-                        {item.name}
-                      </h3>
+                      <h3 className="text-xl font-bold">{item.name}</h3>
                       <StatusBadge visible={item.is_visible} />
                     </div>
 
@@ -756,9 +685,7 @@ function AdminPricingPage() {
                     <p className="mt-4 text-3xl font-bold">
                       {item.price_label}
                       {item.currency && (
-                        <span className="ml-1 text-lg">
-                          {item.currency}
-                        </span>
+                        <span className="ml-1 text-lg">{item.currency}</span>
                       )}
                     </p>
 
@@ -839,9 +766,7 @@ function FormField({
 }: FormFieldProps) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold">
-        {label}
-      </label>
+      <label className="mb-2 block text-sm font-semibold">{label}</label>
       <input
         type="text"
         required={required}
@@ -876,9 +801,7 @@ function ToggleField({
         className="mt-1 h-4 w-4"
       />
       <span>
-        <span className="block text-sm font-semibold">
-          {label}
-        </span>
+        <span className="block text-sm font-semibold">{label}</span>
         <span className="mt-1 block text-xs text-muted-foreground">
           {description}
         </span>

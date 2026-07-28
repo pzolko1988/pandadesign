@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   useEffect,
   useMemo,
@@ -84,41 +80,30 @@ const EMPTY_FORM: BlogForm = {
 function AdminBlogPage() {
   const navigate = useNavigate();
 
-  const [posts, setPosts] =
-    useState<BlogPost[]>([]);
-  const [form, setForm] =
-    useState<BlogForm>(EMPTY_FORM);
-  const [editingId, setEditingId] =
-    useState<string | null>(null);
-  const [slugTouched, setSlugTouched] =
-    useState(false);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [form, setForm] = useState<BlogForm>(EMPTY_FORM);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [slugTouched, setSlugTouched] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<BlogStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<BlogStatus | "all">("all");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] =
-    useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
   }, []);
 
   const filteredPosts = useMemo(() => {
-    const search =
-      searchTerm.trim().toLocaleLowerCase("hu-HU");
+    const search = searchTerm.trim().toLocaleLowerCase("hu-HU");
 
     return posts.filter((post) => {
-      if (
-        statusFilter !== "all" &&
-        post.status !== statusFilter
-      ) {
+      if (statusFilter !== "all" && post.status !== statusFilter) {
         return false;
       }
 
@@ -126,15 +111,8 @@ function AdminBlogPage() {
         return true;
       }
 
-      return [
-        post.title,
-        post.slug,
-        post.excerpt,
-        post.author_name,
-      ].some((value) =>
-        value
-          .toLocaleLowerCase("hu-HU")
-          .includes(search),
+      return [post.title, post.slug, post.excerpt, post.author_name].some(
+        (value) => value.toLocaleLowerCase("hu-HU").includes(search),
       );
     });
   }, [posts, searchTerm, statusFilter]);
@@ -204,10 +182,7 @@ function AdminBlogPage() {
     setPosts((data ?? []) as BlogPost[]);
   }
 
-  function updateField<K extends keyof BlogForm>(
-    field: K,
-    value: BlogForm[K],
-  ) {
+  function updateField<K extends keyof BlogForm>(field: K, value: BlogForm[K]) {
     setForm((current) => ({
       ...current,
       [field]: value,
@@ -218,13 +193,8 @@ function AdminBlogPage() {
     setForm((current) => ({
       ...current,
       title: value,
-      slug:
-        slugTouched
-          ? current.slug
-          : slugify(value),
-      seo_title:
-        current.seo_title ||
-        value,
+      slug: slugTouched ? current.slug : slugify(value),
+      seo_title: current.seo_title || value,
     }));
   }
 
@@ -249,12 +219,9 @@ function AdminBlogPage() {
       title: post.title,
       slug: post.slug,
       excerpt: post.excerpt,
-      content_html:
-        post.content_html || "<p></p>",
-      content_json:
-        post.content_json ?? EMPTY_FORM.content_json,
-      featured_image_path:
-        post.featured_image_path,
+      content_html: post.content_html || "<p></p>",
+      content_json: post.content_json ?? EMPTY_FORM.content_json,
+      featured_image_path: post.featured_image_path,
       author_name: post.author_name,
       status: post.status,
       seo_title: post.seo_title,
@@ -270,9 +237,7 @@ function AdminBlogPage() {
     });
   }
 
-  async function uploadFeaturedImage(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
+  async function uploadFeaturedImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
 
@@ -280,23 +245,13 @@ function AdminBlogPage() {
       return;
     }
 
-    if (
-      ![
-        "image/png",
-        "image/jpeg",
-        "image/webp",
-      ].includes(file.type)
-    ) {
-      setErrorMessage(
-        "Csak PNG, JPG vagy WebP kép tölthető fel.",
-      );
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      setErrorMessage("Csak PNG, JPG vagy WebP kép tölthető fel.");
       return;
     }
 
     if (file.size > 8 * 1024 * 1024) {
-      setErrorMessage(
-        "A kép mérete legfeljebb 8 MB lehet.",
-      );
+      setErrorMessage("A kép mérete legfeljebb 8 MB lehet.");
       return;
     }
 
@@ -304,14 +259,10 @@ function AdminBlogPage() {
     setErrorMessage("");
     setSuccessMessage("");
 
-    const previousPath =
-      form.featured_image_path;
-    const extension =
-      file.name.split(".").pop()?.toLowerCase() ||
-      "webp";
+    const previousPath = form.featured_image_path;
+    const extension = file.name.split(".").pop()?.toLowerCase() || "webp";
 
-    const path =
-      `featured/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+    const path = `featured/${Date.now()}-${crypto.randomUUID()}.${extension}`;
 
     try {
       const { error } = await supabase.storage
@@ -332,16 +283,12 @@ function AdminBlogPage() {
       }));
 
       if (previousPath) {
-        const { error: deleteError } =
-          await supabase.storage
-            .from("blog-media")
-            .remove([previousPath]);
+        const { error: deleteError } = await supabase.storage
+          .from("blog-media")
+          .remove([previousPath]);
 
         if (deleteError) {
-          console.warn(
-            "A korábbi blogkép nem törölhető:",
-            deleteError,
-          );
+          console.warn("A korábbi blogkép nem törölhető:", deleteError);
         }
       }
 
@@ -366,9 +313,7 @@ function AdminBlogPage() {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Biztosan törlöd a kiemelt képet?",
-    );
+    const confirmed = window.confirm("Biztosan törlöd a kiemelt képet?");
 
     if (!confirmed) {
       return;
@@ -392,23 +337,17 @@ function AdminBlogPage() {
         featured_image_path: null,
       }));
 
-      setSuccessMessage(
-        "A kiemelt kép törölve.",
-      );
+      setSuccessMessage("A kiemelt kép törölve.");
     } catch (error: unknown) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "A kép törlése nem sikerült.",
+        error instanceof Error ? error.message : "A kép törlése nem sikerült.",
       );
     } finally {
       setUploading(false);
     }
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const title = form.title.trim();
@@ -416,8 +355,7 @@ function AdminBlogPage() {
     const excerpt = form.excerpt.trim();
     const authorName = form.author_name.trim();
     const seoTitle = form.seo_title.trim();
-    const seoDescription =
-      form.seo_description.trim();
+    const seoDescription = form.seo_description.trim();
 
     const plainText = form.content_html
       .replace(/<[^>]*>/g, " ")
@@ -425,9 +363,7 @@ function AdminBlogPage() {
       .trim();
 
     if (title.length < 3) {
-      setErrorMessage(
-        "A címnek legalább 3 karakter hosszúnak kell lennie.",
-      );
+      setErrorMessage("A címnek legalább 3 karakter hosszúnak kell lennie.");
       return;
     }
 
@@ -446,16 +382,12 @@ function AdminBlogPage() {
     }
 
     if (plainText.length < 20) {
-      setErrorMessage(
-        "A blogbejegyzés tartalma még túl rövid.",
-      );
+      setErrorMessage("A blogbejegyzés tartalma még túl rövid.");
       return;
     }
 
     if (!authorName) {
-      setErrorMessage(
-        "A szerző neve nem lehet üres.",
-      );
+      setErrorMessage("A szerző neve nem lehet üres.");
       return;
     }
 
@@ -474,9 +406,7 @@ function AdminBlogPage() {
       }
 
       if (!user) {
-        throw new Error(
-          "A felhasználói munkamenet nem található.",
-        );
+        throw new Error("A felhasználói munkamenet nem található.");
       }
 
       const payload = {
@@ -485,8 +415,7 @@ function AdminBlogPage() {
         excerpt,
         content_html: form.content_html,
         content_json: form.content_json,
-        featured_image_path:
-          form.featured_image_path,
+        featured_image_path: form.featured_image_path,
         author_name: authorName,
         status: form.status,
         seo_title: seoTitle,
@@ -504,24 +433,18 @@ function AdminBlogPage() {
           throw error;
         }
 
-        setSuccessMessage(
-          "A blogbejegyzés sikeresen frissítve.",
-        );
+        setSuccessMessage("A blogbejegyzés sikeresen frissítve.");
       } else {
-        const { error } = await supabase
-          .from("blog_posts")
-          .insert({
-            ...payload,
-            created_by: user.id,
-          });
+        const { error } = await supabase.from("blog_posts").insert({
+          ...payload,
+          created_by: user.id,
+        });
 
         if (error) {
           throw error;
         }
 
-        setSuccessMessage(
-          "Az új blogbejegyzés sikeresen létrehozva.",
-        );
+        setSuccessMessage("Az új blogbejegyzés sikeresen létrehozva.");
       }
 
       await loadPosts();
@@ -561,34 +484,22 @@ function AdminBlogPage() {
       }
 
       if (post.featured_image_path) {
-        const { error: storageError } =
-          await supabase.storage
-            .from("blog-media")
-            .remove([
-              post.featured_image_path,
-            ]);
+        const { error: storageError } = await supabase.storage
+          .from("blog-media")
+          .remove([post.featured_image_path]);
 
         if (storageError) {
-          console.warn(
-            "A blogkép nem törölhető:",
-            storageError,
-          );
+          console.warn("A blogkép nem törölhető:", storageError);
         }
       }
 
-      setPosts((current) =>
-        current.filter(
-          (item) => item.id !== post.id,
-        ),
-      );
+      setPosts((current) => current.filter((item) => item.id !== post.id));
 
       if (editingId === post.id) {
         resetEditor();
       }
 
-      setSuccessMessage(
-        "A blogbejegyzés végleg törölve.",
-      );
+      setSuccessMessage("A blogbejegyzés végleg törölve.");
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error
@@ -600,14 +511,10 @@ function AdminBlogPage() {
     }
   }
 
-  const featuredImageUrl =
-    form.featured_image_path
-      ? supabase.storage
-          .from("blog-media")
-          .getPublicUrl(
-            form.featured_image_path,
-          ).data.publicUrl
-      : "";
+  const featuredImageUrl = form.featured_image_path
+    ? supabase.storage.from("blog-media").getPublicUrl(form.featured_image_path)
+        .data.publicUrl
+    : "";
 
   if (loading) {
     return (
@@ -631,13 +538,10 @@ function AdminBlogPage() {
               ← Vissza az áttekintéshez
             </Link>
 
-            <h1 className="mt-4 text-3xl font-bold">
-              Blogkezelő
-            </h1>
+            <h1 className="mt-4 text-3xl font-bold">Blogkezelő</h1>
 
             <p className="mt-2 max-w-3xl text-muted-foreground">
-              Blogbejegyzések létrehozása Tiptap gazdag
-              szövegszerkesztővel.
+              Blogbejegyzések létrehozása Tiptap gazdag szövegszerkesztővel.
             </p>
           </div>
 
@@ -669,22 +573,16 @@ function AdminBlogPage() {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="mb-10 space-y-6"
-        >
+        <form onSubmit={handleSubmit} className="mb-10 space-y-6">
           <section className="rounded-2xl border bg-background p-6 shadow-sm">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-bold">
-                  {editingId
-                    ? "Bejegyzés szerkesztése"
-                    : "Új blogbejegyzés"}
+                  {editingId ? "Bejegyzés szerkesztése" : "Új blogbejegyzés"}
                 </h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  A tartalmat először piszkozatként is
-                  elmentheted.
+                  A tartalmat először piszkozatként is elmentheted.
                 </p>
               </div>
 
@@ -723,12 +621,7 @@ function AdminBlogPage() {
                     value={form.slug}
                     onChange={(event) => {
                       setSlugTouched(true);
-                      updateField(
-                        "slug",
-                        slugify(
-                          event.target.value,
-                        ),
-                      );
+                      updateField("slug", slugify(event.target.value));
                     }}
                     placeholder="pelda-blogbejegyzes"
                     className="min-w-0 flex-1 rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
@@ -738,10 +631,7 @@ function AdminBlogPage() {
                     type="button"
                     onClick={() => {
                       setSlugTouched(true);
-                      updateField(
-                        "slug",
-                        slugify(form.title),
-                      );
+                      updateField("slug", slugify(form.title));
                     }}
                     className="rounded-xl border px-4 py-3 text-sm font-semibold transition hover:bg-muted"
                   >
@@ -759,9 +649,7 @@ function AdminBlogPage() {
                 label="Szerző"
                 required
                 value={form.author_name}
-                onChange={(value) =>
-                  updateField("author_name", value)
-                }
+                onChange={(value) => updateField("author_name", value)}
               />
 
               <div>
@@ -776,20 +664,13 @@ function AdminBlogPage() {
                   id="blog-status"
                   value={form.status}
                   onChange={(event) =>
-                    updateField(
-                      "status",
-                      event.target.value as BlogStatus,
-                    )
+                    updateField("status", event.target.value as BlogStatus)
                   }
                   className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
                 >
-                  <option value="draft">
-                    Piszkozat
-                  </option>
+                  <option value="draft">Piszkozat</option>
 
-                  <option value="published">
-                    Publikált
-                  </option>
+                  <option value="published">Publikált</option>
                 </select>
               </div>
 
@@ -809,10 +690,7 @@ function AdminBlogPage() {
                   rows={4}
                   value={form.excerpt}
                   onChange={(event) =>
-                    updateField(
-                      "excerpt",
-                      event.target.value,
-                    )
+                    updateField("excerpt", event.target.value)
                   }
                   placeholder="Rövid összefoglaló a bloglistához és a közösségi megosztásokhoz."
                   className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
@@ -827,9 +705,7 @@ function AdminBlogPage() {
 
           <section className="rounded-2xl border bg-background p-6 shadow-sm">
             <div className="mb-5">
-              <h2 className="text-xl font-bold">
-                Kiemelt kép
-              </h2>
+              <h2 className="text-xl font-bold">Kiemelt kép</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
                 Ajánlott képarány: 16:9. Maximum 8 MB.
@@ -864,9 +740,7 @@ function AdminBlogPage() {
                       type="file"
                       accept="image/png,image/jpeg,image/webp"
                       disabled={uploading}
-                      onChange={(event) =>
-                        void uploadFeaturedImage(event)
-                      }
+                      onChange={(event) => void uploadFeaturedImage(event)}
                       className="sr-only"
                     />
                   </label>
@@ -875,9 +749,7 @@ function AdminBlogPage() {
                     <button
                       type="button"
                       disabled={uploading}
-                      onClick={() =>
-                        void removeFeaturedImage()
-                      }
+                      onClick={() => void removeFeaturedImage()}
                       className="rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
                     >
                       Kép törlése
@@ -886,8 +758,8 @@ function AdminBlogPage() {
                 </div>
 
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                  PNG, JPG és WebP támogatott. A kép a
-                  Supabase blog-media tárhelyére kerül.
+                  PNG, JPG és WebP támogatott. A kép a Supabase blog-media
+                  tárhelyére kerül.
                 </p>
               </div>
             </div>
@@ -895,13 +767,10 @@ function AdminBlogPage() {
 
           <section>
             <div className="mb-4">
-              <h2 className="text-xl font-bold">
-                Bejegyzés tartalma
-              </h2>
+              <h2 className="text-xl font-bold">Bejegyzés tartalma</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                A Tiptap szerkesztő csak ezen az adminoldalon
-                töltődik be.
+                A Tiptap szerkesztő csak ezen az adminoldalon töltődik be.
               </p>
             </div>
 
@@ -920,13 +789,11 @@ function AdminBlogPage() {
 
           <section className="rounded-2xl border bg-background p-6 shadow-sm">
             <div className="mb-5">
-              <h2 className="text-xl font-bold">
-                Keresőoptimalizálás
-              </h2>
+              <h2 className="text-xl font-bold">Keresőoptimalizálás</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                Üresen hagyva a bejegyzés címe és kivonata
-                használható alapértelmezésként.
+                Üresen hagyva a bejegyzés címe és kivonata használható
+                alapértelmezésként.
               </p>
             </div>
 
@@ -935,9 +802,7 @@ function AdminBlogPage() {
                 id="blog-seo-title"
                 label="SEO-cím"
                 value={form.seo_title}
-                onChange={(value) =>
-                  updateField("seo_title", value)
-                }
+                onChange={(value) => updateField("seo_title", value)}
                 description={`${form.seo_title.length}/180 karakter`}
               />
 
@@ -955,10 +820,7 @@ function AdminBlogPage() {
                   rows={4}
                   value={form.seo_description}
                   onChange={(event) =>
-                    updateField(
-                      "seo_description",
-                      event.target.value,
-                    )
+                    updateField("seo_description", event.target.value)
                   }
                   className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
                 />
@@ -974,9 +836,7 @@ function AdminBlogPage() {
             <p className="text-sm text-muted-foreground">
               Mentés állapota:{" "}
               <strong>
-                {form.status === "published"
-                  ? "publikált"
-                  : "piszkozat"}
+                {form.status === "published" ? "publikált" : "piszkozat"}
               </strong>
             </p>
 
@@ -998,9 +858,7 @@ function AdminBlogPage() {
           <div className="border-b p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h2 className="text-xl font-bold">
-                  Blogbejegyzések
-                </h2>
+                <h2 className="text-xl font-bold">Blogbejegyzések</h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   {filteredPosts.length} találat
@@ -1014,11 +872,7 @@ function AdminBlogPage() {
                   <input
                     type="search"
                     value={searchTerm}
-                    onChange={(event) =>
-                      setSearchTerm(
-                        event.target.value,
-                      )
-                    }
+                    onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder="Keresés..."
                     className="w-full rounded-xl border py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-brand"
                   />
@@ -1027,23 +881,13 @@ function AdminBlogPage() {
                 <select
                   value={statusFilter}
                   onChange={(event) =>
-                    setStatusFilter(
-                      event.target.value as
-                        | BlogStatus
-                        | "all",
-                    )
+                    setStatusFilter(event.target.value as BlogStatus | "all")
                   }
                   className="rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
                 >
-                  <option value="all">
-                    Minden állapot
-                  </option>
-                  <option value="draft">
-                    Piszkozat
-                  </option>
-                  <option value="published">
-                    Publikált
-                  </option>
+                  <option value="all">Minden állapot</option>
+                  <option value="draft">Piszkozat</option>
+                  <option value="published">Publikált</option>
                 </select>
 
                 <button
@@ -1062,21 +906,16 @@ function AdminBlogPage() {
             <div className="p-10 text-center">
               <FilePenLine className="mx-auto h-10 w-10 text-muted-foreground/30" />
 
-              <h3 className="mt-4 font-bold">
-                Nincs megjeleníthető bejegyzés
-              </h3>
+              <h3 className="mt-4 font-bold">Nincs megjeleníthető bejegyzés</h3>
             </div>
           ) : (
             <div className="divide-y">
               {filteredPosts.map((post) => {
-                const imageUrl =
-                  post.featured_image_path
-                    ? supabase.storage
-                        .from("blog-media")
-                        .getPublicUrl(
-                          post.featured_image_path,
-                        ).data.publicUrl
-                    : "";
+                const imageUrl = post.featured_image_path
+                  ? supabase.storage
+                      .from("blog-media")
+                      .getPublicUrl(post.featured_image_path).data.publicUrl
+                  : "";
 
                 return (
                   <article
@@ -1112,14 +951,11 @@ function AdminBlogPage() {
                         </span>
 
                         <span className="text-xs text-muted-foreground">
-                          Frissítve:{" "}
-                          {formatDate(post.updated_at)}
+                          Frissítve: {formatDate(post.updated_at)}
                         </span>
                       </div>
 
-                      <h3 className="mt-3 text-lg font-bold">
-                        {post.title}
-                      </h3>
+                      <h3 className="mt-3 text-lg font-bold">{post.title}</h3>
 
                       <p className="mt-1 text-sm text-muted-foreground">
                         /blog/{post.slug}
@@ -1157,9 +993,7 @@ function AdminBlogPage() {
 
                       <button
                         type="button"
-                        onClick={() =>
-                          startEditing(post)
-                        }
+                        onClick={() => startEditing(post)}
                         className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted"
                       >
                         Szerkesztés
@@ -1168,9 +1002,7 @@ function AdminBlogPage() {
                       <button
                         type="button"
                         disabled={saving}
-                        onClick={() =>
-                          void deletePost(post)
-                        }
+                        onClick={() => void deletePost(post)}
                         className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1207,10 +1039,7 @@ function TextField({
 }: TextFieldProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold">
         {label}
       </label>
 
@@ -1218,16 +1047,12 @@ function TextField({
         id={id}
         required={required}
         value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
+        onChange={(event) => onChange(event.target.value)}
         className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
       />
 
       {description && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{description}</p>
       )}
     </div>
   );

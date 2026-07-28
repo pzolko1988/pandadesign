@@ -23,54 +23,26 @@ type AdminTemplateOptions = {
   publicSiteUrl: string;
 };
 
-export function buildAdminEmail({
-  lead,
-  publicSiteUrl,
-}: AdminTemplateOptions) {
+export function buildAdminEmail({ lead, publicSiteUrl }: AdminTemplateOptions) {
   const subject =
     `Új ajánlatkérés: ${lead.name}` +
-    (lead.service_type
-      ? ` – ${lead.service_type}`
-      : "");
+    (lead.service_type ? ` – ${lead.service_type}` : "");
 
-  const adminUrl =
-    `${publicSiteUrl.replace(/\/+$/, "")}/admin/leads`;
+  const adminUrl = `${publicSiteUrl.replace(/\/+$/, "")}/admin/leads`;
 
   const rows = [
     ["Név", lead.name],
     ["E-mail", lead.email],
     ["Telefon", lead.phone || "Nincs megadva"],
-    [
-      "Vállalkozás",
-      lead.company || "Nincs megadva",
-    ],
-    [
-      "Szolgáltatás",
-      lead.service_type || "Nincs megadva",
-    ],
-    [
-      "Költségkeret",
-      lead.budget_range || "Nincs megadva",
-    ],
-    [
-      "Marketing-hozzájárulás",
-      lead.marketing_consent ? "Igen" : "Nem",
-    ],
-    [
-      "Beérkezés",
-      formatHungarianDate(lead.created_at),
-    ],
-    [
-      "Forrásoldal",
-      lead.source_page || "Nincs adat",
-    ],
+    ["Vállalkozás", lead.company || "Nincs megadva"],
+    ["Szolgáltatás", lead.service_type || "Nincs megadva"],
+    ["Költségkeret", lead.budget_range || "Nincs megadva"],
+    ["Marketing-hozzájárulás", lead.marketing_consent ? "Igen" : "Nem"],
+    ["Beérkezés", formatHungarianDate(lead.created_at)],
+    ["Forrásoldal", lead.source_page || "Nincs adat"],
     [
       "UTM",
-      [
-        lead.utm_source,
-        lead.utm_medium,
-        lead.utm_campaign,
-      ]
+      [lead.utm_source, lead.utm_medium, lead.utm_campaign]
         .filter(Boolean)
         .join(" / ") || "Nincs adat",
     ],
@@ -153,15 +125,9 @@ export function buildAdminEmail({
     `Név: ${lead.name}`,
     `E-mail: ${lead.email}`,
     `Telefon: ${lead.phone || "Nincs megadva"}`,
-    `Vállalkozás: ${
-      lead.company || "Nincs megadva"
-    }`,
-    `Szolgáltatás: ${
-      lead.service_type || "Nincs megadva"
-    }`,
-    `Költségkeret: ${
-      lead.budget_range || "Nincs megadva"
-    }`,
+    `Vállalkozás: ${lead.company || "Nincs megadva"}`,
+    `Szolgáltatás: ${lead.service_type || "Nincs megadva"}`,
+    `Költségkeret: ${lead.budget_range || "Nincs megadva"}`,
     "",
     "Üzenet:",
     lead.message,
@@ -177,11 +143,8 @@ export function buildAdminEmail({
   };
 }
 
-export function buildAutoreplyEmail(
-  lead: LeadRecord,
-) {
-  const subject =
-    "Megkaptuk az ajánlatkérésed – PandaDesign";
+export function buildAutoreplyEmail(lead: LeadRecord) {
+  const subject = "Megkaptuk az ajánlatkérésed – PandaDesign";
 
   const html = `
 <!doctype html>
@@ -217,10 +180,7 @@ export function buildAutoreplyEmail(
             A megkeresésed témája
           </div>
           <div style="margin-top:8px;font-size:15px;font-weight:700;color:#111827;">
-            ${escapeHtml(
-              lead.service_type ||
-                "Weboldal és digitális megoldás",
-            )}
+            ${escapeHtml(lead.service_type || "Weboldal és digitális megoldás")}
           </div>
         </div>
 

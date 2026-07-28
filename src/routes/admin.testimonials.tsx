@@ -1,17 +1,6 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
-import {
-  MessageSquare,
-  Star,
-} from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
+import { MessageSquare, Star } from "lucide-react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/testimonials")({
@@ -62,23 +51,17 @@ function AdminTestimonialsPage() {
 
   const [settings, setSettings] =
     useState<TestimonialSectionSettings>(DEFAULT_SETTINGS);
-  const [testimonials, setTestimonials] =
-    useState<Testimonial[]>([]);
-  const [form, setForm] =
-    useState<TestimonialForm>(EMPTY_FORM);
-  const [editingId, setEditingId] =
-    useState<string | null>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [form, setForm] = useState<TestimonialForm>(EMPTY_FORM);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [savingSettings, setSavingSettings] =
-    useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
   const [savingItem, setSavingItem] = useState(false);
-  const [actionId, setActionId] =
-    useState<string | null>(null);
+  const [actionId, setActionId] = useState<string | null>(null);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -89,9 +72,7 @@ function AdminTestimonialsPage() {
       return 10;
     }
 
-    return (
-      Math.max(...items.map((item) => item.sort_order)) + 10
-    );
+    return Math.max(...items.map((item) => item.sort_order)) + 10;
   }
 
   async function initializePage() {
@@ -176,22 +157,17 @@ function AdminTestimonialsPage() {
     }
 
     if (settingsData) {
-      setSettings(
-        settingsData as TestimonialSectionSettings,
-      );
+      setSettings(settingsData as TestimonialSectionSettings);
     }
 
-    const loadedItems =
-      (itemsData ?? []) as Testimonial[];
+    const loadedItems = (itemsData ?? []) as Testimonial[];
 
     setTestimonials(loadedItems);
 
     return loadedItems;
   }
 
-  function updateSettings<
-    K extends keyof TestimonialSectionSettings,
-  >(
+  function updateSettings<K extends keyof TestimonialSectionSettings>(
     field: K,
     value: TestimonialSectionSettings[K],
   ) {
@@ -211,9 +187,7 @@ function AdminTestimonialsPage() {
     }));
   }
 
-  async function saveSettings(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function saveSettings(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const eyebrow = settings.eyebrow.trim();
@@ -265,9 +239,7 @@ function AdminTestimonialsPage() {
         description,
       }));
 
-      setSuccessMessage(
-        "A véleményszekció beállításai elmentve.",
-      );
+      setSuccessMessage("A véleményszekció beállításai elmentve.");
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error
@@ -295,17 +267,13 @@ function AdminTestimonialsPage() {
     setErrorMessage("");
     setSuccessMessage("");
 
-    document
-      .getElementById("testimonial-editor")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    document.getElementById("testimonial-editor")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 
-  function resetEditor(
-    currentItems = testimonials,
-  ) {
+  function resetEditor(currentItems = testimonials) {
     setEditingId(null);
 
     setForm({
@@ -317,22 +285,17 @@ function AdminTestimonialsPage() {
     setSuccessMessage("");
   }
 
-  async function saveTestimonial(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function saveTestimonial(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const name = form.name.trim();
     const role = form.role.trim();
-    const testimonialText =
-      form.testimonial_text.trim();
+    const testimonialText = form.testimonial_text.trim();
     const rating = Number(form.rating);
     const sortOrder = Number(form.sort_order);
 
     if (name.length < 2) {
-      setErrorMessage(
-        "A névnek legalább 2 karakter hosszúnak kell lennie.",
-      );
+      setErrorMessage("A névnek legalább 2 karakter hosszúnak kell lennie.");
       return;
     }
 
@@ -343,24 +306,13 @@ function AdminTestimonialsPage() {
       return;
     }
 
-    if (
-      !Number.isInteger(rating) ||
-      rating < 1 ||
-      rating > 5
-    ) {
-      setErrorMessage(
-        "Az értékelés 1 és 5 közötti egész szám lehet.",
-      );
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      setErrorMessage("Az értékelés 1 és 5 közötti egész szám lehet.");
       return;
     }
 
-    if (
-      !Number.isInteger(sortOrder) ||
-      sortOrder < 0
-    ) {
-      setErrorMessage(
-        "A sorrend 0 vagy annál nagyobb egész szám lehet.",
-      );
+    if (!Number.isInteger(sortOrder) || sortOrder < 0) {
+      setErrorMessage("A sorrend 0 vagy annál nagyobb egész szám lehet.");
       return;
     }
 
@@ -389,21 +341,15 @@ function AdminTestimonialsPage() {
           throw error;
         }
 
-        setSuccessMessage(
-          "A vélemény sikeresen frissítve.",
-        );
+        setSuccessMessage("A vélemény sikeresen frissítve.");
       } else {
-        const { error } = await supabase
-          .from("testimonials")
-          .insert(payload);
+        const { error } = await supabase.from("testimonials").insert(payload);
 
         if (error) {
           throw error;
         }
 
-        setSuccessMessage(
-          "Az új vélemény sikeresen létrehozva.",
-        );
+        setSuccessMessage("Az új vélemény sikeresen létrehozva.");
       }
 
       const loadedItems = await loadContent();
@@ -424,9 +370,7 @@ function AdminTestimonialsPage() {
     }
   }
 
-  async function toggleVisibility(
-    item: Testimonial,
-  ) {
+  async function toggleVisibility(item: Testimonial) {
     setActionId(item.id);
     setErrorMessage("");
     setSuccessMessage("");
@@ -444,9 +388,7 @@ function AdminTestimonialsPage() {
       }
 
       setSuccessMessage(
-        item.is_visible
-          ? "A vélemény elrejtve."
-          : "A vélemény láthatóvá téve.",
+        item.is_visible ? "A vélemény elrejtve." : "A vélemény láthatóvá téve.",
       );
 
       await loadContent();
@@ -461,18 +403,13 @@ function AdminTestimonialsPage() {
     }
   }
 
-  async function moveItem(
-    item: Testimonial,
-    direction: "up" | "down",
-  ) {
+  async function moveItem(item: Testimonial, direction: "up" | "down") {
     const currentIndex = testimonials.findIndex(
       (currentItem) => currentItem.id === item.id,
     );
 
     const targetIndex =
-      direction === "up"
-        ? currentIndex - 1
-        : currentIndex + 1;
+      direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
     if (
       currentIndex < 0 ||
@@ -524,9 +461,7 @@ function AdminTestimonialsPage() {
     }
   }
 
-  async function deleteTestimonial(
-    item: Testimonial,
-  ) {
+  async function deleteTestimonial(item: Testimonial) {
     const confirmed = window.confirm(
       `Biztosan törlöd ezt a véleményt?\n\n${item.name}`,
     );
@@ -592,13 +527,10 @@ function AdminTestimonialsPage() {
             ← Vissza az áttekintéshez
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Véleménykezelő
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Véleménykezelő</h1>
 
           <p className="mt-2 max-w-3xl text-muted-foreground">
-            A véleményszekció és az ügyfél-visszajelzések
-            kezelése.
+            A véleményszekció és az ügyfél-visszajelzések kezelése.
           </p>
         </header>
 
@@ -625,9 +557,7 @@ function AdminTestimonialsPage() {
           className="mb-8 rounded-2xl border bg-background p-6 shadow-sm"
         >
           <div className="mb-6">
-            <h2 className="text-xl font-bold">
-              Szekcióbeállítások
-            </h2>
+            <h2 className="text-xl font-bold">Szekcióbeállítások</h2>
 
             <p className="mt-1 text-sm text-muted-foreground">
               A publikus véleményblokk címei és láthatósága.
@@ -647,10 +577,7 @@ function AdminTestimonialsPage() {
                 id="testimonial-eyebrow"
                 value={settings.eyebrow}
                 onChange={(event) =>
-                  updateSettings(
-                    "eyebrow",
-                    event.target.value,
-                  )
+                  updateSettings("eyebrow", event.target.value)
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -668,10 +595,7 @@ function AdminTestimonialsPage() {
                 id="testimonial-title"
                 value={settings.title}
                 onChange={(event) =>
-                  updateSettings(
-                    "title",
-                    event.target.value,
-                  )
+                  updateSettings("title", event.target.value)
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -690,10 +614,7 @@ function AdminTestimonialsPage() {
                 rows={4}
                 value={settings.description}
                 onChange={(event) =>
-                  updateSettings(
-                    "description",
-                    event.target.value,
-                  )
+                  updateSettings("description", event.target.value)
                 }
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -705,10 +626,7 @@ function AdminTestimonialsPage() {
               type="checkbox"
               checked={settings.is_visible}
               onChange={(event) =>
-                updateSettings(
-                  "is_visible",
-                  event.target.checked,
-                )
+                updateSettings("is_visible", event.target.checked)
               }
               className="h-4 w-4"
             />
@@ -719,8 +637,7 @@ function AdminTestimonialsPage() {
               </span>
 
               <span className="mt-1 block text-xs text-muted-foreground">
-                Kikapcsolva a teljes blokk eltűnik a publikus
-                főoldalról.
+                Kikapcsolva a teljes blokk eltűnik a publikus főoldalról.
               </span>
             </span>
           </label>
@@ -730,9 +647,7 @@ function AdminTestimonialsPage() {
             disabled={savingSettings}
             className="mt-5 rounded-xl bg-brand px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {savingSettings
-              ? "Mentés..."
-              : "Szekcióbeállítások mentése"}
+            {savingSettings ? "Mentés..." : "Szekcióbeállítások mentése"}
           </button>
         </form>
 
@@ -744,9 +659,7 @@ function AdminTestimonialsPage() {
           >
             <div className="flex items-center justify-between gap-4">
               <h2 className="text-xl font-bold">
-                {editingId
-                  ? "Vélemény szerkesztése"
-                  : "Új vélemény"}
+                {editingId ? "Vélemény szerkesztése" : "Új vélemény"}
               </h2>
 
               {editingId && (
@@ -773,9 +686,7 @@ function AdminTestimonialsPage() {
                 required
                 minLength={2}
                 value={form.name}
-                onChange={(event) =>
-                  updateField("name", event.target.value)
-                }
+                onChange={(event) => updateField("name", event.target.value)}
                 placeholder="Például: Kovács Anna"
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -792,9 +703,7 @@ function AdminTestimonialsPage() {
               <input
                 id="testimonial-role"
                 value={form.role}
-                onChange={(event) =>
-                  updateField("role", event.target.value)
-                }
+                onChange={(event) => updateField("role", event.target.value)}
                 placeholder="Például: Ügyvezető, Minta Kft."
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -815,10 +724,7 @@ function AdminTestimonialsPage() {
                 rows={8}
                 value={form.testimonial_text}
                 onChange={(event) =>
-                  updateField(
-                    "testimonial_text",
-                    event.target.value,
-                  )
+                  updateField("testimonial_text", event.target.value)
                 }
                 placeholder="Írd ide az ügyfél visszajelzését..."
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
@@ -838,10 +744,7 @@ function AdminTestimonialsPage() {
                   id="testimonial-rating"
                   value={form.rating}
                   onChange={(event) =>
-                    updateField(
-                      "rating",
-                      Number(event.target.value),
-                    )
+                    updateField("rating", Number(event.target.value))
                   }
                   className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
                 >
@@ -868,10 +771,7 @@ function AdminTestimonialsPage() {
                   step={1}
                   value={form.sort_order}
                   onChange={(event) =>
-                    updateField(
-                      "sort_order",
-                      Number(event.target.value),
-                    )
+                    updateField("sort_order", Number(event.target.value))
                   }
                   className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
                 />
@@ -883,10 +783,7 @@ function AdminTestimonialsPage() {
                 type="checkbox"
                 checked={form.is_sample}
                 onChange={(event) =>
-                  updateField(
-                    "is_sample",
-                    event.target.checked,
-                  )
+                  updateField("is_sample", event.target.checked)
                 }
                 className="h-4 w-4"
               />
@@ -897,8 +794,8 @@ function AdminTestimonialsPage() {
                 </span>
 
                 <span className="mt-1 block text-xs text-muted-foreground">
-                  Bekapcsolva a publikus kártyán megjelenik a
-                  „Minta tartalom” jelzés.
+                  Bekapcsolva a publikus kártyán megjelenik a „Minta tartalom”
+                  jelzés.
                 </span>
               </span>
             </label>
@@ -908,10 +805,7 @@ function AdminTestimonialsPage() {
                 type="checkbox"
                 checked={form.is_visible}
                 onChange={(event) =>
-                  updateField(
-                    "is_visible",
-                    event.target.checked,
-                  )
+                  updateField("is_visible", event.target.checked)
                 }
                 className="h-4 w-4"
               />
@@ -942,9 +836,7 @@ function AdminTestimonialsPage() {
 
           <section>
             <div className="mb-4">
-              <h2 className="text-xl font-bold">
-                Meglévő vélemények
-              </h2>
+              <h2 className="text-xl font-bold">Meglévő vélemények</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
                 {testimonials.length} darab elem
@@ -953,13 +845,10 @@ function AdminTestimonialsPage() {
 
             {testimonials.length === 0 ? (
               <div className="rounded-2xl border border-dashed bg-background p-10 text-center">
-                <h3 className="font-bold">
-                  Még nincs vélemény
-                </h3>
+                <h3 className="font-bold">Még nincs vélemény</h3>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Az első véleményt a bal oldali
-                  szerkesztőben hozhatod létre.
+                  Az első véleményt a bal oldali szerkesztőben hozhatod létre.
                 </p>
               </div>
             ) : (
@@ -971,9 +860,7 @@ function AdminTestimonialsPage() {
                     <article
                       key={item.id}
                       className={`rounded-2xl border bg-background p-5 shadow-sm ${
-                        item.is_visible
-                          ? ""
-                          : "opacity-60"
+                        item.is_visible ? "" : "opacity-60"
                       }`}
                     >
                       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -990,9 +877,7 @@ function AdminTestimonialsPage() {
                                   : "bg-slate-100 text-slate-600"
                               }`}
                             >
-                              {item.is_visible
-                                ? "Látható"
-                                : "Elrejtve"}
+                              {item.is_visible ? "Látható" : "Elrejtve"}
                             </span>
 
                             {item.is_sample && (
@@ -1003,18 +888,16 @@ function AdminTestimonialsPage() {
                           </div>
 
                           <div className="mt-4 flex items-center gap-1">
-                            {Array.from({ length: 5 }).map(
-                              (_, starIndex) => (
-                                <Star
-                                  key={starIndex}
-                                  className={`h-4 w-4 ${
-                                    starIndex < item.rating
-                                      ? "fill-current text-amber-500"
-                                      : "text-muted-foreground/30"
-                                  }`}
-                                />
-                              ),
-                            )}
+                            {Array.from({ length: 5 }).map((_, starIndex) => (
+                              <Star
+                                key={starIndex}
+                                className={`h-4 w-4 ${
+                                  starIndex < item.rating
+                                    ? "fill-current text-amber-500"
+                                    : "text-muted-foreground/30"
+                                }`}
+                              />
+                            ))}
                           </div>
 
                           <div className="mt-4 flex gap-3">
@@ -1026,9 +909,7 @@ function AdminTestimonialsPage() {
                           </div>
 
                           <div className="mt-4 border-t pt-4">
-                            <p className="font-bold">
-                              {item.name}
-                            </p>
+                            <p className="font-bold">{item.name}</p>
 
                             {item.role && (
                               <p className="mt-1 text-sm text-muted-foreground">
@@ -1041,12 +922,8 @@ function AdminTestimonialsPage() {
                         <div className="flex shrink-0 flex-wrap gap-2 xl:max-w-[230px] xl:justify-end">
                           <button
                             type="button"
-                            disabled={
-                              itemBusy || index === 0
-                            }
-                            onClick={() =>
-                              void moveItem(item, "up")
-                            }
+                            disabled={itemBusy || index === 0}
+                            onClick={() => void moveItem(item, "up")}
                             title="Mozgatás felfelé"
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                           >
@@ -1056,13 +933,9 @@ function AdminTestimonialsPage() {
                           <button
                             type="button"
                             disabled={
-                              itemBusy ||
-                              index ===
-                                testimonials.length - 1
+                              itemBusy || index === testimonials.length - 1
                             }
-                            onClick={() =>
-                              void moveItem(item, "down")
-                            }
+                            onClick={() => void moveItem(item, "down")}
                             title="Mozgatás lefelé"
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                           >
@@ -1072,9 +945,7 @@ function AdminTestimonialsPage() {
                           <button
                             type="button"
                             disabled={itemBusy}
-                            onClick={() =>
-                              startEditing(item)
-                            }
+                            onClick={() => startEditing(item)}
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:opacity-50"
                           >
                             Szerkesztés
@@ -1083,22 +954,16 @@ function AdminTestimonialsPage() {
                           <button
                             type="button"
                             disabled={itemBusy}
-                            onClick={() =>
-                              void toggleVisibility(item)
-                            }
+                            onClick={() => void toggleVisibility(item)}
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:opacity-50"
                           >
-                            {item.is_visible
-                              ? "Elrejtés"
-                              : "Aktiválás"}
+                            {item.is_visible ? "Elrejtés" : "Aktiválás"}
                           </button>
 
                           <button
                             type="button"
                             disabled={itemBusy}
-                            onClick={() =>
-                              void deleteTestimonial(item)
-                            }
+                            onClick={() => void deleteTestimonial(item)}
                             className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
                           >
                             Törlés

@@ -1,7 +1,4 @@
-import {
-  createClient,
-  type SupabaseClient,
-} from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import {
   buildAdminEmail,
   buildAutoreplyEmail,
@@ -31,8 +28,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-webhook-secret",
-  "Access-Control-Allow-Methods":
-    "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 Deno.serve(async (request) => {
@@ -52,89 +48,57 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const resendApiKey = requiredEnv(
-      "RESEND_API_KEY",
-    );
-    const notificationFrom = requiredEnv(
-      "LEAD_NOTIFICATION_FROM",
-    );
+    const resendApiKey = requiredEnv("RESEND_API_KEY");
+    const notificationFrom = requiredEnv("LEAD_NOTIFICATION_FROM");
     const publicSiteUrl =
-      Deno.env.get("PUBLIC_SITE_URL")?.trim() ||
-      "https://pandadesign.hu";
+      Deno.env.get("PUBLIC_SITE_URL")?.trim() || "https://pandadesign.hu";
 
     const body = await request.json();
 
-    const supabaseUrl = requiredEnv(
-      "SUPABASE_URL",
+    const supabaseUrl = requiredEnv("SUPABASE_URL");
+    const secretKey = getSupabaseKey(
+      "SUPABASE_SECRET_KEYS",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "sb_secret_",
     );
-    const secretKey =
-      getSupabaseKey(
-        "SUPABASE_SECRET_KEYS",
-        "SUPABASE_SERVICE_ROLE_KEY",
-        "sb_secret_",
-      );
 
-    const serviceClient = createClient(
-      supabaseUrl,
-      secretKey,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
+    const serviceClient = createClient(supabaseUrl, secretKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
       },
-    );
+    });
 
-    const isManual =
-      isManualPayload(body);
+    const isManual = isManualPayload(body);
 
     let lead: LeadRecord;
     let idempotencyKey: string;
 
     if (isManual) {
-      await requireAdmin(
-        request,
-        supabaseUrl,
-      );
+      await requireAdmin(request, supabaseUrl);
 
-      lead = await fetchLead(
-        serviceClient,
-        body.lead_id,
-      );
+      lead = await fetchLead(serviceClient, body.lead_id);
 
-      idempotencyKey =
-        `pandadesign-lead-${lead.id}-manual-${Date.now()}`;
+      idempotencyKey = `pandadesign-lead-${lead.id}-manual-${Date.now()}`;
     } else {
       verifyWebhookRequest(request);
-      const webhook =
-        validateWebhookPayload(body);
+      const webhook = validateWebhookPayload(body);
 
       lead = webhook.record;
 
-      idempotencyKey =
-        `pandadesign-lead-${lead.id}-automatic`;
+      idempotencyKey = `pandadesign-lead-${lead.id}-automatic`;
     }
 
-    const attemptNumber =
-      Number(lead.notification_attempts ?? 0) + 1;
+    const attemptNumber = Number(lead.notification_attempts ?? 0) + 1;
 
-    await updateLeadDelivery(
-      serviceClient,
-      lead.id,
-      {
-        notification_status: "pending",
-        notification_last_attempt_at:
-          new Date().toISOString(),
-        notification_attempts:
-          attemptNumber,
-        notification_error: null,
-      },
-    );
+    await updateLeadDelivery(serviceClient, lead.id, {
+      notification_status: "pending",
+      notification_last_attempt_at: new Date().toISOString(),
+      notification_attempts: attemptNumber,
+      notification_error: null,
+    });
 
-    const recipientList =
-      await resolveNotificationRecipients(
-        serviceClient,
-      );
+    const recipientList = await resolveNotificationRecipients(serviceClient);
 
     const adminEmail = buildAdminEmail({
       lead,
@@ -154,37 +118,24 @@ Deno.serve(async (request) => {
       },
     });
 
-    await updateLeadDelivery(
-      serviceClient,
-      lead.id,
-      {
-        notification_status: "sent",
-        notification_sent_at:
-          new Date().toISOString(),
-        notification_email_id:
-          adminResult.id ?? null,
-        notification_error: null,
-      },
-    );
+    await updateLeadDelivery(serviceClient, lead.id, {
+      notification_status: "sent",
+      notification_sent_at: new Date().toISOString(),
+      notification_email_id: adminResult.id ?? null,
+      notification_error: null,
+    });
 
     let autoreplyResult:
       | {
-          status:
-            | "disabled"
-            | "sent"
-            | "failed"
-            | "skipped";
+          status: "disabled" | "sent" | "failed" | "skipped";
           id?: string;
           error?: string;
         }
       | undefined;
 
-    const autoreplyEnabled =
-      parseBoolean(
-        Deno.env.get(
-          "LEAD_AUTOREPLY_ENABLED",
-        ),
-      );
+    const autoreplyEnabled = parseBoolean(
+      Deno.env.get("LEAD_AUTOREPLY_ENABLED"),
+    );
 
     if (isManual) {
       autoreplyResult = {
@@ -194,60 +145,40 @@ Deno.serve(async (request) => {
       autoreplyResult = {
         status: "disabled",
       };
-    } else if (
-      !lead.privacy_accepted ||
-      !lead.email
-    ) {
+    } else if (!lead.privacy_accepted || !lead.email) {
       autoreplyResult = {
         status: "skipped",
       };
     } else {
-      await updateLeadDelivery(
-        serviceClient,
-        lead.id,
-        {
-          autoreply_status: "pending",
-          autoreply_error: null,
-        },
-      );
+      await updateLeadDelivery(serviceClient, lead.id, {
+        autoreply_status: "pending",
+        autoreply_error: null,
+      });
 
       try {
         const autoreplyFrom =
-          Deno.env.get(
-            "LEAD_AUTOREPLY_FROM",
-          )?.trim() ||
-          notificationFrom;
+          Deno.env.get("LEAD_AUTOREPLY_FROM")?.trim() || notificationFrom;
 
-        const autoreplyEmail =
-          buildAutoreplyEmail(lead);
+        const autoreplyEmail = buildAutoreplyEmail(lead);
 
-        const response =
-          await sendResendEmail({
-            apiKey: resendApiKey,
-            idempotencyKey:
-              `pandadesign-lead-${lead.id}-autoreply`,
-            payload: {
-              from: autoreplyFrom,
-              to: [lead.email],
-              subject:
-                autoreplyEmail.subject,
-              html: autoreplyEmail.html,
-              text: autoreplyEmail.text,
-            },
-          });
-
-        await updateLeadDelivery(
-          serviceClient,
-          lead.id,
-          {
-            autoreply_status: "sent",
-            autoreply_sent_at:
-              new Date().toISOString(),
-            autoreply_email_id:
-              response.id ?? null,
-            autoreply_error: null,
+        const response = await sendResendEmail({
+          apiKey: resendApiKey,
+          idempotencyKey: `pandadesign-lead-${lead.id}-autoreply`,
+          payload: {
+            from: autoreplyFrom,
+            to: [lead.email],
+            subject: autoreplyEmail.subject,
+            html: autoreplyEmail.html,
+            text: autoreplyEmail.text,
           },
-        );
+        });
+
+        await updateLeadDelivery(serviceClient, lead.id, {
+          autoreply_status: "sent",
+          autoreply_sent_at: new Date().toISOString(),
+          autoreply_email_id: response.id ?? null,
+          autoreply_error: null,
+        });
 
         autoreplyResult = {
           status: "sent",
@@ -259,14 +190,10 @@ Deno.serve(async (request) => {
             ? error.message
             : "Ismeretlen automatikus válaszhiba.";
 
-        await updateLeadDelivery(
-          serviceClient,
-          lead.id,
-          {
-            autoreply_status: "failed",
-            autoreply_error: message,
-          },
-        );
+        await updateLeadDelivery(serviceClient, lead.id, {
+          autoreply_status: "failed",
+          autoreply_error: message,
+        });
 
         autoreplyResult = {
           status: "failed",
@@ -276,74 +203,48 @@ Deno.serve(async (request) => {
     }
 
     if (autoreplyResult) {
-      await updateLeadDelivery(
-        serviceClient,
-        lead.id,
-        {
-          autoreply_status:
-            autoreplyResult.status,
-        },
-      );
+      await updateLeadDelivery(serviceClient, lead.id, {
+        autoreply_status: autoreplyResult.status,
+      });
     }
 
     return jsonResponse({
       ok: true,
       lead_id: lead.id,
-      notification_email_id:
-        adminResult.id ?? null,
+      notification_email_id: adminResult.id ?? null,
       autoreply: autoreplyResult,
     });
   } catch (error: unknown) {
     const message =
-      error instanceof Error
-        ? error.message
-        : "Ismeretlen szerverhiba.";
+      error instanceof Error ? error.message : "Ismeretlen szerverhiba.";
 
-    console.error(
-      "Lead notification failed:",
-      message,
-    );
+    console.error("Lead notification failed:", message);
 
     try {
       const body = await cloneJson(request);
-      const leadId =
-        isManualPayload(body)
-          ? body.lead_id
-          : isWebhookPayload(body)
-            ? body.record?.id
-            : undefined;
+      const leadId = isManualPayload(body)
+        ? body.lead_id
+        : isWebhookPayload(body)
+          ? body.record?.id
+          : undefined;
 
       if (leadId) {
-        const supabaseUrl =
-          Deno.env.get("SUPABASE_URL");
-        const secretKey =
-          tryGetSupabaseSecretKey();
+        const supabaseUrl = Deno.env.get("SUPABASE_URL");
+        const secretKey = tryGetSupabaseSecretKey();
 
         if (supabaseUrl && secretKey) {
-          const serviceClient =
-            createClient(
-              supabaseUrl,
-              secretKey,
-              {
-                auth: {
-                  persistSession: false,
-                  autoRefreshToken: false,
-                },
-              },
-            );
-
-          await updateLeadDelivery(
-            serviceClient,
-            leadId,
-            {
-              notification_status:
-                "failed",
-              notification_error:
-                message.slice(0, 2000),
-              notification_last_attempt_at:
-                new Date().toISOString(),
+          const serviceClient = createClient(supabaseUrl, secretKey, {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
             },
-          );
+          });
+
+          await updateLeadDelivery(serviceClient, leadId, {
+            notification_status: "failed",
+            notification_error: message.slice(0, 2000),
+            notification_last_attempt_at: new Date().toISOString(),
+          });
         }
       }
     } catch {
@@ -359,41 +260,30 @@ Deno.serve(async (request) => {
   }
 });
 
-async function requireAdmin(
-  request: Request,
-  supabaseUrl: string,
-) {
-  const authorization =
-    request.headers.get("Authorization");
+async function requireAdmin(request: Request, supabaseUrl: string) {
+  const authorization = request.headers.get("Authorization");
 
   if (!authorization?.startsWith("Bearer ")) {
-    throw new Error(
-      "A manuális küldéshez admin bejelentkezés szükséges.",
-    );
+    throw new Error("A manuális küldéshez admin bejelentkezés szükséges.");
   }
 
-  const publishableKey =
-    getSupabaseKey(
-      "SUPABASE_PUBLISHABLE_KEYS",
-      "SUPABASE_ANON_KEY",
-      "sb_publishable_",
-    );
+  const publishableKey = getSupabaseKey(
+    "SUPABASE_PUBLISHABLE_KEYS",
+    "SUPABASE_ANON_KEY",
+    "sb_publishable_",
+  );
 
-  const userClient = createClient(
-    supabaseUrl,
-    publishableKey,
-    {
-      global: {
-        headers: {
-          Authorization: authorization,
-        },
-      },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
+  const userClient = createClient(supabaseUrl, publishableKey, {
+    global: {
+      headers: {
+        Authorization: authorization,
       },
     },
-  );
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 
   const {
     data: { user },
@@ -401,58 +291,31 @@ async function requireAdmin(
   } = await userClient.auth.getUser();
 
   if (userError || !user) {
-    throw new Error(
-      "Érvénytelen vagy lejárt admin munkamenet.",
-    );
+    throw new Error("Érvénytelen vagy lejárt admin munkamenet.");
   }
 
-  const {
-    data: isAdmin,
-    error: adminError,
-  } = await userClient.rpc("is_admin");
+  const { data: isAdmin, error: adminError } = await userClient.rpc("is_admin");
 
   if (adminError || !isAdmin) {
-    throw new Error(
-      "A művelethez nincs adminisztrátori jogosultság.",
-    );
+    throw new Error("A művelethez nincs adminisztrátori jogosultság.");
   }
 }
 
-function verifyWebhookRequest(
-  request: Request,
-) {
-  const expected =
-    requiredEnv(
-      "LEAD_WEBHOOK_SECRET",
-    );
+function verifyWebhookRequest(request: Request) {
+  const expected = requiredEnv("LEAD_WEBHOOK_SECRET");
 
-  const received =
-    request.headers
-      .get("x-webhook-secret")
-      ?.trim() ?? "";
+  const received = request.headers.get("x-webhook-secret")?.trim() ?? "";
 
-  if (
-    !received ||
-    !constantTimeEqual(
-      received,
-      expected,
-    )
-  ) {
-    throw new Error(
-      "Érvénytelen webhook hitelesítés.",
-    );
+  if (!received || !constantTimeEqual(received, expected)) {
+    throw new Error("Érvénytelen webhook hitelesítés.");
   }
 }
 
-function validateWebhookPayload(
-  value: unknown,
-): DatabaseWebhookPayload & {
+function validateWebhookPayload(value: unknown): DatabaseWebhookPayload & {
   record: LeadRecord;
 } {
   if (!isWebhookPayload(value)) {
-    throw new Error(
-      "A webhook törzse nem megfelelő.",
-    );
+    throw new Error("A webhook törzse nem megfelelő.");
   }
 
   if (
@@ -461,22 +324,17 @@ function validateWebhookPayload(
     value.table !== "contact_leads" ||
     !value.record
   ) {
-    throw new Error(
-      "A webhook csak új contact_leads rekordot fogad.",
-    );
+    throw new Error("A webhook csak új contact_leads rekordot fogad.");
   }
 
   validateLead(value.record);
 
-  return value as
-    DatabaseWebhookPayload & {
-      record: LeadRecord;
-    };
+  return value as DatabaseWebhookPayload & {
+    record: LeadRecord;
+  };
 }
 
-function validateLead(
-  lead: LeadRecord,
-) {
+function validateLead(lead: LeadRecord) {
   if (
     !lead.id ||
     !lead.name ||
@@ -484,22 +342,13 @@ function validateLead(
     !lead.message ||
     !lead.created_at
   ) {
-    throw new Error(
-      "A lead kötelező adatai hiányoznak.",
-    );
+    throw new Error("A lead kötelező adatai hiányoznak.");
   }
 }
 
-async function fetchLead(
-  client: SupabaseClient,
-  leadId: string,
-) {
-  if (
-    !/^[0-9a-f-]{36}$/i.test(leadId)
-  ) {
-    throw new Error(
-      "A leadazonosító formátuma nem megfelelő.",
-    );
+async function fetchLead(client: SupabaseClient, leadId: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(leadId)) {
+    throw new Error("A leadazonosító formátuma nem megfelelő.");
   }
 
   const { data, error } = await client
@@ -513,9 +362,7 @@ async function fetchLead(
   }
 
   if (!data) {
-    throw new Error(
-      "A lead nem található.",
-    );
+    throw new Error("A lead nem található.");
   }
 
   validateLead(data as LeadRecord);
@@ -523,15 +370,10 @@ async function fetchLead(
   return data as LeadRecord;
 }
 
-async function resolveNotificationRecipients(
-  client: SupabaseClient,
-) {
-  const envRecipients =
-    parseRecipientList(
-      Deno.env.get(
-        "LEAD_NOTIFICATION_TO",
-      ),
-    );
+async function resolveNotificationRecipients(client: SupabaseClient) {
+  const envRecipients = parseRecipientList(
+    Deno.env.get("LEAD_NOTIFICATION_TO"),
+  );
 
   if (envRecipients.length > 0) {
     return envRecipients;
@@ -539,23 +381,17 @@ async function resolveNotificationRecipients(
 
   const { data, error } = await client
     .from("site_settings")
-    .select(
-      "contact_recipient_email, email",
-    )
+    .select("contact_recipient_email, email")
     .eq("id", 1)
     .maybeSingle();
 
   if (error) {
-    throw new Error(
-      `A címzett nem tölthető be: ${error.message}`,
-    );
+    throw new Error(`A címzett nem tölthető be: ${error.message}`);
   }
 
-  const recipients =
-    parseRecipientList(
-      data?.contact_recipient_email ||
-        data?.email,
-    );
+  const recipients = parseRecipientList(
+    data?.contact_recipient_email || data?.email,
+  );
 
   if (recipients.length === 0) {
     throw new Error(
@@ -582,26 +418,17 @@ async function sendResendEmail({
     reply_to?: string;
   };
 }) {
-  const response = await fetch(
-    "https://api.resend.com/emails",
-    {
-      method: "POST",
-      headers: {
-        Authorization:
-          `Bearer ${apiKey}`,
-        "Content-Type":
-          "application/json",
-        "Idempotency-Key":
-          idempotencyKey.slice(0, 256),
-      },
-      body: JSON.stringify(payload),
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey.slice(0, 256),
     },
-  );
+    body: JSON.stringify(payload),
+  });
 
-  const result =
-    (await response.json()
-      .catch(() => ({}))) as
-        ResendResponse;
+  const result = (await response.json().catch(() => ({}))) as ResendResponse;
 
   if (!response.ok) {
     throw new Error(
@@ -625,10 +452,7 @@ async function updateLeadDelivery(
     .eq("id", leadId);
 
   if (error) {
-    console.error(
-      "A leadértesítési állapot nem frissíthető:",
-      error.message,
-    );
+    console.error("A leadértesítési állapot nem frissíthető:", error.message);
   }
 }
 
@@ -637,15 +461,13 @@ function getSupabaseKey(
   legacyEnvName: string,
   preferredPrefix: string,
 ) {
-  const legacy =
-    Deno.env.get(legacyEnvName)?.trim();
+  const legacy = Deno.env.get(legacyEnvName)?.trim();
 
   if (legacy) {
     return legacy;
   }
 
-  const plural =
-    Deno.env.get(pluralEnvName)?.trim();
+  const plural = Deno.env.get(pluralEnvName)?.trim();
 
   if (!plural) {
     throw new Error(
@@ -655,15 +477,9 @@ function getSupabaseKey(
 
   try {
     const parsed = JSON.parse(plural);
-    const values =
-      collectStringValues(parsed);
+    const values = collectStringValues(parsed);
 
-    const preferred = values.find(
-      (value) =>
-        value.startsWith(
-          preferredPrefix,
-        ),
-    );
+    const preferred = values.find((value) => value.startsWith(preferredPrefix));
 
     if (preferred) {
       return preferred;
@@ -673,19 +489,12 @@ function getSupabaseKey(
       return values[0];
     }
   } catch {
-    if (
-      plural.startsWith(
-        preferredPrefix,
-      ) ||
-      plural.length > 20
-    ) {
+    if (plural.startsWith(preferredPrefix) || plural.length > 20) {
       return plural;
     }
   }
 
-  throw new Error(
-    `A ${pluralEnvName} formátuma nem értelmezhető.`,
-  );
+  throw new Error(`A ${pluralEnvName} formátuma nem értelmezhető.`);
 }
 
 function tryGetSupabaseSecretKey() {
@@ -700,73 +509,48 @@ function tryGetSupabaseSecretKey() {
   }
 }
 
-function collectStringValues(
-  value: unknown,
-): string[] {
+function collectStringValues(value: unknown): string[] {
   if (typeof value === "string") {
     return [value];
   }
 
   if (Array.isArray(value)) {
-    return value.flatMap(
-      collectStringValues,
-    );
+    return value.flatMap(collectStringValues);
   }
 
-  if (
-    value &&
-    typeof value === "object"
-  ) {
-    return Object.values(value).flatMap(
-      collectStringValues,
-    );
+  if (value && typeof value === "object") {
+    return Object.values(value).flatMap(collectStringValues);
   }
 
   return [];
 }
 
 function requiredEnv(name: string) {
-  const value =
-    Deno.env.get(name)?.trim();
+  const value = Deno.env.get(name)?.trim();
 
   if (!value) {
-    throw new Error(
-      `Hiányzó Edge Function titok: ${name}.`,
-    );
+    throw new Error(`Hiányzó Edge Function titok: ${name}.`);
   }
 
   return value;
 }
 
-function parseRecipientList(
-  value: string | null | undefined,
-) {
+function parseRecipientList(value: string | null | undefined) {
   return String(value ?? "")
     .split(/[;,]/)
     .map((item) => item.trim())
     .filter(Boolean);
 }
 
-function parseBoolean(
-  value: string | null | undefined,
-) {
-  return [
-    "1",
-    "true",
-    "yes",
-    "on",
-    "igen",
-  ].includes(
+function parseBoolean(value: string | null | undefined) {
+  return ["1", "true", "yes", "on", "igen"].includes(
     String(value ?? "")
       .trim()
       .toLowerCase(),
   );
 }
 
-function constantTimeEqual(
-  left: string,
-  right: string,
-) {
+function constantTimeEqual(left: string, right: string) {
   const encoder = new TextEncoder();
   const a = encoder.encode(left);
   const b = encoder.encode(right);
@@ -777,69 +561,49 @@ function constantTimeEqual(
 
   let difference = 0;
 
-  for (
-    let index = 0;
-    index < a.length;
-    index += 1
-  ) {
+  for (let index = 0; index < a.length; index += 1) {
     difference |= a[index] ^ b[index];
   }
 
   return difference === 0;
 }
 
-function isManualPayload(
-  value: unknown,
-): value is ManualPayload {
+function isManualPayload(value: unknown): value is ManualPayload {
   return Boolean(
     value &&
-      typeof value === "object" &&
-      "mode" in value &&
-      value.mode === "manual" &&
-      "lead_id" in value &&
-      typeof value.lead_id ===
-        "string",
+    typeof value === "object" &&
+    "mode" in value &&
+    value.mode === "manual" &&
+    "lead_id" in value &&
+    typeof value.lead_id === "string",
   );
 }
 
-function isWebhookPayload(
-  value: unknown,
-): value is DatabaseWebhookPayload {
+function isWebhookPayload(value: unknown): value is DatabaseWebhookPayload {
   return Boolean(
     value &&
-      typeof value === "object" &&
-      "type" in value &&
-      "table" in value &&
-      "schema" in value &&
-      "record" in value,
+    typeof value === "object" &&
+    "type" in value &&
+    "table" in value &&
+    "schema" in value &&
+    "record" in value,
   );
 }
 
-async function cloneJson(
-  request: Request,
-) {
+async function cloneJson(request: Request) {
   try {
-    return await request
-      .clone()
-      .json();
+    return await request.clone().json();
   } catch {
     return null;
   }
 }
 
-function jsonResponse(
-  body: unknown,
-  status = 200,
-) {
-  return new Response(
-    JSON.stringify(body),
-    {
-      status,
-      headers: {
-        ...corsHeaders,
-        "Content-Type":
-          "application/json; charset=utf-8",
-      },
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json; charset=utf-8",
     },
-  );
+  });
 }

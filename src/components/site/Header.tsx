@@ -1,17 +1,6 @@
-import {
-  Link,
-  useRouterState,
-} from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Menu,
-  X,
-} from "lucide-react";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DEFAULT_SITE_SETTINGS,
@@ -31,27 +20,22 @@ import {
 
 export function Header() {
   const pathname = useRouterState({
-    select: (state) =>
-      state.location.pathname,
+    select: (state) => state.location.pathname,
   });
 
-  const [siteSettings, setSiteSettings] =
-    useState<SiteSettings>(
-      DEFAULT_SITE_SETTINGS,
-    );
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(
+    DEFAULT_SITE_SETTINGS,
+  );
 
-  const [chromeSettings, setChromeSettings] =
-    useState<SiteChromeSettings>(
-      DEFAULT_SITE_CHROME_SETTINGS,
-    );
+  const [chromeSettings, setChromeSettings] = useState<SiteChromeSettings>(
+    DEFAULT_SITE_CHROME_SETTINGS,
+  );
 
-  const [navigationItems, setNavigationItems] =
-    useState<NavigationItem[]>(
-      DEFAULT_NAVIGATION_ITEMS,
-    );
+  const [navigationItems, setNavigationItems] = useState<NavigationItem[]>(
+    DEFAULT_NAVIGATION_ITEMS,
+  );
 
-  const [mobileOpen, setMobileOpen] =
-    useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -79,12 +63,8 @@ export function Header() {
       }
 
       if (chromeResult.status === "fulfilled") {
-        setChromeSettings(
-          chromeResult.value.settings,
-        );
-        setNavigationItems(
-          chromeResult.value.navigationItems,
-        );
+        setChromeSettings(chromeResult.value.settings);
+        setNavigationItems(chromeResult.value.navigationItems);
       } else {
         console.error(
           "A fejléc navigációja nem tölthető be:",
@@ -109,74 +89,58 @@ export function Header() {
       return;
     }
 
-    const previousOverflow =
-      document.body.style.overflow;
+    const previousOverflow = document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow =
-        previousOverflow;
+      document.body.style.overflow = previousOverflow;
     };
   }, [mobileOpen]);
 
   const headerItems = useMemo(
     () =>
       navigationItems.filter(
-        (item) =>
-          item.placement === "header" ||
-          item.placement === "both",
+        (item) => item.placement === "header" || item.placement === "both",
       ),
     [navigationItems],
   );
 
-  const logoUrl = getSiteAssetUrl(
-    siteSettings.logo_path,
-  );
+  const logoUrl = getSiteAssetUrl(siteSettings.logo_path);
 
-  const announcementContent =
-    chromeSettings.announcement_text.trim();
+  const announcementContent = chromeSettings.announcement_text.trim();
 
   return (
     <>
-      {chromeSettings.announcement_visible &&
-        announcementContent && (
-          <div className="border-b border-brand/15 bg-brand px-4 py-2 text-center text-xs font-medium text-brand-foreground sm:text-sm">
-            {chromeSettings.announcement_url ? (
-              <a
-                href={
-                  chromeSettings.announcement_url
-                }
-                target={
-                  isExternalUrl(
-                    chromeSettings.announcement_url,
-                  )
-                    ? "_blank"
-                    : undefined
-                }
-                rel={
-                  isExternalUrl(
-                    chromeSettings.announcement_url,
-                  )
-                    ? "noopener noreferrer"
-                    : undefined
-                }
-                className="inline-flex items-center gap-1.5 hover:underline"
-              >
-                {announcementContent}
-                <ArrowRight className="h-3.5 w-3.5" />
-              </a>
-            ) : (
-              announcementContent
-            )}
-          </div>
-        )}
+      {chromeSettings.announcement_visible && announcementContent && (
+        <div className="border-b border-brand/15 bg-brand px-4 py-2 text-center text-xs font-medium text-brand-foreground sm:text-sm">
+          {chromeSettings.announcement_url ? (
+            <a
+              href={chromeSettings.announcement_url}
+              target={
+                isExternalUrl(chromeSettings.announcement_url)
+                  ? "_blank"
+                  : undefined
+              }
+              rel={
+                isExternalUrl(chromeSettings.announcement_url)
+                  ? "noopener noreferrer"
+                  : undefined
+              }
+              className="inline-flex items-center gap-1.5 hover:underline"
+            >
+              {announcementContent}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          ) : (
+            announcementContent
+          )}
+        </div>
+      )}
 
       <header
         className={`z-40 border-b bg-background/95 backdrop-blur ${
-          chromeSettings.header_sticky
-            ? "sticky top-0"
-            : "relative"
+          chromeSettings.header_sticky ? "sticky top-0" : "relative"
         }`}
       >
         <div className="container-page flex min-h-[72px] items-center justify-between gap-5">
@@ -220,29 +184,15 @@ export function Header() {
             className="hidden items-center gap-1 lg:flex"
           >
             {headerItems.map((item) => {
-              const active =
-                isActiveNavigationUrl(
-                  pathname,
-                  item.url,
-                );
+              const active = isActiveNavigationUrl(pathname, item.url);
 
               return (
                 <a
                   key={item.id}
                   href={item.url}
-                  target={
-                    item.open_in_new_tab
-                      ? "_blank"
-                      : undefined
-                  }
-                  rel={
-                    item.open_in_new_tab
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                  aria-current={
-                    active ? "page" : undefined
-                  }
+                  target={item.open_in_new_tab ? "_blank" : undefined}
+                  rel={item.open_in_new_tab ? "noopener noreferrer" : undefined}
+                  aria-current={active ? "page" : undefined}
                   className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
                     active
                       ? "bg-brand/10 text-brand"
@@ -259,19 +209,9 @@ export function Header() {
             {chromeSettings.header_cta_visible &&
               chromeSettings.header_cta_text &&
               chromeSettings.header_cta_url && (
-                <Button
-                  asChild
-                  variant="cta"
-                  className="hidden sm:inline-flex"
-                >
-                  <a
-                    href={
-                      chromeSettings.header_cta_url
-                    }
-                  >
-                    {
-                      chromeSettings.header_cta_text
-                    }
+                <Button asChild variant="cta" className="hidden sm:inline-flex">
+                  <a href={chromeSettings.header_cta_url}>
+                    {chromeSettings.header_cta_text}
                     <ArrowRight className="h-4 w-4" />
                   </a>
                 </Button>
@@ -280,14 +220,10 @@ export function Header() {
             <button
               type="button"
               aria-label={
-                mobileOpen
-                  ? "Mobilmenü bezárása"
-                  : "Mobilmenü megnyitása"
+                mobileOpen ? "Mobilmenü bezárása" : "Mobilmenü megnyitása"
               }
               aria-expanded={mobileOpen}
-              onClick={() =>
-                setMobileOpen((current) => !current)
-              }
+              onClick={() => setMobileOpen((current) => !current)}
               className="grid h-11 w-11 place-items-center rounded-xl border bg-background text-ink transition hover:bg-secondary lg:hidden"
             >
               {mobileOpen ? (
@@ -307,31 +243,17 @@ export function Header() {
             >
               <div className="space-y-1">
                 {headerItems.map((item) => {
-                  const active =
-                    isActiveNavigationUrl(
-                      pathname,
-                      item.url,
-                    );
+                  const active = isActiveNavigationUrl(pathname, item.url);
 
                   return (
                     <a
                       key={item.id}
                       href={item.url}
-                      target={
-                        item.open_in_new_tab
-                          ? "_blank"
-                          : undefined
-                      }
+                      target={item.open_in_new_tab ? "_blank" : undefined}
                       rel={
-                        item.open_in_new_tab
-                          ? "noopener noreferrer"
-                          : undefined
+                        item.open_in_new_tab ? "noopener noreferrer" : undefined
                       }
-                      aria-current={
-                        active
-                          ? "page"
-                          : undefined
-                      }
+                      aria-current={active ? "page" : undefined}
                       className={`flex items-center justify-between rounded-xl px-4 py-3 text-base font-semibold transition ${
                         active
                           ? "bg-brand/10 text-brand"
@@ -355,14 +277,8 @@ export function Header() {
                     variant="cta"
                     className="mt-5 w-full"
                   >
-                    <a
-                      href={
-                        chromeSettings.header_cta_url
-                      }
-                    >
-                      {
-                        chromeSettings.header_cta_text
-                      }
+                    <a href={chromeSettings.header_cta_url}>
+                      {chromeSettings.header_cta_text}
                       <ArrowRight className="h-4 w-4" />
                     </a>
                   </Button>

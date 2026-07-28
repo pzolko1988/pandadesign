@@ -1,12 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,14 +15,11 @@ import { Button } from "@/components/ui/button";
 import { RichTextContent } from "@/components/site/RichTextContent";
 import { supabase } from "@/lib/supabase/client";
 
-export const Route = createFileRoute(
-  "/referenciak/$slug",
-)({
+export const Route = createFileRoute("/referenciak/$slug")({
   head: () => ({
     meta: [
       {
-        title:
-          "Projekt és esettanulmány — PandaDesign",
+        title: "Projekt és esettanulmány — PandaDesign",
       },
     ],
   }),
@@ -67,12 +57,10 @@ type PublicProject = {
 function ReferenceDetailPage() {
   const { slug } = Route.useParams();
 
-  const [project, setProject] =
-    useState<PublicProject | null>(null);
+  const [project, setProject] = useState<PublicProject | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -93,9 +81,7 @@ function ReferenceDetailPage() {
       }
 
       if (error) {
-        setErrorMessage(
-          "A projekt átmenetileg nem tölthető be.",
-        );
+        setErrorMessage("A projekt átmenetileg nem tölthető be.");
         setLoading(false);
         return;
       }
@@ -106,8 +92,7 @@ function ReferenceDetailPage() {
         return;
       }
 
-      const loaded =
-        data as PublicProject;
+      const loaded = data as PublicProject;
 
       setProject(loaded);
       synchronizeHead(loaded);
@@ -122,21 +107,16 @@ function ReferenceDetailPage() {
   }, [slug]);
 
   const heroImageUrl = useMemo(
-    () =>
-      project?.image_path
-        ? getPortfolioUrl(project.image_path)
-        : "",
+    () => (project?.image_path ? getPortfolioUrl(project.image_path) : ""),
     [project?.image_path],
   );
 
   const galleryUrls = useMemo(
     () =>
-      (project?.gallery_paths ?? []).map(
-        (path) => ({
-          path,
-          url: getPortfolioUrl(path),
-        }),
-      ),
+      (project?.gallery_paths ?? []).map((path) => ({
+        path,
+        url: getPortfolioUrl(path),
+      })),
     [project?.gallery_paths],
   );
 
@@ -162,8 +142,7 @@ function ReferenceDetailPage() {
           </h1>
 
           <p className="mt-3 text-ink-soft">
-            Lehet, hogy a projektet elrejtették vagy
-            megváltozott az URL-címe.
+            Lehet, hogy a projektet elrejtették vagy megváltozott az URL-címe.
           </p>
 
           <Link
@@ -182,8 +161,7 @@ function ReferenceDetailPage() {
     return (
       <main className="container-page py-20">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
-          {errorMessage ||
-            "A projekt nem tölthető be."}
+          {errorMessage || "A projekt nem tölthető be."}
         </div>
       </main>
     );
@@ -194,9 +172,7 @@ function ReferenceDetailPage() {
     project.project_url.startsWith("http://");
 
   const hasRichContent =
-    project.content_html
-      .replace(/<[^>]*>/g, " ")
-      .trim().length > 0;
+    project.content_html.replace(/<[^>]*>/g, " ").trim().length > 0;
 
   return (
     <main>
@@ -219,10 +195,7 @@ function ReferenceDetailPage() {
 
               <div className="mt-7 flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
-                  {[
-                    project.industry,
-                    project.category,
-                  ]
+                  {[project.industry, project.category]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
@@ -244,17 +217,11 @@ function ReferenceDetailPage() {
 
               <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-ink-soft">
                 {project.client_name && (
-                  <MetaItem
-                    icon={UserRound}
-                    value={project.client_name}
-                  />
+                  <MetaItem icon={UserRound} value={project.client_name} />
                 )}
 
                 {project.location && (
-                  <MetaItem
-                    icon={MapPin}
-                    value={project.location}
-                  />
+                  <MetaItem icon={MapPin} value={project.location} />
                 )}
 
                 {project.completed_year && (
@@ -265,20 +232,12 @@ function ReferenceDetailPage() {
                 )}
 
                 {project.duration_label && (
-                  <MetaItem
-                    icon={Clock3}
-                    value={project.duration_label}
-                  />
+                  <MetaItem icon={Clock3} value={project.duration_label} />
                 )}
               </div>
 
               {hasExternalUrl && (
-                <Button
-                  asChild
-                  size="lg"
-                  variant="cta"
-                  className="mt-8"
-                >
+                <Button asChild size="lg" variant="cta" className="mt-8">
                   <a
                     href={project.project_url}
                     target="_blank"
@@ -305,8 +264,7 @@ function ReferenceDetailPage() {
           </div>
         )}
 
-        {(project.challenge ||
-          project.solution) && (
+        {(project.challenge || project.solution) && (
           <section className="container-page py-12 md:py-16">
             <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-2">
               {project.challenge && (
@@ -341,28 +299,25 @@ function ReferenceDetailPage() {
                 </h2>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {project.results.map(
-                    (result) => (
-                      <div
-                        key={result}
-                        className="flex gap-3 rounded-2xl border bg-white p-5 shadow-soft"
-                      >
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+                  {project.results.map((result) => (
+                    <div
+                      key={result}
+                      className="flex gap-3 rounded-2xl border bg-white p-5 shadow-soft"
+                    >
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
 
-                        <p className="text-sm font-medium leading-6 text-ink">
-                          {result}
-                        </p>
-                      </div>
-                    ),
-                  )}
+                      <p className="text-sm font-medium leading-6 text-ink">
+                        {result}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </section>
         )}
 
-        {(project.services.length > 0 ||
-          project.technologies.length > 0) && (
+        {(project.services.length > 0 || project.technologies.length > 0) && (
           <section className="container-page py-12 md:py-16">
             <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2">
               {project.services.length > 0 && (
@@ -373,10 +328,7 @@ function ReferenceDetailPage() {
               )}
 
               {project.technologies.length > 0 && (
-                <TagGroup
-                  title="Technológiák"
-                  values={project.technologies}
-                />
+                <TagGroup title="Technológiák" values={project.technologies} />
               )}
             </div>
           </section>
@@ -403,29 +355,23 @@ function ReferenceDetailPage() {
               </h2>
 
               <div className="mt-8 grid gap-5 md:grid-cols-2">
-                {galleryUrls.map(
-                  (image, index) => (
-                    <figure
-                      key={image.path}
-                      className={`overflow-hidden rounded-2xl border bg-white shadow-soft ${
-                        index % 3 === 0
-                          ? "md:col-span-2"
-                          : ""
+                {galleryUrls.map((image, index) => (
+                  <figure
+                    key={image.path}
+                    className={`overflow-hidden rounded-2xl border bg-white shadow-soft ${
+                      index % 3 === 0 ? "md:col-span-2" : ""
+                    }`}
+                  >
+                    <img
+                      src={image.url}
+                      alt={`${project.title} – projektkép ${index + 1}`}
+                      loading="lazy"
+                      className={`w-full object-cover ${
+                        index % 3 === 0 ? "aspect-[16/8]" : "aspect-[4/3]"
                       }`}
-                    >
-                      <img
-                        src={image.url}
-                        alt={`${project.title} – projektkép ${index + 1}`}
-                        loading="lazy"
-                        className={`w-full object-cover ${
-                          index % 3 === 0
-                            ? "aspect-[16/8]"
-                            : "aspect-[4/3]"
-                        }`}
-                      />
-                    </figure>
-                  ),
-                )}
+                    />
+                  </figure>
+                ))}
               </div>
             </div>
           </section>
@@ -440,8 +386,7 @@ function ReferenceDetailPage() {
 
             <div className="relative max-w-2xl">
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                {project.cta_title ||
-                  "Hasonló weboldalra van szükséged?"}
+                {project.cta_title || "Hasonló weboldalra van szükséged?"}
               </h2>
 
               <p className="mt-4 text-base leading-relaxed text-brand-foreground/80 md:text-lg">
@@ -449,15 +394,9 @@ function ReferenceDetailPage() {
                   "Beszéljük át az elképzelésedet egy díjmentes konzultáción."}
               </p>
 
-              <Button
-                asChild
-                size="lg"
-                variant="cta"
-                className="mt-8"
-              >
+              <Button asChild size="lg" variant="cta" className="mt-8">
                 <Link to="/kapcsolat">
-                  {project.cta_button_text ||
-                    "Ajánlatot kérek"}
+                  {project.cta_button_text || "Ajánlatot kérek"}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -474,10 +413,7 @@ type MetaItemProps = {
   value: string;
 };
 
-function MetaItem({
-  icon: Icon,
-  value,
-}: MetaItemProps) {
+function MetaItem({ icon: Icon, value }: MetaItemProps) {
   return (
     <span className="inline-flex items-center gap-2">
       <Icon className="h-4 w-4" />
@@ -501,29 +437,17 @@ function SummaryCard({
         {number}
       </span>
 
-      <h2 className="mt-4 text-2xl font-bold text-ink">
-        {title}
-      </h2>
+      <h2 className="mt-4 text-2xl font-bold text-ink">{title}</h2>
 
-      <p className="mt-4 whitespace-pre-line leading-7 text-ink-soft">
-        {text}
-      </p>
+      <p className="mt-4 whitespace-pre-line leading-7 text-ink-soft">{text}</p>
     </article>
   );
 }
 
-function TagGroup({
-  title,
-  values,
-}: {
-  title: string;
-  values: string[];
-}) {
+function TagGroup({ title, values }: { title: string; values: string[] }) {
   return (
     <section>
-      <h2 className="text-xl font-bold text-ink">
-        {title}
-      </h2>
+      <h2 className="text-xl font-bold text-ink">{title}</h2>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {values.map((value) => (
@@ -540,37 +464,20 @@ function TagGroup({
 }
 
 function getPortfolioUrl(path: string) {
-  return supabase.storage
-    .from("portfolio")
-    .getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from("portfolio").getPublicUrl(path).data.publicUrl;
 }
 
-function synchronizeHead(
-  project: PublicProject,
-) {
+function synchronizeHead(project: PublicProject) {
   const title =
-    project.seo_title.trim() ||
-    `${project.title} — PandaDesign referencia`;
+    project.seo_title.trim() || `${project.title} — PandaDesign referencia`;
 
-  const description =
-    project.seo_description.trim() ||
-    project.description;
+  const description = project.seo_description.trim() || project.description;
 
   document.title = title;
 
-  setMeta(
-    'meta[name="description"]',
-    "name",
-    "description",
-    description,
-  );
+  setMeta('meta[name="description"]', "name", "description", description);
 
-  setMeta(
-    'meta[property="og:title"]',
-    "property",
-    "og:title",
-    title,
-  );
+  setMeta('meta[property="og:title"]', "property", "og:title", title);
 
   setMeta(
     'meta[property="og:description"]',
@@ -588,15 +495,13 @@ function synchronizeHead(
     );
   }
 
-  let script =
-    document.head.querySelector<HTMLScriptElement>(
-      "#pandadesign-project-jsonld",
-    );
+  let script = document.head.querySelector<HTMLScriptElement>(
+    "#pandadesign-project-jsonld",
+  );
 
   if (!script) {
     script = document.createElement("script");
-    script.id =
-      "pandadesign-project-jsonld";
+    script.id = "pandadesign-project-jsonld";
     script.type = "application/ld+json";
     document.head.appendChild(script);
   }
@@ -606,9 +511,7 @@ function synchronizeHead(
     "@type": "CreativeWork",
     name: project.title,
     description,
-    image: project.image_path
-      ? getPortfolioUrl(project.image_path)
-      : undefined,
+    image: project.image_path ? getPortfolioUrl(project.image_path) : undefined,
     creator: {
       "@type": "Organization",
       name: "PandaDesign",
@@ -622,10 +525,7 @@ function setMeta(
   key: string,
   content: string,
 ) {
-  let element =
-    document.head.querySelector<HTMLMetaElement>(
-      selector,
-    );
+  let element = document.head.querySelector<HTMLMetaElement>(selector);
 
   if (!element) {
     element = document.createElement("meta");

@@ -1,13 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowRight,
   MessageSquare,
@@ -72,26 +64,20 @@ const ICON_OPTIONS: Array<{
   },
 ];
 
-const ICON_MAP: Record<string, LucideIcon> =
-  Object.fromEntries(
-    ICON_OPTIONS.map((option) => [
-      option.key,
-      option.icon,
-    ]),
-  );
+const ICON_MAP: Record<string, LucideIcon> = Object.fromEntries(
+  ICON_OPTIONS.map((option) => [option.key, option.icon]),
+);
 
 function AdminCtaPage() {
   const navigate = useNavigate();
 
-  const [form, setForm] =
-    useState<FinalCtaSettings>(DEFAULT_SETTINGS);
+  const [form, setForm] = useState<FinalCtaSettings>(DEFAULT_SETTINGS);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -170,9 +156,7 @@ function AdminCtaPage() {
     }));
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const badgeText = form.badge_text.trim();
@@ -182,9 +166,7 @@ function AdminCtaPage() {
     const buttonUrl = form.button_url.trim();
 
     if (title.length < 3) {
-      setErrorMessage(
-        "A főcímnek legalább 3 karakter hosszúnak kell lennie.",
-      );
+      setErrorMessage("A főcímnek legalább 3 karakter hosszúnak kell lennie.");
       return;
     }
 
@@ -196,9 +178,7 @@ function AdminCtaPage() {
     }
 
     if (!buttonUrl) {
-      setErrorMessage(
-        "A gomb célhivatkozása nem lehet üres.",
-      );
+      setErrorMessage("A gomb célhivatkozása nem lehet üres.");
       return;
     }
 
@@ -207,23 +187,21 @@ function AdminCtaPage() {
     setSuccessMessage("");
 
     try {
-      const { error } = await supabase
-        .from("final_cta_settings")
-        .upsert(
-          {
-            id: 1,
-            badge_text: badgeText,
-            title,
-            description,
-            button_text: buttonText,
-            button_url: buttonUrl,
-            icon_key: form.icon_key,
-            is_visible: form.is_visible,
-          },
-          {
-            onConflict: "id",
-          },
-        );
+      const { error } = await supabase.from("final_cta_settings").upsert(
+        {
+          id: 1,
+          badge_text: badgeText,
+          title,
+          description,
+          button_text: buttonText,
+          button_url: buttonUrl,
+          icon_key: form.icon_key,
+          is_visible: form.is_visible,
+        },
+        {
+          onConflict: "id",
+        },
+      );
 
       if (error) {
         throw error;
@@ -238,9 +216,7 @@ function AdminCtaPage() {
         button_url: buttonUrl,
       }));
 
-      setSuccessMessage(
-        "A záró CTA beállításai sikeresen elmentve.",
-      );
+      setSuccessMessage("A záró CTA beállításai sikeresen elmentve.");
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error
@@ -262,8 +238,7 @@ function AdminCtaPage() {
     );
   }
 
-  const PreviewIcon =
-    ICON_MAP[form.icon_key] ?? Users;
+  const PreviewIcon = ICON_MAP[form.icon_key] ?? Users;
 
   return (
     <main className="min-h-screen bg-muted/30 px-6 py-14">
@@ -276,13 +251,11 @@ function AdminCtaPage() {
             ← Vissza az áttekintéshez
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Záró CTA szerkesztő
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Záró CTA szerkesztő</h1>
 
           <p className="mt-2 max-w-3xl text-muted-foreground">
-            A főoldal utolsó, kiemelt kapcsolatfelvételi
-            blokkjának szerkesztése.
+            A főoldal utolsó, kiemelt kapcsolatfelvételi blokkjának
+            szerkesztése.
           </p>
         </header>
 
@@ -310,13 +283,10 @@ function AdminCtaPage() {
             className="h-fit space-y-5 rounded-2xl border bg-background p-6 shadow-sm lg:sticky lg:top-6"
           >
             <div>
-              <h2 className="text-xl font-bold">
-                CTA-beállítások
-              </h2>
+              <h2 className="text-xl font-bold">CTA-beállítások</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                A módosítások mentés után jelennek meg a
-                publikus főoldalon.
+                A módosítások mentés után jelennek meg a publikus főoldalon.
               </p>
             </div>
 
@@ -332,10 +302,7 @@ function AdminCtaPage() {
                 id="cta-badge"
                 value={form.badge_text}
                 onChange={(event) =>
-                  updateField(
-                    "badge_text",
-                    event.target.value,
-                  )
+                  updateField("badge_text", event.target.value)
                 }
                 placeholder="Például: Ingyenes konzultáció"
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
@@ -356,12 +323,7 @@ function AdminCtaPage() {
                 minLength={3}
                 rows={3}
                 value={form.title}
-                onChange={(event) =>
-                  updateField(
-                    "title",
-                    event.target.value,
-                  )
-                }
+                onChange={(event) => updateField("title", event.target.value)}
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 font-semibold leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
               />
             </div>
@@ -379,10 +341,7 @@ function AdminCtaPage() {
                 rows={5}
                 value={form.description}
                 onChange={(event) =>
-                  updateField(
-                    "description",
-                    event.target.value,
-                  )
+                  updateField("description", event.target.value)
                 }
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -402,10 +361,7 @@ function AdminCtaPage() {
                 minLength={2}
                 value={form.button_text}
                 onChange={(event) =>
-                  updateField(
-                    "button_text",
-                    event.target.value,
-                  )
+                  updateField("button_text", event.target.value)
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -424,10 +380,7 @@ function AdminCtaPage() {
                 required
                 value={form.button_url}
                 onChange={(event) =>
-                  updateField(
-                    "button_url",
-                    event.target.value,
-                  )
+                  updateField("button_url", event.target.value)
                 }
                 placeholder="/kapcsolat vagy https://..."
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
@@ -450,18 +403,12 @@ function AdminCtaPage() {
                 id="cta-icon"
                 value={form.icon_key}
                 onChange={(event) =>
-                  updateField(
-                    "icon_key",
-                    event.target.value,
-                  )
+                  updateField("icon_key", event.target.value)
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               >
                 {ICON_OPTIONS.map((option) => (
-                  <option
-                    key={option.key}
-                    value={option.key}
-                  >
+                  <option key={option.key} value={option.key}>
                     {option.label}
                   </option>
                 ))}
@@ -473,10 +420,7 @@ function AdminCtaPage() {
                 type="checkbox"
                 checked={form.is_visible}
                 onChange={(event) =>
-                  updateField(
-                    "is_visible",
-                    event.target.checked,
-                  )
+                  updateField("is_visible", event.target.checked)
                 }
                 className="h-4 w-4"
               />
@@ -487,8 +431,7 @@ function AdminCtaPage() {
                 </span>
 
                 <span className="mt-1 block text-xs text-muted-foreground">
-                  Kikapcsolva a teljes blokk eltűnik a
-                  publikus főoldalról.
+                  Kikapcsolva a teljes blokk eltűnik a publikus főoldalról.
                 </span>
               </span>
             </label>
@@ -498,21 +441,16 @@ function AdminCtaPage() {
               disabled={saving}
               className="w-full rounded-xl bg-brand px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving
-                ? "Mentés..."
-                : "Záró CTA mentése"}
+              {saving ? "Mentés..." : "Záró CTA mentése"}
             </button>
           </form>
 
           <section>
             <div className="mb-4">
-              <h2 className="text-xl font-bold">
-                Élő előnézet
-              </h2>
+              <h2 className="text-xl font-bold">Élő előnézet</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                A kártya a publikus főoldali megjelenést
-                közelíti.
+                A kártya a publikus főoldali megjelenést közelíti.
               </p>
             </div>
 
@@ -541,8 +479,7 @@ function AdminCtaPage() {
                 )}
 
                 <h2 className="mt-5 whitespace-pre-line text-3xl font-bold tracking-tight md:text-4xl">
-                  {form.title ||
-                    "A CTA főcíme itt jelenik meg"}
+                  {form.title || "A CTA főcíme itt jelenik meg"}
                 </h2>
 
                 {form.description && (

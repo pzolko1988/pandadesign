@@ -1,13 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/services")({
@@ -86,8 +78,7 @@ function AdminServicesPage() {
       return;
     }
 
-    const { data: isAdmin, error: adminError } =
-      await supabase.rpc("is_admin");
+    const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
 
     if (adminError) {
       setErrorMessage(adminError.message);
@@ -96,9 +87,7 @@ function AdminServicesPage() {
     }
 
     if (!isAdmin) {
-      setErrorMessage(
-        "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
-      );
+      setErrorMessage("Ehhez az oldalhoz nincs adminisztrátori jogosultságod.");
       setLoading(false);
       return;
     }
@@ -176,9 +165,7 @@ function AdminServicesPage() {
     setSuccessMessage("");
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setSaving(true);
@@ -224,9 +211,7 @@ function AdminServicesPage() {
 
       setSuccessMessage("A szolgáltatás sikeresen frissítve.");
     } else {
-      const { error } = await supabase
-        .from("services")
-        .insert(payload);
+      const { error } = await supabase.from("services").insert(payload);
 
       if (error) {
         setErrorMessage(error.message);
@@ -317,13 +302,10 @@ function AdminServicesPage() {
             ← Vissza az áttekintéshez
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Szolgáltatások
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Szolgáltatások</h1>
 
           <p className="mt-2 text-muted-foreground">
-            Hozz létre, módosíts, rejts el vagy törölj
-            szolgáltatásokat.
+            Hozz létre, módosíts, rejts el vagy törölj szolgáltatásokat.
           </p>
         </header>
 
@@ -334,9 +316,7 @@ function AdminServicesPage() {
           >
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">
-                {editingId
-                  ? "Szolgáltatás szerkesztése"
-                  : "Új szolgáltatás"}
+                {editingId ? "Szolgáltatás szerkesztése" : "Új szolgáltatás"}
               </h2>
 
               {editingId && (
@@ -367,15 +347,11 @@ function AdminServicesPage() {
               label="URL-azonosító"
               value={form.slug}
               required
-              onChange={(value) =>
-                updateField("slug", createSlug(value))
-              }
+              onChange={(value) => updateField("slug", createSlug(value))}
             />
 
             <div>
-              <label className="mb-2 block text-sm font-semibold">
-                Leírás
-              </label>
+              <label className="mb-2 block text-sm font-semibold">Leírás</label>
 
               <textarea
                 rows={4}
@@ -389,9 +365,7 @@ function AdminServicesPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold">
-                Ikon
-              </label>
+              <label className="mb-2 block text-sm font-semibold">Ikon</label>
 
               <select
                 value={form.icon_key}
@@ -401,10 +375,7 @@ function AdminServicesPage() {
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               >
                 {iconOptions.map((icon) => (
-                  <option
-                    key={icon.value}
-                    value={icon.value}
-                  >
+                  <option key={icon.value} value={icon.value}>
                     {icon.label}
                   </option>
                 ))}
@@ -415,9 +386,7 @@ function AdminServicesPage() {
               label="Hivatkozás"
               value={form.link_url}
               required
-              onChange={(value) =>
-                updateField("link_url", value)
-              }
+              onChange={(value) => updateField("link_url", value)}
             />
 
             <div>
@@ -430,10 +399,7 @@ function AdminServicesPage() {
                 min={0}
                 value={form.sort_order}
                 onChange={(event) =>
-                  updateField(
-                    "sort_order",
-                    Number(event.target.value),
-                  )
+                  updateField("sort_order", Number(event.target.value))
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               />
@@ -444,10 +410,7 @@ function AdminServicesPage() {
                 type="checkbox"
                 checked={form.is_visible}
                 onChange={(event) =>
-                  updateField(
-                    "is_visible",
-                    event.target.checked,
-                  )
+                  updateField("is_visible", event.target.checked)
                 }
                 className="h-4 w-4"
               />
@@ -484,9 +447,7 @@ function AdminServicesPage() {
 
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">
-                Meglévő szolgáltatások
-              </h2>
+              <h2 className="text-xl font-bold">Meglévő szolgáltatások</h2>
 
               <span className="text-sm text-muted-foreground">
                 {services.length} elem
@@ -502,9 +463,7 @@ function AdminServicesPage() {
                   <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-lg font-bold">
-                          {service.title}
-                        </h3>
+                        <h3 className="text-lg font-bold">{service.title}</h3>
 
                         <span
                           className={
@@ -513,9 +472,7 @@ function AdminServicesPage() {
                               : "rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600"
                           }
                         >
-                          {service.is_visible
-                            ? "Látható"
-                            : "Elrejtve"}
+                          {service.is_visible ? "Látható" : "Elrejtve"}
                         </span>
                       </div>
 
@@ -524,17 +481,11 @@ function AdminServicesPage() {
                       </p>
 
                       <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                        <span>
-                          Sorrend: {service.sort_order}
-                        </span>
+                        <span>Sorrend: {service.sort_order}</span>
 
-                        <span>
-                          Ikon: {service.icon_key}
-                        </span>
+                        <span>Ikon: {service.icon_key}</span>
 
-                        <span>
-                          Azonosító: {service.slug}
-                        </span>
+                        <span>Azonosító: {service.slug}</span>
                       </div>
                     </div>
 
@@ -549,21 +500,15 @@ function AdminServicesPage() {
 
                       <button
                         type="button"
-                        onClick={() =>
-                          void toggleVisibility(service)
-                        }
+                        onClick={() => void toggleVisibility(service)}
                         className="rounded-lg border px-4 py-2 text-sm font-semibold"
                       >
-                        {service.is_visible
-                          ? "Elrejtés"
-                          : "Megjelenítés"}
+                        {service.is_visible ? "Elrejtés" : "Megjelenítés"}
                       </button>
 
                       <button
                         type="button"
-                        onClick={() =>
-                          void deleteService(service)
-                        }
+                        onClick={() => void deleteService(service)}
                         className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600"
                       >
                         Törlés
@@ -601,9 +546,7 @@ function FormField({
 }: FormFieldProps) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold">
-        {label}
-      </label>
+      <label className="mb-2 block text-sm font-semibold">{label}</label>
 
       <input
         type="text"

@@ -1,13 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   ArrowRight,
   Building2,
@@ -32,8 +24,7 @@ export const Route = createFileRoute("/kapcsolat")({
   head: () => ({
     meta: [
       {
-        title:
-          "Kapcsolat és ajánlatkérés — PandaDesign",
+        title: "Kapcsolat és ajánlatkérés — PandaDesign",
       },
       {
         name: "description",
@@ -91,10 +82,8 @@ const BUDGET_OPTIONS = [
 ];
 
 function ContactPage() {
-  const [settings, setSettings] =
-    useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
-  const [form, setForm] =
-    useState<ContactForm>(EMPTY_FORM);
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [form, setForm] = useState<ContactForm>(EMPTY_FORM);
 
   const [startedAt] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
@@ -113,10 +102,7 @@ function ContactPage() {
           setSettings(loaded);
         }
       } catch (error) {
-        console.error(
-          "A kapcsolattartási adatok nem tölthetők be:",
-          error,
-        );
+        console.error("A kapcsolattartási adatok nem tölthetők be:", error);
       }
     }
 
@@ -155,9 +141,7 @@ function ContactPage() {
     ],
   );
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const name = form.name.trim();
@@ -172,18 +156,12 @@ function ContactPage() {
     }
 
     if (name.length < 2) {
-      setErrorMessage(
-        "Kérjük, add meg a nevedet.",
-      );
+      setErrorMessage("Kérjük, add meg a nevedet.");
       return;
     }
 
-    if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    ) {
-      setErrorMessage(
-        "Kérjük, adj meg egy érvényes e-mail-címet.",
-      );
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorMessage("Kérjük, adj meg egy érvényes e-mail-címet.");
       return;
     }
 
@@ -195,51 +173,36 @@ function ContactPage() {
     }
 
     if (!form.privacyAccepted) {
-      setErrorMessage(
-        "Az adatkezelési tájékoztató elfogadása kötelező.",
-      );
+      setErrorMessage("Az adatkezelési tájékoztató elfogadása kötelező.");
       return;
     }
 
     setSubmitting(true);
     setErrorMessage("");
 
-    const params = new URLSearchParams(
-      window.location.search,
-    );
+    const params = new URLSearchParams(window.location.search);
 
     try {
-      const { error } = await supabase.rpc(
-        "submit_contact_lead",
-        {
-          p_name: name,
-          p_email: email,
-          p_phone: form.phone.trim(),
-          p_company: form.company.trim(),
-          p_service_type: form.serviceType,
-          p_budget_range: form.budgetRange,
-          p_message: message,
-          p_privacy_accepted:
-            form.privacyAccepted,
-          p_marketing_consent:
-            form.marketingConsent,
-          p_source_page:
-            `${window.location.pathname}${window.location.search}`,
-          p_referrer: document.referrer,
-          p_utm_source:
-            params.get("utm_source") ?? "",
-          p_utm_medium:
-            params.get("utm_medium") ?? "",
-          p_utm_campaign:
-            params.get("utm_campaign") ?? "",
-          p_utm_content:
-            params.get("utm_content") ?? "",
-          p_utm_term:
-            params.get("utm_term") ?? "",
-          p_user_agent: navigator.userAgent,
-          p_website: form.website,
-        },
-      );
+      const { error } = await supabase.rpc("submit_contact_lead", {
+        p_name: name,
+        p_email: email,
+        p_phone: form.phone.trim(),
+        p_company: form.company.trim(),
+        p_service_type: form.serviceType,
+        p_budget_range: form.budgetRange,
+        p_message: message,
+        p_privacy_accepted: form.privacyAccepted,
+        p_marketing_consent: form.marketingConsent,
+        p_source_page: `${window.location.pathname}${window.location.search}`,
+        p_referrer: document.referrer,
+        p_utm_source: params.get("utm_source") ?? "",
+        p_utm_medium: params.get("utm_medium") ?? "",
+        p_utm_campaign: params.get("utm_campaign") ?? "",
+        p_utm_content: params.get("utm_content") ?? "",
+        p_utm_term: params.get("utm_term") ?? "",
+        p_user_agent: navigator.userAgent,
+        p_website: form.website,
+      });
 
       if (error) {
         throw error;
@@ -276,9 +239,8 @@ function ContactPage() {
             </h1>
 
             <p className="mx-auto mt-4 max-w-xl leading-relaxed text-ink-soft">
-              Az üzeneted sikeresen megérkezett. Átnézzük az
-              igényeidet, és a lehető leghamarabb felvesszük
-              veled a kapcsolatot.
+              Az üzeneted sikeresen megérkezett. Átnézzük az igényeidet, és a
+              lehető leghamarabb felvesszük veled a kapcsolatot.
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -291,9 +253,7 @@ function ContactPage() {
               </Button>
 
               <Button asChild variant="outline">
-                <Link to="/">
-                  Vissza a főoldalra
-                </Link>
+                <Link to="/">Vissza a főoldalra</Link>
               </Button>
             </div>
           </CardContent>
@@ -320,9 +280,8 @@ function ContactPage() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
-            Írd meg, milyen weboldalra vagy fejlesztésre van
-            szükséged. Az első egyeztetés díjmentes és nem jár
-            kötelezettséggel.
+            Írd meg, milyen weboldalra vagy fejlesztésre van szükséged. Az első
+            egyeztetés díjmentes és nem jár kötelezettséggel.
           </p>
         </div>
       </section>
@@ -332,45 +291,35 @@ function ContactPage() {
           <aside className="space-y-5">
             <Card className="border shadow-soft">
               <CardContent className="p-6 md:p-7">
-                <h2 className="text-xl font-bold text-ink">
-                  Kapcsolattartás
-                </h2>
+                <h2 className="text-xl font-bold text-ink">Kapcsolattartás</h2>
 
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                  A megadott adatokat kizárólag a
-                  kapcsolatfelvétel és az ajánlat előkészítése
-                  céljából kezeljük.
+                  A megadott adatokat kizárólag a kapcsolatfelvétel és az
+                  ajánlat előkészítése céljából kezeljük.
                 </p>
 
                 <div className="mt-6 space-y-4">
-                  {settings.show_contact_details &&
-                    settings.email && (
-                      <ContactItem
-                        icon={Mail}
-                        label="E-mail"
-                        value={settings.email}
-                        href={`mailto:${settings.email}`}
-                      />
-                    )}
+                  {settings.show_contact_details && settings.email && (
+                    <ContactItem
+                      icon={Mail}
+                      label="E-mail"
+                      value={settings.email}
+                      href={`mailto:${settings.email}`}
+                    />
+                  )}
 
-                  {settings.show_contact_details &&
-                    settings.phone && (
-                      <ContactItem
-                        icon={Phone}
-                        label="Telefon"
-                        value={settings.phone}
-                        href={`tel:${settings.phone.replace(/\s/g, "")}`}
-                      />
-                    )}
+                  {settings.show_contact_details && settings.phone && (
+                    <ContactItem
+                      icon={Phone}
+                      label="Telefon"
+                      value={settings.phone}
+                      href={`tel:${settings.phone.replace(/\s/g, "")}`}
+                    />
+                  )}
 
-                  {settings.show_contact_details &&
-                    address && (
-                      <ContactItem
-                        icon={MapPin}
-                        label="Cím"
-                        value={address}
-                      />
-                    )}
+                  {settings.show_contact_details && address && (
+                    <ContactItem icon={MapPin} label="Cím" value={address} />
+                  )}
 
                   {settings.opening_hours && (
                     <ContactItem
@@ -385,8 +334,7 @@ function ContactPage() {
                     !address &&
                     !settings.opening_hours && (
                       <p className="rounded-xl bg-secondary/50 px-4 py-3 text-sm text-ink-soft">
-                        Küldd el az űrlapot, és rövid időn
-                        belül válaszolunk.
+                        Küldd el az űrlapot, és rövid időn belül válaszolunk.
                       </p>
                     )}
                 </div>
@@ -406,9 +354,9 @@ function ContactPage() {
                     </h2>
 
                     <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                      A kapcsolatfelvételi adatokat védett
-                      adatbázisban tároljuk, és kizárólag az
-                      ajánlatkérés kezelésére használjuk.
+                      A kapcsolatfelvételi adatokat védett adatbázisban
+                      tároljuk, és kizárólag az ajánlatkérés kezelésére
+                      használjuk.
                     </p>
                   </div>
                 </div>
@@ -419,9 +367,7 @@ function ContactPage() {
           <Card className="border shadow-elegant">
             <CardContent className="p-6 md:p-8">
               <div className="mb-7">
-                <h2 className="text-2xl font-bold text-ink">
-                  Ajánlatkérés
-                </h2>
+                <h2 className="text-2xl font-bold text-ink">Ajánlatkérés</h2>
 
                 <p className="mt-2 text-sm text-ink-soft">
                   A csillaggal jelölt mezők kitöltése kötelező.
@@ -437,17 +383,12 @@ function ContactPage() {
                 </div>
               )}
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-5"
-              >
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div
                   aria-hidden="true"
                   className="absolute -left-[10000px] h-px w-px overflow-hidden"
                 >
-                  <label htmlFor="contact-website">
-                    Weboldal
-                  </label>
+                  <label htmlFor="contact-website">Weboldal</label>
 
                   <input
                     id="contact-website"
@@ -455,10 +396,7 @@ function ContactPage() {
                     autoComplete="off"
                     value={form.website}
                     onChange={(event) =>
-                      updateField(
-                        "website",
-                        event.target.value,
-                      )
+                      updateField("website", event.target.value)
                     }
                   />
                 </div>
@@ -469,9 +407,7 @@ function ContactPage() {
                     label="Név"
                     required
                     value={form.name}
-                    onChange={(value) =>
-                      updateField("name", value)
-                    }
+                    onChange={(value) => updateField("name", value)}
                     autoComplete="name"
                   />
 
@@ -481,9 +417,7 @@ function ContactPage() {
                     type="email"
                     required
                     value={form.email}
-                    onChange={(value) =>
-                      updateField("email", value)
-                    }
+                    onChange={(value) => updateField("email", value)}
                     autoComplete="email"
                   />
 
@@ -492,9 +426,7 @@ function ContactPage() {
                     label="Telefonszám"
                     type="tel"
                     value={form.phone}
-                    onChange={(value) =>
-                      updateField("phone", value)
-                    }
+                    onChange={(value) => updateField("phone", value)}
                     autoComplete="tel"
                   />
 
@@ -502,9 +434,7 @@ function ContactPage() {
                     id="contact-company"
                     label="Vállalkozás neve"
                     value={form.company}
-                    onChange={(value) =>
-                      updateField("company", value)
-                    }
+                    onChange={(value) => updateField("company", value)}
                     autoComplete="organization"
                   />
                 </div>
@@ -515,12 +445,7 @@ function ContactPage() {
                     label="Milyen megoldás érdekel?"
                     value={form.serviceType}
                     options={SERVICE_OPTIONS}
-                    onChange={(value) =>
-                      updateField(
-                        "serviceType",
-                        value,
-                      )
-                    }
+                    onChange={(value) => updateField("serviceType", value)}
                   />
 
                   <SelectField
@@ -528,12 +453,7 @@ function ContactPage() {
                     label="Tervezett költségkeret"
                     value={form.budgetRange}
                     options={BUDGET_OPTIONS}
-                    onChange={(value) =>
-                      updateField(
-                        "budgetRange",
-                        value,
-                      )
-                    }
+                    onChange={(value) => updateField("budgetRange", value)}
                   />
                 </div>
 
@@ -553,10 +473,7 @@ function ContactPage() {
                     rows={8}
                     value={form.message}
                     onChange={(event) =>
-                      updateField(
-                        "message",
-                        event.target.value,
-                      )
+                      updateField("message", event.target.value)
                     }
                     placeholder="Írd le röviden a vállalkozásodat, a kívánt funkciókat és az elképzelt határidőt."
                     className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
@@ -573,10 +490,7 @@ function ContactPage() {
                     required
                     checked={form.privacyAccepted}
                     onChange={(event) =>
-                      updateField(
-                        "privacyAccepted",
-                        event.target.checked,
-                      )
+                      updateField("privacyAccepted", event.target.checked)
                     }
                     className="mt-1 h-4 w-4"
                   />
@@ -599,18 +513,14 @@ function ContactPage() {
                     type="checkbox"
                     checked={form.marketingConsent}
                     onChange={(event) =>
-                      updateField(
-                        "marketingConsent",
-                        event.target.checked,
-                      )
+                      updateField("marketingConsent", event.target.checked)
                     }
                     className="mt-1 h-4 w-4"
                   />
 
                   <span className="text-sm leading-relaxed text-ink-soft">
-                    Hozzájárulok, hogy a PandaDesign később
-                    hasznos szakmai tartalmakkal és
-                    ajánlatokkal megkeressen. Ez nem kötelező.
+                    Hozzájárulok, hogy a PandaDesign később hasznos szakmai
+                    tartalmakkal és ajánlatokkal megkeressen. Ez nem kötelező.
                   </span>
                 </label>
 
@@ -621,9 +531,7 @@ function ContactPage() {
                   disabled={submitting}
                   className="w-full sm:w-auto"
                 >
-                  {submitting
-                    ? "Küldés..."
-                    : "Ajánlatkérés elküldése"}
+                  {submitting ? "Küldés..." : "Ajánlatkérés elküldése"}
 
                   {submitting ? (
                     <Send className="h-4 w-4 animate-pulse" />
@@ -647,12 +555,7 @@ type ContactItemProps = {
   href?: string;
 };
 
-function ContactItem({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: ContactItemProps) {
+function ContactItem({ icon: Icon, label, value, href }: ContactItemProps) {
   const content = (
     <>
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
@@ -664,9 +567,7 @@ function ContactItem({
           {label}
         </span>
 
-        <span className="mt-1 block text-sm font-medium text-ink">
-          {value}
-        </span>
+        <span className="mt-1 block text-sm font-medium text-ink">{value}</span>
       </span>
     </>
   );
@@ -710,10 +611,7 @@ function FormField({
 }: FormFieldProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold text-ink"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-ink">
         {label}
         {required ? " *" : ""}
       </label>
@@ -724,9 +622,7 @@ function FormField({
         required={required}
         autoComplete={autoComplete}
         value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
+        onChange={(event) => onChange(event.target.value)}
         className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
       />
     </div>
@@ -750,26 +646,18 @@ function SelectField({
 }: SelectFieldProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold text-ink"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold text-ink">
         {label}
       </label>
 
       <select
         id={id}
         value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
+        onChange={(event) => onChange(event.target.value)}
         className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
       >
         {options.map((option) => (
-          <option
-            key={option}
-            value={option}
-          >
+          <option key={option} value={option}>
             {option}
           </option>
         ))}

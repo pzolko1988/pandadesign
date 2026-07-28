@@ -1,12 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -18,9 +11,7 @@ import {
 import { RichTextContent } from "@/components/site/RichTextContent";
 import { supabase } from "@/lib/supabase/client";
 
-export const Route = createFileRoute(
-  "/preview/blog/$token",
-)({
+export const Route = createFileRoute("/preview/blog/$token")({
   component: BlogPreviewPage,
 });
 
@@ -42,39 +33,30 @@ type BlogPreview = {
 function BlogPreviewPage() {
   const { token } = Route.useParams();
 
-  const [post, setPost] =
-    useState<BlogPreview | null>(null);
+  const [post, setPost] = useState<BlogPreview | null>(null);
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let active = true;
 
     async function loadPreview() {
-      const { data, error } = await supabase.rpc(
-        "get_blog_post_preview",
-        {
-          p_token: token,
-        },
-      );
+      const { data, error } = await supabase.rpc("get_blog_post_preview", {
+        p_token: token,
+      });
 
       if (!active) {
         return;
       }
 
       if (error) {
-        setErrorMessage(
-          "Az előnézet nem tölthető be.",
-        );
+        setErrorMessage("Az előnézet nem tölthető be.");
         setLoading(false);
         return;
       }
 
       if (!data) {
-        setErrorMessage(
-          "Az előnézeti link érvénytelen vagy lejárt.",
-        );
+        setErrorMessage("Az előnézeti link érvénytelen vagy lejárt.");
         setLoading(false);
         return;
       }
@@ -95,9 +77,7 @@ function BlogPreviewPage() {
       post?.featured_image_path
         ? supabase.storage
             .from("blog-media")
-            .getPublicUrl(
-              post.featured_image_path,
-            ).data.publicUrl
+            .getPublicUrl(post.featured_image_path).data.publicUrl
         : "",
     [post?.featured_image_path],
   );
@@ -124,9 +104,7 @@ function BlogPreviewPage() {
             Az előnézet nem érhető el
           </h1>
 
-          <p className="mt-3 text-amber-800">
-            {errorMessage}
-          </p>
+          <p className="mt-3 text-amber-800">{errorMessage}</p>
 
           <Link
             to="/"
@@ -149,12 +127,7 @@ function BlogPreviewPage() {
             Titkos piszkozat-előnézet
           </span>
 
-          <span>
-            Lejár:{" "}
-            {formatDate(
-              post.preview_expires_at,
-            )}
-          </span>
+          <span>Lejár: {formatDate(post.preview_expires_at)}</span>
         </div>
       </div>
 
@@ -185,18 +158,13 @@ function BlogPreviewPage() {
                 {post.published_at && (
                   <span className="inline-flex items-center gap-2">
                     <CalendarDays className="h-4 w-4" />
-                    {formatDate(
-                      post.published_at,
-                    )}
+                    {formatDate(post.published_at)}
                   </span>
                 )}
 
                 <span className="inline-flex items-center gap-2">
                   <Clock3 className="h-4 w-4" />
-                  {readingTime(
-                    post.content_html,
-                  )}{" "}
-                  perc olvasás
+                  {readingTime(post.content_html)} perc olvasás
                 </span>
               </div>
             </div>

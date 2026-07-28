@@ -8,11 +8,7 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   DEFAULT_SITE_SETTINGS,
   getSiteAssetUrl,
@@ -28,20 +24,17 @@ import {
 } from "@/lib/site-navigation";
 
 export function Footer() {
-  const [siteSettings, setSiteSettings] =
-    useState<SiteSettings>(
-      DEFAULT_SITE_SETTINGS,
-    );
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(
+    DEFAULT_SITE_SETTINGS,
+  );
 
-  const [chromeSettings, setChromeSettings] =
-    useState<SiteChromeSettings>(
-      DEFAULT_SITE_CHROME_SETTINGS,
-    );
+  const [chromeSettings, setChromeSettings] = useState<SiteChromeSettings>(
+    DEFAULT_SITE_CHROME_SETTINGS,
+  );
 
-  const [navigationItems, setNavigationItems] =
-    useState<NavigationItem[]>(
-      DEFAULT_NAVIGATION_ITEMS,
-    );
+  const [navigationItems, setNavigationItems] = useState<NavigationItem[]>(
+    DEFAULT_NAVIGATION_ITEMS,
+  );
 
   useEffect(() => {
     let active = true;
@@ -69,12 +62,8 @@ export function Footer() {
       }
 
       if (chromeResult.status === "fulfilled") {
-        setChromeSettings(
-          chromeResult.value.settings,
-        );
-        setNavigationItems(
-          chromeResult.value.navigationItems,
-        );
+        setChromeSettings(chromeResult.value.settings);
+        setNavigationItems(chromeResult.value.navigationItems);
       } else {
         console.error(
           "A lábléc navigációja nem tölthető be:",
@@ -92,19 +81,13 @@ export function Footer() {
 
   const footerGroups = useMemo(() => {
     const footerItems = navigationItems.filter(
-      (item) =>
-        item.placement === "footer" ||
-        item.placement === "both",
+      (item) => item.placement === "footer" || item.placement === "both",
     );
 
-    const grouped = new Map<
-      string,
-      NavigationItem[]
-    >();
+    const grouped = new Map<string, NavigationItem[]>();
 
     footerItems.forEach((item) => {
-      const group =
-        item.group_label.trim() || "Navigáció";
+      const group = item.group_label.trim() || "Navigáció";
 
       const current = grouped.get(group) ?? [];
       current.push(item);
@@ -114,9 +97,7 @@ export function Footer() {
     return Array.from(grouped.entries());
   }, [navigationItems]);
 
-  const logoUrl = getSiteAssetUrl(
-    siteSettings.logo_path,
-  );
+  const logoUrl = getSiteAssetUrl(siteSettings.logo_path);
 
   const address = [
     siteSettings.postal_code,
@@ -152,10 +133,7 @@ export function Footer() {
       <div className="container-page py-12 md:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.15fr_1.7fr]">
           <div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-3"
-            >
+            <Link to="/" className="inline-flex items-center gap-3">
               {logoUrl ? (
                 <span className="rounded-xl bg-white p-2">
                   <img
@@ -183,27 +161,26 @@ export function Footer() {
                 "Modern, gyors és könnyen kezelhető weboldalak vállalkozásoknak."}
             </p>
 
-            {chromeSettings.footer_show_social &&
-              socialLinks.length > 0 && (
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {socialLinks.map((item) => {
-                    const Icon = item.icon;
+            {chromeSettings.footer_show_social && socialLinks.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {socialLinks.map((item) => {
+                  const Icon = item.icon;
 
-                    return (
-                      <a
-                        key={item.label}
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={item.label}
-                        className="grid h-10 w-10 place-items-center rounded-xl border border-white/15 text-white/75 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
-                      >
-                        <Icon className="h-4 w-4" />
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={item.label}
+                      className="grid h-10 w-10 place-items-center rounded-xl border border-white/15 text-white/75 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
 
             {chromeSettings.footer_show_contact &&
               siteSettings.show_contact_details && (
@@ -214,9 +191,7 @@ export function Footer() {
                       className="flex items-start gap-3 transition hover:text-white"
                     >
                       <Mail className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                      <span>
-                        {siteSettings.email}
-                      </span>
+                      <span>{siteSettings.email}</span>
                     </a>
                   )}
 
@@ -226,9 +201,7 @@ export function Footer() {
                       className="flex items-start gap-3 transition hover:text-white"
                     >
                       <Phone className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                      <span>
-                        {siteSettings.phone}
-                      </span>
+                      <span>{siteSettings.phone}</span>
                     </a>
                   )}
 
@@ -242,58 +215,44 @@ export function Footer() {
               )}
           </div>
 
-          {chromeSettings.footer_show_navigation &&
-            footerGroups.length > 0 && (
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {footerGroups.map(
-                  ([groupLabel, items]) => (
-                    <nav
-                      key={groupLabel}
-                      aria-label={groupLabel}
-                    >
-                      <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
-                        {groupLabel}
-                      </h2>
+          {chromeSettings.footer_show_navigation && footerGroups.length > 0 && (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {footerGroups.map(([groupLabel, items]) => (
+                <nav key={groupLabel} aria-label={groupLabel}>
+                  <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
+                    {groupLabel}
+                  </h2>
 
-                      <ul className="mt-4 space-y-3">
-                        {items.map((item) => (
-                          <li key={item.id}>
-                            <a
-                              href={item.url}
-                              target={
-                                item.open_in_new_tab
-                                  ? "_blank"
-                                  : undefined
-                              }
-                              rel={
-                                item.open_in_new_tab
-                                  ? "noopener noreferrer"
-                                  : undefined
-                              }
-                              className="text-sm text-white/65 transition hover:text-white"
-                            >
-                              {item.label}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </nav>
-                  ),
-                )}
-              </div>
-            )}
+                  <ul className="mt-4 space-y-3">
+                    {items.map((item) => (
+                      <li key={item.id}>
+                        <a
+                          href={item.url}
+                          target={item.open_in_new_tab ? "_blank" : undefined}
+                          rel={
+                            item.open_in_new_tab
+                              ? "noopener noreferrer"
+                              : undefined
+                          }
+                          className="text-sm text-white/65 transition hover:text-white"
+                        >
+                          {item.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-4 py-5 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {currentYear}{" "}
-            {siteSettings.legal_name ||
-              siteSettings.site_name}
-            .{" "}
-            {siteSettings.copyright_text ||
-              "Minden jog fenntartva."}
+            © {currentYear} {siteSettings.legal_name || siteSettings.site_name}.{" "}
+            {siteSettings.copyright_text || "Minden jog fenntartva."}
           </p>
 
           {chromeSettings.footer_show_back_to_top && (

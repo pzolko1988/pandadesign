@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase/client";
 
@@ -85,9 +81,7 @@ function AdminHeroPage() {
       } catch (error: unknown) {
         if (active) {
           setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "Ismeretlen hiba történt.",
+            error instanceof Error ? error.message : "Ismeretlen hiba történt.",
           );
         }
       } finally {
@@ -104,19 +98,14 @@ function AdminHeroPage() {
     };
   }, [navigate]);
 
-  function updateField(
-    field: keyof HeroContent,
-    value: string,
-  ) {
+  function updateField(field: keyof HeroContent, value: string) {
     setForm((current) => ({
       ...current,
       [field]: value,
     }));
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setSaving(true);
@@ -145,9 +134,7 @@ function AdminHeroPage() {
   if (loading) {
     return (
       <main className="min-h-screen px-6 py-20">
-        <p className="text-center text-muted-foreground">
-          Hero betöltése...
-        </p>
+        <p className="text-center text-muted-foreground">Hero betöltése...</p>
       </main>
     );
   }
@@ -163,9 +150,7 @@ function AdminHeroPage() {
             ← Vissza az áttekintéshez
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Hero szerkesztése
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Hero szerkesztése</h1>
 
           <p className="mt-2 text-muted-foreground">
             Itt módosíthatod a főoldal első szakaszának tartalmát.
@@ -211,33 +196,25 @@ function AdminHeroPage() {
             <FormField
               label="Elsődleges gomb felirata"
               value={form.primaryButtonText}
-              onChange={(value) =>
-                updateField("primaryButtonText", value)
-              }
+              onChange={(value) => updateField("primaryButtonText", value)}
             />
 
             <FormField
               label="Elsődleges gomb hivatkozása"
               value={form.primaryButtonUrl}
-              onChange={(value) =>
-                updateField("primaryButtonUrl", value)
-              }
+              onChange={(value) => updateField("primaryButtonUrl", value)}
             />
 
             <FormField
               label="Másodlagos gomb felirata"
               value={form.secondaryButtonText}
-              onChange={(value) =>
-                updateField("secondaryButtonText", value)
-              }
+              onChange={(value) => updateField("secondaryButtonText", value)}
             />
 
             <FormField
               label="Másodlagos gomb hivatkozása"
               value={form.secondaryButtonUrl}
-              onChange={(value) =>
-                updateField("secondaryButtonUrl", value)
-              }
+              onChange={(value) => updateField("secondaryButtonUrl", value)}
             />
           </div>
 
@@ -282,16 +259,10 @@ type FormFieldProps = {
   onChange: (value: string) => void;
 };
 
-function FormField({
-  label,
-  value,
-  onChange,
-}: FormFieldProps) {
+function FormField({ label, value, onChange }: FormFieldProps) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold">
-        {label}
-      </label>
+      <label className="mb-2 block text-sm font-semibold">{label}</label>
 
       <input
         type="text"

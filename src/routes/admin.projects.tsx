@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   useEffect,
   useMemo,
@@ -61,10 +57,7 @@ type Project = {
   updated_at: string;
 };
 
-type ProjectForm = Omit<
-  Project,
-  "id" | "created_at" | "updated_at"
->;
+type ProjectForm = Omit<Project, "id" | "created_at" | "updated_at">;
 
 const EMPTY_DOCUMENT = {
   type: "doc",
@@ -100,10 +93,8 @@ const EMPTY_FORM: ProjectForm = {
   gallery_paths: [],
   seo_title: "",
   seo_description: "",
-  cta_title:
-    "Hasonló weboldalra van szükséged?",
-  cta_text:
-    "Beszéljük át az elképzelésedet egy díjmentes konzultáción.",
+  cta_title: "Hasonló weboldalra van szükséged?",
+  cta_text: "Beszéljük át az elképzelésedet egy díjmentes konzultáción.",
   cta_button_text: "Ajánlatot kérek",
 };
 
@@ -123,37 +114,28 @@ const CATEGORIES = [
 function AdminProjectsPage() {
   const navigate = useNavigate();
 
-  const [projects, setProjects] =
-    useState<Project[]>([]);
-  const [form, setForm] =
-    useState<ProjectForm>(EMPTY_FORM);
-  const [editingId, setEditingId] =
-    useState<string | null>(null);
-  const [slugTouched, setSlugTouched] =
-    useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [form, setForm] = useState<ProjectForm>(EMPTY_FORM);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [slugTouched, setSlugTouched] = useState(false);
 
-  const [heroFile, setHeroFile] =
-    useState<File | null>(null);
-  const [heroPreviewUrl, setHeroPreviewUrl] =
-    useState("");
+  const [heroFile, setHeroFile] = useState<File | null>(null);
+  const [heroPreviewUrl, setHeroPreviewUrl] = useState("");
 
-  const [galleryFiles, setGalleryFiles] =
-    useState<File[]>([]);
-  const [galleryDeletePaths, setGalleryDeletePaths] =
-    useState<string[]>([]);
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [galleryDeletePaths, setGalleryDeletePaths] = useState<string[]>([]);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [visibilityFilter, setVisibilityFilter] =
-    useState<"all" | "visible" | "hidden">("all");
+  const [visibilityFilter, setVisibilityFilter] = useState<
+    "all" | "visible" | "hidden"
+  >("all");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] =
-    useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -178,28 +160,19 @@ function AdminProjectsPage() {
 
   useEffect(() => {
     return () => {
-      galleryLocalPreviews.forEach((item) =>
-        URL.revokeObjectURL(item.url),
-      );
+      galleryLocalPreviews.forEach((item) => URL.revokeObjectURL(item.url));
     };
   }, [galleryLocalPreviews]);
 
   const filteredProjects = useMemo(() => {
-    const search =
-      searchTerm.trim().toLocaleLowerCase("hu-HU");
+    const search = searchTerm.trim().toLocaleLowerCase("hu-HU");
 
     return projects.filter((project) => {
-      if (
-        visibilityFilter === "visible" &&
-        !project.is_visible
-      ) {
+      if (visibilityFilter === "visible" && !project.is_visible) {
         return false;
       }
 
-      if (
-        visibilityFilter === "hidden" &&
-        project.is_visible
-      ) {
+      if (visibilityFilter === "hidden" && project.is_visible) {
         return false;
       }
 
@@ -214,28 +187,16 @@ function AdminProjectsPage() {
         project.category,
         project.client_name,
         project.description,
-      ].some((value) =>
-        value
-          .toLocaleLowerCase("hu-HU")
-          .includes(search),
-      );
+      ].some((value) => value.toLocaleLowerCase("hu-HU").includes(search));
     });
-  }, [
-    projects,
-    searchTerm,
-    visibilityFilter,
-  ]);
+  }, [projects, searchTerm, visibilityFilter]);
 
   const heroStoredUrl = useMemo(
-    () =>
-      form.image_path
-        ? getPortfolioUrl(form.image_path)
-        : "",
+    () => (form.image_path ? getPortfolioUrl(form.image_path) : ""),
     [form.image_path],
   );
 
-  const heroUrl =
-    heroPreviewUrl || heroStoredUrl;
+  const heroUrl = heroPreviewUrl || heroStoredUrl;
 
   async function initializePage() {
     setLoading(true);
@@ -318,13 +279,8 @@ function AdminProjectsPage() {
     setForm((current) => ({
       ...current,
       title: value,
-      slug:
-        slugTouched
-          ? current.slug
-          : slugify(value),
-      seo_title:
-        current.seo_title ||
-        value,
+      slug: slugTouched ? current.slug : slugify(value),
+      seo_title: current.seo_title || value,
     }));
   }
 
@@ -333,13 +289,7 @@ function AdminProjectsPage() {
       return 10;
     }
 
-    return (
-      Math.max(
-        ...projects.map(
-          (project) => project.sort_order,
-        ),
-      ) + 10
-    );
+    return Math.max(...projects.map((project) => project.sort_order)) + 10;
   }
 
   function resetEditor() {
@@ -399,21 +349,15 @@ function AdminProjectsPage() {
       solution: project.solution,
       results: project.results ?? [],
       services: project.services ?? [],
-      technologies:
-        project.technologies ?? [],
-      content_html:
-        project.content_html || "<p></p>",
-      content_json:
-        project.content_json ?? EMPTY_DOCUMENT,
-      gallery_paths:
-        project.gallery_paths ?? [],
+      technologies: project.technologies ?? [],
+      content_html: project.content_html || "<p></p>",
+      content_json: project.content_json ?? EMPTY_DOCUMENT,
+      gallery_paths: project.gallery_paths ?? [],
       seo_title: project.seo_title,
-      seo_description:
-        project.seo_description,
+      seo_description: project.seo_description,
       cta_title: project.cta_title,
       cta_text: project.cta_text,
-      cta_button_text:
-        project.cta_button_text,
+      cta_button_text: project.cta_button_text,
     });
 
     setErrorMessage("");
@@ -426,13 +370,7 @@ function AdminProjectsPage() {
   }
 
   function validateImage(file: File) {
-    if (
-      ![
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-      ].includes(file.type)
-    ) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       return "Csak JPG, PNG vagy WebP kép tölthető fel.";
     }
 
@@ -443,9 +381,7 @@ function AdminProjectsPage() {
     return "";
   }
 
-  function handleHeroFile(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
+  function handleHeroFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
     event.target.value = "";
 
@@ -453,8 +389,7 @@ function AdminProjectsPage() {
       return;
     }
 
-    const validationError =
-      validateImage(file);
+    const validationError = validateImage(file);
 
     if (validationError) {
       setErrorMessage(validationError);
@@ -466,51 +401,31 @@ function AdminProjectsPage() {
     }
 
     setHeroFile(file);
-    setHeroPreviewUrl(
-      URL.createObjectURL(file),
-    );
+    setHeroPreviewUrl(URL.createObjectURL(file));
     setErrorMessage("");
   }
 
-  function handleGalleryFiles(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
-    const files = Array.from(
-      event.target.files ?? [],
-    );
+  function handleGalleryFiles(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
     event.target.value = "";
 
     if (files.length === 0) {
       return;
     }
 
-    const invalidFile = files.find(
-      (file) => validateImage(file),
-    );
+    const invalidFile = files.find((file) => validateImage(file));
 
     if (invalidFile) {
-      setErrorMessage(
-        `${invalidFile.name}: ${validateImage(invalidFile)}`,
-      );
+      setErrorMessage(`${invalidFile.name}: ${validateImage(invalidFile)}`);
       return;
     }
 
-    if (
-      form.gallery_paths.length +
-        galleryFiles.length +
-        files.length >
-      20
-    ) {
-      setErrorMessage(
-        "Egy projekthez legfeljebb 20 galériakép tartozhat.",
-      );
+    if (form.gallery_paths.length + galleryFiles.length + files.length > 20) {
+      setErrorMessage("Egy projekthez legfeljebb 20 galériakép tartozhat.");
       return;
     }
 
-    setGalleryFiles((current) => [
-      ...current,
-      ...files,
-    ]);
+    setGalleryFiles((current) => [...current, ...files]);
     setErrorMessage("");
   }
 
@@ -531,32 +446,19 @@ function AdminProjectsPage() {
     updateField("image_path", null);
   }
 
-  function removeStoredGalleryImage(
-    path: string,
-  ) {
+  function removeStoredGalleryImage(path: string) {
     updateField(
       "gallery_paths",
-      form.gallery_paths.filter(
-        (item) => item !== path,
-      ),
+      form.gallery_paths.filter((item) => item !== path),
     );
 
-    setGalleryDeletePaths((current) => [
-      ...current,
-      path,
-    ]);
+    setGalleryDeletePaths((current) => [...current, path]);
   }
 
-  async function uploadImage(
-    file: File,
-    folder: "hero" | "gallery",
-  ) {
-    const extension =
-      file.name.split(".").pop()?.toLowerCase() ||
-      "webp";
+  async function uploadImage(file: File, folder: "hero" | "gallery") {
+    const extension = file.name.split(".").pop()?.toLowerCase() || "webp";
 
-    const path =
-      `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+    const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
 
     const { error } = await supabase.storage
       .from("portfolio")
@@ -573,12 +475,8 @@ function AdminProjectsPage() {
     return path;
   }
 
-  async function removeStorageFiles(
-    paths: string[],
-  ) {
-    const uniquePaths = Array.from(
-      new Set(paths.filter(Boolean)),
-    );
+  async function removeStorageFiles(paths: string[]) {
+    const uniquePaths = Array.from(new Set(paths.filter(Boolean)));
 
     if (uniquePaths.length === 0) {
       return;
@@ -589,22 +487,16 @@ function AdminProjectsPage() {
       .remove(uniquePaths);
 
     if (error) {
-      console.warn(
-        "Egyes projektképek nem törölhetők:",
-        error,
-      );
+      console.warn("Egyes projektképek nem törölhetők:", error);
     }
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const title = form.title.trim();
     const slug = slugify(form.slug || title);
-    const description =
-      form.description.trim();
+    const description = form.description.trim();
 
     const plainText = form.content_html
       .replace(/<[^>]*>/g, " ")
@@ -633,14 +525,10 @@ function AdminProjectsPage() {
     }
 
     if (
-      !Number.isInteger(
-        Number(form.sort_order),
-      ) ||
+      !Number.isInteger(Number(form.sort_order)) ||
       Number(form.sort_order) < 0
     ) {
-      setErrorMessage(
-        "A sorrend 0 vagy annál nagyobb egész szám lehet.",
-      );
+      setErrorMessage("A sorrend 0 vagy annál nagyobb egész szám lehet.");
       return;
     }
 
@@ -650,26 +538,17 @@ function AdminProjectsPage() {
     setSuccessMessage("");
 
     const uploadedPaths: string[] = [];
-    let nextHeroPath =
-      form.image_path;
-    let nextGalleryPaths = [
-      ...form.gallery_paths,
-    ];
+    let nextHeroPath = form.image_path;
+    const nextGalleryPaths = [...form.gallery_paths];
 
     try {
       if (heroFile) {
-        nextHeroPath = await uploadImage(
-          heroFile,
-          "hero",
-        );
+        nextHeroPath = await uploadImage(heroFile, "hero");
         uploadedPaths.push(nextHeroPath);
       }
 
       for (const file of galleryFiles) {
-        const path = await uploadImage(
-          file,
-          "gallery",
-        );
+        const path = await uploadImage(file, "gallery");
 
         nextGalleryPaths.push(path);
         uploadedPaths.push(path);
@@ -679,46 +558,30 @@ function AdminProjectsPage() {
         slug,
         title,
         industry: form.industry.trim(),
-        category:
-          form.category.trim() || "Egyéb",
+        category: form.category.trim() || "Egyéb",
         description,
         image_path: nextHeroPath,
-        project_url:
-          normalizeExternalUrl(
-            form.project_url,
-          ),
+        project_url: normalizeExternalUrl(form.project_url),
         sort_order: Number(form.sort_order),
         is_concept: form.is_concept,
         is_visible: form.is_visible,
-        client_name:
-          form.client_name.trim(),
+        client_name: form.client_name.trim(),
         location: form.location.trim(),
-        completed_year:
-          form.completed_year.trim(),
-        duration_label:
-          form.duration_label.trim(),
+        completed_year: form.completed_year.trim(),
+        duration_label: form.duration_label.trim(),
         challenge: form.challenge.trim(),
         solution: form.solution.trim(),
         results: cleanList(form.results),
         services: cleanList(form.services),
-        technologies: cleanList(
-          form.technologies,
-        ),
-        content_html:
-          plainText.length > 0
-            ? form.content_html
-            : "<p></p>",
+        technologies: cleanList(form.technologies),
+        content_html: plainText.length > 0 ? form.content_html : "<p></p>",
         content_json: form.content_json,
         gallery_paths: nextGalleryPaths,
-        seo_title:
-          form.seo_title.trim(),
-        seo_description:
-          form.seo_description.trim(),
-        cta_title:
-          form.cta_title.trim(),
+        seo_title: form.seo_title.trim(),
+        seo_description: form.seo_description.trim(),
+        cta_title: form.cta_title.trim(),
         cta_text: form.cta_text.trim(),
-        cta_button_text:
-          form.cta_button_text.trim(),
+        cta_button_text: form.cta_button_text.trim(),
       };
 
       if (editingId) {
@@ -731,40 +594,24 @@ function AdminProjectsPage() {
           throw error;
         }
 
-        setSuccessMessage(
-          "A részletes projekt sikeresen frissítve.",
-        );
+        setSuccessMessage("A részletes projekt sikeresen frissítve.");
       } else {
-        const { error } = await supabase
-          .from("projects")
-          .insert(payload);
+        const { error } = await supabase.from("projects").insert(payload);
 
         if (error) {
           throw error;
         }
 
-        setSuccessMessage(
-          "Az új részletes projekt sikeresen létrehozva.",
-        );
+        setSuccessMessage("Az új részletes projekt sikeresen létrehozva.");
       }
 
-      const deletionCandidates = [
-        ...galleryDeletePaths,
-      ];
+      const deletionCandidates = [...galleryDeletePaths];
 
-      if (
-        heroFile &&
-        form.image_path &&
-        form.image_path !== nextHeroPath
-      ) {
-        deletionCandidates.push(
-          form.image_path,
-        );
+      if (heroFile && form.image_path && form.image_path !== nextHeroPath) {
+        deletionCandidates.push(form.image_path);
       }
 
-      await removeStorageFiles(
-        deletionCandidates,
-      );
+      await removeStorageFiles(deletionCandidates);
 
       await loadProjects();
 
@@ -773,9 +620,7 @@ function AdminProjectsPage() {
       setHeroFile(null);
 
       if (heroPreviewUrl) {
-        URL.revokeObjectURL(
-          heroPreviewUrl,
-        );
+        URL.revokeObjectURL(heroPreviewUrl);
       }
 
       setHeroPreviewUrl("");
@@ -786,9 +631,7 @@ function AdminProjectsPage() {
         sort_order: getNextSortOrder(),
       });
     } catch (error: unknown) {
-      await removeStorageFiles(
-        uploadedPaths,
-      );
+      await removeStorageFiles(uploadedPaths);
 
       setErrorMessage(
         error instanceof Error
@@ -801,9 +644,7 @@ function AdminProjectsPage() {
     }
   }
 
-  async function toggleVisibility(
-    project: Project,
-  ) {
+  async function toggleVisibility(project: Project) {
     setErrorMessage("");
     setSuccessMessage("");
 
@@ -811,8 +652,7 @@ function AdminProjectsPage() {
       const { error } = await supabase
         .from("projects")
         .update({
-          is_visible:
-            !project.is_visible,
+          is_visible: !project.is_visible,
         })
         .eq("id", project.id);
 
@@ -836,9 +676,7 @@ function AdminProjectsPage() {
     }
   }
 
-  async function deleteProject(
-    project: Project,
-  ) {
+  async function deleteProject(project: Project) {
     const confirmed = window.confirm(
       `Biztosan végleg törlöd ezt a projektet?\n\n${project.title}`,
     );
@@ -871,9 +709,7 @@ function AdminProjectsPage() {
       }
 
       await loadProjects();
-      setSuccessMessage(
-        "A projekt végleg törölve.",
-      );
+      setSuccessMessage("A projekt végleg törölve.");
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error
@@ -912,8 +748,8 @@ function AdminProjectsPage() {
             </h1>
 
             <p className="mt-2 max-w-3xl text-muted-foreground">
-              Részletes projektoldalak, Tiptap-tartalom,
-              eredmények, galéria és SEO kezelése.
+              Részletes projektoldalak, Tiptap-tartalom, eredmények, galéria és
+              SEO kezelése.
             </p>
           </div>
 
@@ -945,15 +781,10 @@ function AdminProjectsPage() {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="mb-10 space-y-6"
-        >
+        <form onSubmit={handleSubmit} className="mb-10 space-y-6">
           <EditorSection
             title={
-              editingId
-                ? "Projekt szerkesztése"
-                : "Új projekt létrehozása"
+              editingId ? "Projekt szerkesztése" : "Új projekt létrehozása"
             }
             description="A kártyákhoz és a részletes projektoldalhoz szükséges alapadatok."
           >
@@ -981,12 +812,7 @@ function AdminProjectsPage() {
                     value={form.slug}
                     onChange={(event) => {
                       setSlugTouched(true);
-                      updateField(
-                        "slug",
-                        slugify(
-                          event.target.value,
-                        ),
-                      );
+                      updateField("slug", slugify(event.target.value));
                     }}
                     className="min-w-0 flex-1 rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
                   />
@@ -995,10 +821,7 @@ function AdminProjectsPage() {
                     type="button"
                     onClick={() => {
                       setSlugTouched(true);
-                      updateField(
-                        "slug",
-                        slugify(form.title),
-                      );
+                      updateField("slug", slugify(form.title));
                     }}
                     className="rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted"
                   >
@@ -1015,9 +838,7 @@ function AdminProjectsPage() {
                 id="project-industry"
                 label="Iparág"
                 value={form.industry}
-                onChange={(value) =>
-                  updateField("industry", value)
-                }
+                onChange={(value) => updateField("industry", value)}
                 placeholder="Például: Ingatlan"
               />
 
@@ -1033,18 +854,12 @@ function AdminProjectsPage() {
                   id="project-category"
                   value={form.category}
                   onChange={(event) =>
-                    updateField(
-                      "category",
-                      event.target.value,
-                    )
+                    updateField("category", event.target.value)
                   }
                   className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
                 >
                   {CATEGORIES.map((category) => (
-                    <option
-                      key={category}
-                      value={category}
-                    >
+                    <option key={category} value={category}>
                       {category}
                     </option>
                   ))}
@@ -1055,12 +870,7 @@ function AdminProjectsPage() {
                 id="project-client"
                 label="Ügyfél vagy márka neve"
                 value={form.client_name}
-                onChange={(value) =>
-                  updateField(
-                    "client_name",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("client_name", value)}
                 placeholder="Koncepciónál üresen hagyható"
               />
 
@@ -1068,9 +878,7 @@ function AdminProjectsPage() {
                 id="project-location"
                 label="Helyszín"
                 value={form.location}
-                onChange={(value) =>
-                  updateField("location", value)
-                }
+                onChange={(value) => updateField("location", value)}
                 placeholder="Például: Budapest"
               />
 
@@ -1078,12 +886,7 @@ function AdminProjectsPage() {
                 id="project-year"
                 label="Befejezés éve"
                 value={form.completed_year}
-                onChange={(value) =>
-                  updateField(
-                    "completed_year",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("completed_year", value)}
                 placeholder="2026"
               />
 
@@ -1091,12 +894,7 @@ function AdminProjectsPage() {
                 id="project-duration"
                 label="Projekt időtartama"
                 value={form.duration_label}
-                onChange={(value) =>
-                  updateField(
-                    "duration_label",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("duration_label", value)}
                 placeholder="Például: 5 hét"
               />
 
@@ -1104,12 +902,7 @@ function AdminProjectsPage() {
                 id="project-url"
                 label="Élő weboldal címe"
                 value={form.project_url}
-                onChange={(value) =>
-                  updateField(
-                    "project_url",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("project_url", value)}
                 placeholder="https://..."
               />
 
@@ -1118,12 +911,7 @@ function AdminProjectsPage() {
                 label="Megjelenési sorrend"
                 type="number"
                 value={String(form.sort_order)}
-                onChange={(value) =>
-                  updateField(
-                    "sort_order",
-                    Number(value),
-                  )
-                }
+                onChange={(value) => updateField("sort_order", Number(value))}
               />
 
               <div className="md:col-span-2">
@@ -1142,10 +930,7 @@ function AdminProjectsPage() {
                   rows={4}
                   value={form.description}
                   onChange={(event) =>
-                    updateField(
-                      "description",
-                      event.target.value,
-                    )
+                    updateField("description", event.target.value)
                   }
                   className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none focus:ring-2 focus:ring-brand"
                 />
@@ -1161,24 +946,14 @@ function AdminProjectsPage() {
                 label="Koncepcióprojekt"
                 description="Bekapcsolva a publikus oldalon külön jelzést kap."
                 checked={form.is_concept}
-                onChange={(checked) =>
-                  updateField(
-                    "is_concept",
-                    checked,
-                  )
-                }
+                onChange={(checked) => updateField("is_concept", checked)}
               />
 
               <CheckboxField
                 label="Publikusan látható"
                 description="Kikapcsolva a projekt csak az adminfelületen látható."
                 checked={form.is_visible}
-                onChange={(checked) =>
-                  updateField(
-                    "is_visible",
-                    checked,
-                  )
-                }
+                onChange={(checked) => updateField("is_visible", checked)}
               />
             </div>
           </EditorSection>
@@ -1204,9 +979,7 @@ function AdminProjectsPage() {
                 <div className="flex flex-wrap gap-2">
                   <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted">
                     <Upload className="h-4 w-4" />
-                    {heroUrl
-                      ? "Kép cseréje"
-                      : "Kép feltöltése"}
+                    {heroUrl ? "Kép cseréje" : "Kép feltöltése"}
 
                     <input
                       type="file"
@@ -1230,8 +1003,7 @@ function AdminProjectsPage() {
                 </div>
 
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                  PNG, JPG vagy WebP, maximum 8 MB.
-                  Ajánlott képarány: 16:9.
+                  PNG, JPG vagy WebP, maximum 8 MB. Ajánlott képarány: 16:9.
                 </p>
               </div>
             </div>
@@ -1246,12 +1018,7 @@ function AdminProjectsPage() {
                 id="project-challenge"
                 label="A kihívás"
                 value={form.challenge}
-                onChange={(value) =>
-                  updateField(
-                    "challenge",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("challenge", value)}
                 placeholder="Milyen problémával érkezett az ügyfél?"
               />
 
@@ -1259,12 +1026,7 @@ function AdminProjectsPage() {
                 id="project-solution"
                 label="A megoldás"
                 value={form.solution}
-                onChange={(value) =>
-                  updateField(
-                    "solution",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("solution", value)}
                 placeholder="Milyen megoldást terveztünk és valósítottunk meg?"
               />
 
@@ -1272,19 +1034,17 @@ function AdminProjectsPage() {
                 id="project-results"
                 label="Eredmények"
                 value={form.results}
-                onChange={(value) =>
-                  updateField("results", value)
+                onChange={(value) => updateField("results", value)}
+                placeholder={
+                  "Gyorsabb betöltés\nTöbb ajánlatkérés\nKönnyebb tartalomkezelés"
                 }
-                placeholder={"Gyorsabb betöltés\nTöbb ajánlatkérés\nKönnyebb tartalomkezelés"}
               />
 
               <ArrayTextarea
                 id="project-services"
                 label="Elvégzett szolgáltatások"
                 value={form.services}
-                onChange={(value) =>
-                  updateField("services", value)
-                }
+                onChange={(value) => updateField("services", value)}
                 placeholder={"UX/UI tervezés\nWebfejlesztés\nSEO beállítás"}
               />
 
@@ -1293,12 +1053,7 @@ function AdminProjectsPage() {
                   id="project-technologies"
                   label="Technológiák"
                   value={form.technologies}
-                  onChange={(value) =>
-                    updateField(
-                      "technologies",
-                      value,
-                    )
-                  }
+                  onChange={(value) => updateField("technologies", value)}
                   placeholder={"React\nTanStack Router\nSupabase\nTailwind CSS"}
                 />
               </div>
@@ -1307,13 +1062,10 @@ function AdminProjectsPage() {
 
           <section>
             <div className="mb-4">
-              <h2 className="text-xl font-bold">
-                Részletes projektleírás
-              </h2>
+              <h2 className="text-xl font-bold">Részletes projektleírás</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                A blogmodulból már telepített Tiptap
-                szerkesztőt használja.
+                A blogmodulból már telepített Tiptap szerkesztőt használja.
               </p>
             </div>
 
@@ -1340,29 +1092,22 @@ function AdminProjectsPage() {
                 <GalleryItem
                   key={path}
                   imageUrl={getPortfolioUrl(path)}
-                  onRemove={() =>
-                    removeStoredGalleryImage(path)
-                  }
+                  onRemove={() => removeStoredGalleryImage(path)}
                 />
               ))}
 
-              {galleryLocalPreviews.map(
-                (item, index) => (
-                  <GalleryItem
-                    key={`${item.file.name}-${index}`}
-                    imageUrl={item.url}
-                    pending
-                    onRemove={() =>
-                      setGalleryFiles((current) =>
-                        current.filter(
-                          (_, fileIndex) =>
-                            fileIndex !== index,
-                        ),
-                      )
-                    }
-                  />
-                ),
-              )}
+              {galleryLocalPreviews.map((item, index) => (
+                <GalleryItem
+                  key={`${item.file.name}-${index}`}
+                  imageUrl={item.url}
+                  pending
+                  onRemove={() =>
+                    setGalleryFiles((current) =>
+                      current.filter((_, fileIndex) => fileIndex !== index),
+                    )
+                  }
+                />
+              ))}
 
               <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed p-5 text-center transition hover:bg-muted/40">
                 <Upload className="h-7 w-7 text-brand" />
@@ -1396,24 +1141,14 @@ function AdminProjectsPage() {
                 id="project-seo-title"
                 label="SEO-cím"
                 value={form.seo_title}
-                onChange={(value) =>
-                  updateField(
-                    "seo_title",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("seo_title", value)}
               />
 
               <LongTextField
                 id="project-seo-description"
                 label="Meta leírás"
                 value={form.seo_description}
-                onChange={(value) =>
-                  updateField(
-                    "seo_description",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("seo_description", value)}
                 rows={4}
               />
             </div>
@@ -1428,24 +1163,14 @@ function AdminProjectsPage() {
                 id="project-cta-title"
                 label="CTA főcím"
                 value={form.cta_title}
-                onChange={(value) =>
-                  updateField(
-                    "cta_title",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("cta_title", value)}
               />
 
               <TextField
                 id="project-cta-button"
                 label="Gomb szövege"
                 value={form.cta_button_text}
-                onChange={(value) =>
-                  updateField(
-                    "cta_button_text",
-                    value,
-                  )
-                }
+                onChange={(value) => updateField("cta_button_text", value)}
               />
 
               <div className="md:col-span-2">
@@ -1453,12 +1178,7 @@ function AdminProjectsPage() {
                   id="project-cta-text"
                   label="CTA leírás"
                   value={form.cta_text}
-                  onChange={(value) =>
-                    updateField(
-                      "cta_text",
-                      value,
-                    )
-                  }
+                  onChange={(value) => updateField("cta_text", value)}
                   rows={3}
                 />
               </div>
@@ -1469,9 +1189,7 @@ function AdminProjectsPage() {
             <p className="text-sm text-muted-foreground">
               Állapot:{" "}
               <strong>
-                {form.is_visible
-                  ? "publikusan látható"
-                  : "elrejtett"}
+                {form.is_visible ? "publikusan látható" : "elrejtett"}
               </strong>
             </p>
 
@@ -1505,9 +1223,7 @@ function AdminProjectsPage() {
           <div className="border-b p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h2 className="text-xl font-bold">
-                  Meglévő projektek
-                </h2>
+                <h2 className="text-xl font-bold">Meglévő projektek</h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   {filteredProjects.length} találat
@@ -1521,11 +1237,7 @@ function AdminProjectsPage() {
                   <input
                     type="search"
                     value={searchTerm}
-                    onChange={(event) =>
-                      setSearchTerm(
-                        event.target.value,
-                      )
-                    }
+                    onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder="Keresés..."
                     className="w-full rounded-xl border py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-brand"
                   />
@@ -1535,23 +1247,14 @@ function AdminProjectsPage() {
                   value={visibilityFilter}
                   onChange={(event) =>
                     setVisibilityFilter(
-                      event.target.value as
-                        | "all"
-                        | "visible"
-                        | "hidden",
+                      event.target.value as "all" | "visible" | "hidden",
                     )
                   }
                   className="rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
                 >
-                  <option value="all">
-                    Minden projekt
-                  </option>
-                  <option value="visible">
-                    Látható
-                  </option>
-                  <option value="hidden">
-                    Elrejtett
-                  </option>
+                  <option value="all">Minden projekt</option>
+                  <option value="visible">Látható</option>
+                  <option value="hidden">Elrejtett</option>
                 </select>
 
                 <button
@@ -1570,9 +1273,7 @@ function AdminProjectsPage() {
             <div className="p-10 text-center">
               <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground/30" />
 
-              <h3 className="mt-4 font-bold">
-                Nincs megjeleníthető projekt
-              </h3>
+              <h3 className="mt-4 font-bold">Nincs megjeleníthető projekt</h3>
             </div>
           ) : (
             <div className="divide-y">
@@ -1584,9 +1285,7 @@ function AdminProjectsPage() {
                   <div className="aspect-[16/10] overflow-hidden rounded-xl border bg-muted/30">
                     {project.image_path ? (
                       <img
-                        src={getPortfolioUrl(
-                          project.image_path,
-                        )}
+                        src={getPortfolioUrl(project.image_path)}
                         alt={project.title}
                         className="h-full w-full object-cover"
                       />
@@ -1606,9 +1305,7 @@ function AdminProjectsPage() {
                             : "bg-slate-100 text-slate-700"
                         }`}
                       >
-                        {project.is_visible
-                          ? "Látható"
-                          : "Elrejtett"}
+                        {project.is_visible ? "Látható" : "Elrejtett"}
                       </span>
 
                       {project.is_concept && (
@@ -1622,15 +1319,10 @@ function AdminProjectsPage() {
                       </span>
                     </div>
 
-                    <h3 className="mt-3 text-lg font-bold">
-                      {project.title}
-                    </h3>
+                    <h3 className="mt-3 text-lg font-bold">{project.title}</h3>
 
                     <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-brand">
-                      {[
-                        project.industry,
-                        project.category,
-                      ]
+                      {[project.industry, project.category]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>
@@ -1671,9 +1363,7 @@ function AdminProjectsPage() {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        startEditing(project)
-                      }
+                      onClick={() => startEditing(project)}
                       className="rounded-lg border px-3 py-2 text-sm font-semibold hover:bg-muted"
                     >
                       Szerkesztés
@@ -1681,22 +1371,16 @@ function AdminProjectsPage() {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        void toggleVisibility(project)
-                      }
+                      onClick={() => void toggleVisibility(project)}
                       className="rounded-lg border px-3 py-2 text-sm font-semibold hover:bg-muted"
                     >
-                      {project.is_visible
-                        ? "Elrejtés"
-                        : "Aktiválás"}
+                      {project.is_visible ? "Elrejtés" : "Aktiválás"}
                     </button>
 
                     <button
                       type="button"
                       disabled={saving}
-                      onClick={() =>
-                        void deleteProject(project)
-                      }
+                      onClick={() => void deleteProject(project)}
                       className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -1719,21 +1403,13 @@ type EditorSectionProps = {
   children: ReactNode;
 };
 
-function EditorSection({
-  title,
-  description,
-  children,
-}: EditorSectionProps) {
+function EditorSection({ title, description, children }: EditorSectionProps) {
   return (
     <section className="rounded-2xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-xl font-bold">
-          {title}
-        </h2>
+        <h2 className="text-xl font-bold">{title}</h2>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       </div>
 
       {children}
@@ -1762,10 +1438,7 @@ function TextField({
 }: TextFieldProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold">
         {label}
       </label>
 
@@ -1774,9 +1447,7 @@ function TextField({
         type={type}
         required={required}
         value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
       />
@@ -1803,10 +1474,7 @@ function LongTextField({
 }: LongTextFieldProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold">
         {label}
       </label>
 
@@ -1814,9 +1482,7 @@ function LongTextField({
         id={id}
         rows={rows}
         value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none focus:ring-2 focus:ring-brand"
       />
@@ -1841,10 +1507,7 @@ function ArrayTextarea({
 }: ArrayTextareaProps) {
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="mb-2 block text-sm font-semibold">
         {label}
       </label>
 
@@ -1852,18 +1515,12 @@ function ArrayTextarea({
         id={id}
         rows={7}
         value={value.join("\n")}
-        onChange={(event) =>
-          onChange(
-            event.target.value.split("\n"),
-          )
-        }
+        onChange={(event) => onChange(event.target.value.split("\n"))}
         placeholder={placeholder}
         className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none focus:ring-2 focus:ring-brand"
       />
 
-      <p className="mt-2 text-xs text-muted-foreground">
-        Soronként egy elem.
-      </p>
+      <p className="mt-2 text-xs text-muted-foreground">Soronként egy elem.</p>
     </div>
   );
 }
@@ -1886,16 +1543,12 @@ function CheckboxField({
       <input
         type="checkbox"
         checked={checked}
-        onChange={(event) =>
-          onChange(event.target.checked)
-        }
+        onChange={(event) => onChange(event.target.checked)}
         className="mt-1 h-4 w-4"
       />
 
       <span>
-        <span className="block text-sm font-semibold">
-          {label}
-        </span>
+        <span className="block text-sm font-semibold">{label}</span>
 
         <span className="mt-1 block text-xs leading-5 text-muted-foreground">
           {description}
@@ -1943,9 +1596,7 @@ function GalleryItem({
 }
 
 function getPortfolioUrl(path: string) {
-  return supabase.storage
-    .from("portfolio")
-    .getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from("portfolio").getPublicUrl(path).data.publicUrl;
 }
 
 function slugify(value: string) {
@@ -1959,9 +1610,7 @@ function slugify(value: string) {
 }
 
 function cleanList(values: string[]) {
-  return values
-    .map((value) => value.trim())
-    .filter(Boolean);
+  return values.map((value) => value.trim()).filter(Boolean);
 }
 
 function normalizeExternalUrl(value: string) {
@@ -1971,10 +1620,7 @@ function normalizeExternalUrl(value: string) {
     return "";
   }
 
-  if (
-    trimmed.startsWith("http://") ||
-    trimmed.startsWith("https://")
-  ) {
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
     return trimmed;
   }
 

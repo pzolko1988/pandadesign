@@ -1,13 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/process")({
@@ -71,8 +63,7 @@ function AdminProcessPage() {
       return;
     }
 
-    const { data: isAdmin, error: adminError } =
-      await supabase.rpc("is_admin");
+    const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
 
     if (adminError) {
       setErrorMessage(adminError.message);
@@ -81,9 +72,7 @@ function AdminProcessPage() {
     }
 
     if (!isAdmin) {
-      setErrorMessage(
-        "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
-      );
+      setErrorMessage("Ehhez az oldalhoz nincs adminisztrátori jogosultságod.");
       setLoading(false);
       return;
     }
@@ -94,9 +83,7 @@ function AdminProcessPage() {
   async function loadSteps() {
     const { data, error } = await supabase
       .from("process_steps")
-      .select(
-        "id, step_number, title, description, sort_order, is_visible",
-      )
+      .select("id, step_number, title, description, sort_order, is_visible")
       .order("sort_order", { ascending: true });
 
     if (error) {
@@ -146,9 +133,7 @@ function AdminProcessPage() {
     setSuccessMessage("");
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setSaving(true);
@@ -169,8 +154,7 @@ function AdminProcessPage() {
 
     const payload = {
       step_number:
-        form.step_number.trim() ||
-        String(form.sort_order).padStart(2, "0"),
+        form.step_number.trim() || String(form.sort_order).padStart(2, "0"),
       title: form.title.trim(),
       description: form.description.trim(),
       sort_order: Number(form.sort_order),
@@ -192,9 +176,7 @@ function AdminProcessPage() {
 
       setSuccessMessage("A munkafolyamat lépése frissítve.");
     } else {
-      const { error } = await supabase
-        .from("process_steps")
-        .insert(payload);
+      const { error } = await supabase.from("process_steps").insert(payload);
 
       if (error) {
         setErrorMessage(error.message);
@@ -235,9 +217,7 @@ function AdminProcessPage() {
     }
 
     setSuccessMessage(
-      step.is_visible
-        ? "A lépés elrejtve."
-        : "A lépés láthatóvá téve.",
+      step.is_visible ? "A lépés elrejtve." : "A lépés láthatóvá téve.",
     );
     await loadSteps();
   }
@@ -289,9 +269,7 @@ function AdminProcessPage() {
             ← Vissza az áttekintéshez
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Munkafolyamat
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Munkafolyamat</h1>
 
           <p className="mt-2 text-muted-foreground">
             Az „Így dolgozunk” szakasz lépéseinek kezelése.
@@ -323,9 +301,7 @@ function AdminProcessPage() {
               label="Lépésszám"
               value={form.step_number}
               required
-              onChange={(value) =>
-                updateField("step_number", value)
-              }
+              onChange={(value) => updateField("step_number", value)}
             />
 
             <FormField
@@ -336,9 +312,7 @@ function AdminProcessPage() {
             />
 
             <div>
-              <label className="mb-2 block text-sm font-semibold">
-                Leírás
-              </label>
+              <label className="mb-2 block text-sm font-semibold">Leírás</label>
 
               <textarea
                 rows={4}
@@ -361,10 +335,7 @@ function AdminProcessPage() {
                 min={0}
                 value={form.sort_order}
                 onChange={(event) =>
-                  updateField(
-                    "sort_order",
-                    Number(event.target.value),
-                  )
+                  updateField("sort_order", Number(event.target.value))
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               />
@@ -412,9 +383,7 @@ function AdminProcessPage() {
 
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">
-                Meglévő lépések
-              </h2>
+              <h2 className="text-xl font-bold">Meglévő lépések</h2>
 
               <span className="text-sm text-muted-foreground">
                 {steps.length} elem
@@ -434,9 +403,7 @@ function AdminProcessPage() {
                           {step.step_number}
                         </span>
 
-                        <h3 className="text-lg font-bold">
-                          {step.title}
-                        </h3>
+                        <h3 className="text-lg font-bold">{step.title}</h3>
 
                         <span
                           className={
@@ -515,9 +482,7 @@ function FormField({
 }: FormFieldProps) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold">
-        {label}
-      </label>
+      <label className="mb-2 block text-sm font-semibold">{label}</label>
 
       <input
         type="text"

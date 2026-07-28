@@ -1,12 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Clock3,
   Copy,
@@ -18,9 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 
-export const Route = createFileRoute(
-  "/admin/blog-history/$id",
-)({
+export const Route = createFileRoute("/admin/blog-history/$id")({
   component: AdminBlogHistoryPage,
 });
 
@@ -55,22 +46,16 @@ function AdminBlogHistoryPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
 
-  const [post, setPost] =
-    useState<BlogPost | null>(null);
-  const [revisions, setRevisions] =
-    useState<BlogRevision[]>([]);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [revisions, setRevisions] = useState<BlogRevision[]>([]);
 
-  const [validHours, setValidHours] =
-    useState(168);
-  const [previewUrl, setPreviewUrl] =
-    useState("");
+  const [validHours, setValidHours] = useState(168);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -137,9 +122,7 @@ function AdminBlogHistoryPage() {
         .maybeSingle(),
       supabase
         .from("blog_post_revisions")
-        .select(
-          "id, revision_number, snapshot, created_by, created_at",
-        )
+        .select("id, revision_number, snapshot, created_by, created_at")
         .eq("blog_post_id", id)
         .order("revision_number", {
           ascending: false,
@@ -155,24 +138,18 @@ function AdminBlogHistoryPage() {
     }
 
     if (!postData) {
-      throw new Error(
-        "A blogbejegyzés nem található.",
-      );
+      throw new Error("A blogbejegyzés nem található.");
     }
 
     const loadedPost = postData as BlogPost;
 
     setPost(loadedPost);
-    setRevisions(
-      (revisionData ?? []) as BlogRevision[],
-    );
+    setRevisions((revisionData ?? []) as BlogRevision[]);
 
     if (
       loadedPost.preview_token &&
       loadedPost.preview_expires_at &&
-      new Date(
-        loadedPost.preview_expires_at,
-      ).getTime() > Date.now()
+      new Date(loadedPost.preview_expires_at).getTime() > Date.now()
     ) {
       setPreviewUrl(
         `${window.location.origin}/preview/blog/${loadedPost.preview_token}`,
@@ -204,20 +181,15 @@ function AdminBlogHistoryPage() {
         throw error;
       }
 
-      const url =
-        `${window.location.origin}/preview/blog/${String(data)}`;
+      const url = `${window.location.origin}/preview/blog/${String(data)}`;
 
       setPreviewUrl(url);
 
       try {
         await navigator.clipboard.writeText(url);
-        setSuccessMessage(
-          "Az előnézeti link elkészült és a vágólapra került.",
-        );
+        setSuccessMessage("Az előnézeti link elkészült és a vágólapra került.");
       } catch {
-        setSuccessMessage(
-          "Az előnézeti link elkészült.",
-        );
+        setSuccessMessage("Az előnézeti link elkészült.");
       }
 
       await loadData();
@@ -238,17 +210,11 @@ function AdminBlogHistoryPage() {
     }
 
     try {
-      await navigator.clipboard.writeText(
-        previewUrl,
-      );
+      await navigator.clipboard.writeText(previewUrl);
 
-      setSuccessMessage(
-        "Az előnézeti link a vágólapra került.",
-      );
+      setSuccessMessage("Az előnézeti link a vágólapra került.");
     } catch {
-      setErrorMessage(
-        "A hivatkozás nem másolható automatikusan.",
-      );
+      setErrorMessage("A hivatkozás nem másolható automatikusan.");
     }
   }
 
@@ -262,21 +228,16 @@ function AdminBlogHistoryPage() {
     setSuccessMessage("");
 
     try {
-      const { error } = await supabase.rpc(
-        "revoke_blog_preview_token",
-        {
-          p_post_id: post.id,
-        },
-      );
+      const { error } = await supabase.rpc("revoke_blog_preview_token", {
+        p_post_id: post.id,
+      });
 
       if (error) {
         throw error;
       }
 
       setPreviewUrl("");
-      setSuccessMessage(
-        "Az előnézeti link visszavonva.",
-      );
+      setSuccessMessage("Az előnézeti link visszavonva.");
       await loadData();
     } catch (error: unknown) {
       setErrorMessage(
@@ -289,9 +250,7 @@ function AdminBlogHistoryPage() {
     }
   }
 
-  async function restoreRevision(
-    revision: BlogRevision,
-  ) {
+  async function restoreRevision(revision: BlogRevision) {
     const confirmed = window.confirm(
       `Biztosan visszaállítod a(z) ${revision.revision_number}. verziót?\n\nA jelenlegi állapot nem vész el, új verzióként bekerül az előzményekbe.`,
     );
@@ -305,12 +264,9 @@ function AdminBlogHistoryPage() {
     setSuccessMessage("");
 
     try {
-      const { error } = await supabase.rpc(
-        "restore_blog_post_revision",
-        {
-          p_revision_id: revision.id,
-        },
-      );
+      const { error } = await supabase.rpc("restore_blog_post_revision", {
+        p_revision_id: revision.id,
+      });
 
       if (error) {
         throw error;
@@ -346,8 +302,7 @@ function AdminBlogHistoryPage() {
     return (
       <main className="min-h-screen px-6 py-20">
         <p className="text-center text-red-600">
-          {errorMessage ||
-            "A blogbejegyzés nem található."}
+          {errorMessage || "A blogbejegyzés nem található."}
         </p>
       </main>
     );
@@ -364,28 +319,14 @@ function AdminBlogHistoryPage() {
             ← Vissza a blogkezelőhöz
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold">
-            Előnézet és verziók
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold">Előnézet és verziók</h1>
 
-          <p className="mt-2 text-muted-foreground">
-            {post.title}
-          </p>
+          <p className="mt-2 text-muted-foreground">{post.title}</p>
         </header>
 
-        {errorMessage && (
-          <Message
-            type="error"
-            text={errorMessage}
-          />
-        )}
+        {errorMessage && <Message type="error" text={errorMessage} />}
 
-        {successMessage && (
-          <Message
-            type="success"
-            text={successMessage}
-          />
-        )}
+        {successMessage && <Message type="success" text={successMessage} />}
 
         <section className="mb-8 rounded-2xl border bg-background p-6 shadow-sm">
           <div className="flex items-start gap-4">
@@ -394,14 +335,11 @@ function AdminBlogHistoryPage() {
             </span>
 
             <div>
-              <h2 className="text-xl font-bold">
-                Titkos előnézeti link
-              </h2>
+              <h2 className="text-xl font-bold">Titkos előnézeti link</h2>
 
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                Piszkozat is megosztható belépés nélkül.
-                A link időkorlátos, és bármikor
-                visszavonható.
+                Piszkozat is megosztható belépés nélkül. A link időkorlátos, és
+                bármikor visszavonható.
               </p>
             </div>
           </div>
@@ -418,28 +356,14 @@ function AdminBlogHistoryPage() {
               <select
                 id="blog-preview-hours"
                 value={validHours}
-                onChange={(event) =>
-                  setValidHours(
-                    Number(event.target.value),
-                  )
-                }
+                onChange={(event) => setValidHours(Number(event.target.value))}
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               >
-                <option value={24}>
-                  24 óra
-                </option>
-                <option value={72}>
-                  3 nap
-                </option>
-                <option value={168}>
-                  7 nap
-                </option>
-                <option value={336}>
-                  14 nap
-                </option>
-                <option value={720}>
-                  30 nap
-                </option>
+                <option value={24}>24 óra</option>
+                <option value={72}>3 nap</option>
+                <option value={168}>7 nap</option>
+                <option value={336}>14 nap</option>
+                <option value={720}>30 nap</option>
               </select>
             </div>
 
@@ -447,9 +371,7 @@ function AdminBlogHistoryPage() {
               <button
                 type="button"
                 disabled={working}
-                onClick={() =>
-                  void generatePreview()
-                }
+                onClick={() => void generatePreview()}
                 className="rounded-xl bg-brand px-5 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-50"
               >
                 {previewUrl
@@ -461,9 +383,7 @@ function AdminBlogHistoryPage() {
                 <>
                   <button
                     type="button"
-                    onClick={() =>
-                      void copyPreviewUrl()
-                    }
+                    onClick={() => void copyPreviewUrl()}
                     className="inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted"
                   >
                     <Copy className="h-4 w-4" />
@@ -483,9 +403,7 @@ function AdminBlogHistoryPage() {
                   <button
                     type="button"
                     disabled={working}
-                    onClick={() =>
-                      void revokePreview()
-                    }
+                    onClick={() => void revokePreview()}
                     className="inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50"
                   >
                     <XCircle className="h-4 w-4" />
@@ -498,17 +416,12 @@ function AdminBlogHistoryPage() {
 
           {previewUrl && (
             <div className="mt-5 rounded-xl border bg-muted/30 p-4">
-              <p className="break-all font-mono text-xs">
-                {previewUrl}
-              </p>
+              <p className="break-all font-mono text-xs">{previewUrl}</p>
 
               {post.preview_expires_at && (
                 <p className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock3 className="h-3.5 w-3.5" />
-                  Lejár:{" "}
-                  {formatDate(
-                    post.preview_expires_at,
-                  )}
+                  Lejár: {formatDate(post.preview_expires_at)}
                 </p>
               )}
             </div>
@@ -523,13 +436,10 @@ function AdminBlogHistoryPage() {
               </span>
 
               <div>
-                <h2 className="text-xl font-bold">
-                  Verzióelőzmények
-                </h2>
+                <h2 className="text-xl font-bold">Verzióelőzmények</h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Minden tartalmi mentés automatikusan új
-                  verziót hoz létre.
+                  Minden tartalmi mentés automatikusan új verziót hoz létre.
                 </p>
               </div>
             </div>
@@ -542,10 +452,7 @@ function AdminBlogHistoryPage() {
           ) : (
             <div className="divide-y">
               {revisions.map((revision, index) => (
-                <article
-                  key={revision.id}
-                  className="p-5"
-                >
+                <article key={revision.id} className="p-5">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -560,21 +467,17 @@ function AdminBlogHistoryPage() {
                         )}
 
                         <span className="text-xs text-muted-foreground">
-                          {formatDate(
-                            revision.created_at,
-                          )}
+                          {formatDate(revision.created_at)}
                         </span>
                       </div>
 
                       <h3 className="mt-3 font-bold">
-                        {revision.snapshot.title ||
-                          "Cím nélküli változat"}
+                        {revision.snapshot.title || "Cím nélküli változat"}
                       </h3>
 
                       <p className="mt-1 text-sm text-muted-foreground">
                         Állapot:{" "}
-                        {revision.snapshot.status ===
-                        "published"
+                        {revision.snapshot.status === "published"
                           ? "publikált"
                           : "piszkozat"}
                       </p>
@@ -590,11 +493,7 @@ function AdminBlogHistoryPage() {
                       <button
                         type="button"
                         disabled={working}
-                        onClick={() =>
-                          void restoreRevision(
-                            revision,
-                          )
-                        }
+                        onClick={() => void restoreRevision(revision)}
                         className="inline-flex shrink-0 items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted disabled:opacity-50"
                       >
                         <RotateCcw className="h-4 w-4" />
@@ -612,13 +511,7 @@ function AdminBlogHistoryPage() {
   );
 }
 
-function Message({
-  type,
-  text,
-}: {
-  type: "error" | "success";
-  text: string;
-}) {
+function Message({ type, text }: { type: "error" | "success"; text: string }) {
   return (
     <div
       className={`mb-6 rounded-xl border px-5 py-4 text-sm font-medium ${

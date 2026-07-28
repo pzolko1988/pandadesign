@@ -1,16 +1,6 @@
-import {
-  createFileRoute,
-  Link,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  ArrowRight,
-  Image as ImageIcon,
-} from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Image as ImageIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase/client";
 
@@ -18,8 +8,7 @@ export const Route = createFileRoute("/referenciak/")({
   head: () => ({
     meta: [
       {
-        title:
-          "Referenciák és esettanulmányok — PandaDesign",
+        title: "Referenciák és esettanulmányok — PandaDesign",
       },
       {
         name: "description",
@@ -46,13 +35,10 @@ type PublicProject = {
 };
 
 function ReferencesIndexPage() {
-  const [projects, setProjects] =
-    useState<PublicProject[]>([]);
-  const [activeCategory, setActiveCategory] =
-    useState("Összes");
+  const [projects, setProjects] = useState<PublicProject[]>([]);
+  const [activeCategory, setActiveCategory] = useState("Összes");
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -74,16 +60,12 @@ function ReferencesIndexPage() {
       }
 
       if (error) {
-        setErrorMessage(
-          "A referenciák átmenetileg nem tölthetők be.",
-        );
+        setErrorMessage("A referenciák átmenetileg nem tölthetők be.");
         setLoading(false);
         return;
       }
 
-      setProjects(
-        (data ?? []) as PublicProject[],
-      );
+      setProjects((data ?? []) as PublicProject[]);
       setLoading(false);
     }
 
@@ -98,11 +80,7 @@ function ReferencesIndexPage() {
     () => [
       "Összes",
       ...Array.from(
-        new Set(
-          projects
-            .map((project) => project.category)
-            .filter(Boolean),
-        ),
+        new Set(projects.map((project) => project.category).filter(Boolean)),
       ),
     ],
     [projects],
@@ -112,10 +90,7 @@ function ReferencesIndexPage() {
     () =>
       activeCategory === "Összes"
         ? projects
-        : projects.filter(
-            (project) =>
-              project.category === activeCategory,
-          ),
+        : projects.filter((project) => project.category === activeCategory),
     [activeCategory, projects],
   );
 
@@ -137,9 +112,8 @@ function ReferencesIndexPage() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
-            Koncepciók és megvalósított projektek,
-            részletes tervezési folyamattal, technológiákkal
-            és eredményekkel.
+            Koncepciók és megvalósított projektek, részletes tervezési
+            folyamattal, technológiákkal és eredményekkel.
           </p>
         </div>
       </section>
@@ -151,9 +125,7 @@ function ReferencesIndexPage() {
               <button
                 key={category}
                 type="button"
-                onClick={() =>
-                  setActiveCategory(category)
-                }
+                onClick={() => setActiveCategory(category)}
                 className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                   activeCategory === category
                     ? "border-brand bg-brand text-white"
@@ -168,14 +140,12 @@ function ReferencesIndexPage() {
 
         {loading && (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map(
-              (_, index) => (
-                <div
-                  key={index}
-                  className="h-[430px] animate-pulse rounded-2xl border bg-secondary/40"
-                />
-              ),
-            )}
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="h-[430px] animate-pulse rounded-2xl border bg-secondary/40"
+              />
+            ))}
           </div>
         )}
 
@@ -185,109 +155,94 @@ function ReferencesIndexPage() {
           </div>
         )}
 
-        {!loading &&
-          !errorMessage &&
-          filteredProjects.length === 0 && (
-            <div className="rounded-2xl border bg-white p-12 text-center shadow-soft">
-              <ImageIcon className="mx-auto h-12 w-12 text-ink-soft/30" />
+        {!loading && !errorMessage && filteredProjects.length === 0 && (
+          <div className="rounded-2xl border bg-white p-12 text-center shadow-soft">
+            <ImageIcon className="mx-auto h-12 w-12 text-ink-soft/30" />
 
-              <h2 className="mt-5 text-xl font-bold text-ink">
-                Nincs megjeleníthető projekt
-              </h2>
+            <h2 className="mt-5 text-xl font-bold text-ink">
+              Nincs megjeleníthető projekt
+            </h2>
 
-              <p className="mt-2 text-ink-soft">
-                Ebben a kategóriában jelenleg nincs
-                publikált referencia.
-              </p>
-            </div>
-          )}
+            <p className="mt-2 text-ink-soft">
+              Ebben a kategóriában jelenleg nincs publikált referencia.
+            </p>
+          </div>
+        )}
 
-        {!loading &&
-          !errorMessage &&
-          filteredProjects.length > 0 && (
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {filteredProjects.map((project) => {
-                const imageUrl =
-                  project.image_path
-                    ? supabase.storage
-                        .from("portfolio")
-                        .getPublicUrl(
-                          project.image_path,
-                        ).data.publicUrl
-                    : "";
+        {!loading && !errorMessage && filteredProjects.length > 0 && (
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProjects.map((project) => {
+              const imageUrl = project.image_path
+                ? supabase.storage
+                    .from("portfolio")
+                    .getPublicUrl(project.image_path).data.publicUrl
+                : "";
 
-                return (
-                  <Card
-                    key={project.id}
-                    className="group flex h-full flex-col overflow-hidden border shadow-soft transition hover:-translate-y-1 hover:shadow-elegant"
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden border-b bg-gradient-to-br from-brand/10 to-success/10">
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt={project.title}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                        />
-                      ) : (
-                        <div className="grid h-full place-items-center">
-                          <ImageIcon className="h-12 w-12 text-brand/25" />
-                        </div>
-                      )}
+              return (
+                <Card
+                  key={project.id}
+                  className="group flex h-full flex-col overflow-hidden border shadow-soft transition hover:-translate-y-1 hover:shadow-elegant"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden border-b bg-gradient-to-br from-brand/10 to-success/10">
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={project.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="grid h-full place-items-center">
+                        <ImageIcon className="h-12 w-12 text-brand/25" />
+                      </div>
+                    )}
 
-                      {project.is_concept && (
-                        <span className="absolute left-3 top-3 rounded-full border bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-ink-soft backdrop-blur">
-                          Koncepció
-                        </span>
-                      )}
-                    </div>
+                    {project.is_concept && (
+                      <span className="absolute left-3 top-3 rounded-full border bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-ink-soft backdrop-blur">
+                        Koncepció
+                      </span>
+                    )}
+                  </div>
 
-                    <CardContent className="flex flex-1 flex-col p-6">
-                      <p className="text-[11px] font-semibold uppercase tracking-widest text-brand">
-                        {[
-                          project.industry,
-                          project.category,
-                        ]
+                  <CardContent className="flex flex-1 flex-col p-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-brand">
+                      {[project.industry, project.category]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+
+                    <h2 className="mt-2 text-xl font-bold leading-tight text-ink">
+                      {project.title}
+                    </h2>
+
+                    <p className="mt-3 flex-1 text-sm leading-6 text-ink-soft">
+                      {project.description}
+                    </p>
+
+                    {(project.client_name || project.completed_year) && (
+                      <p className="mt-4 text-xs text-ink-soft">
+                        {[project.client_name, project.completed_year]
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
+                    )}
 
-                      <h2 className="mt-2 text-xl font-bold leading-tight text-ink">
-                        {project.title}
-                      </h2>
-
-                      <p className="mt-3 flex-1 text-sm leading-6 text-ink-soft">
-                        {project.description}
-                      </p>
-
-                      {(project.client_name ||
-                        project.completed_year) && (
-                        <p className="mt-4 text-xs text-ink-soft">
-                          {[
-                            project.client_name,
-                            project.completed_year,
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")}
-                        </p>
-                      )}
-
-                      <Link
-                        to="/referenciak/$slug"
-                        params={{
-                          slug: project.slug,
-                        }}
-                        className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-brand transition-all group-hover:gap-2"
-                      >
-                        Esettanulmány megnyitása
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+                    <Link
+                      to="/referenciak/$slug"
+                      params={{
+                        slug: project.slug,
+                      }}
+                      className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-brand transition-all group-hover:gap-2"
+                    >
+                      Esettanulmány megnyitása
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </section>
     </main>
   );

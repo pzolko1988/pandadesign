@@ -7,9 +7,7 @@ const supabaseKey =
   import.meta.env.VITE_SUPABASE_KEY;
 
 if (!supabaseUrl) {
-  throw new Error(
-    "Hiányzik a VITE_SUPABASE_URL változó a .env.local fájlból.",
-  );
+  throw new Error("Hiányzik a VITE_SUPABASE_URL változó a .env.local fájlból.");
 }
 
 if (!supabaseKey) {

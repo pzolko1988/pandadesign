@@ -1,18 +1,6 @@
-import {
-  createFileRoute,
-  Link,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  ArrowLeft,
-  CalendarDays,
-  Clock3,
-  UserRound,
-} from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, CalendarDays, Clock3, UserRound } from "lucide-react";
 import { RichTextContent } from "@/components/site/RichTextContent";
 import { supabase } from "@/lib/supabase/client";
 
@@ -43,12 +31,10 @@ type PublicBlogPost = {
 function BlogPostPage() {
   const { slug } = Route.useParams();
 
-  const [post, setPost] =
-    useState<PublicBlogPost | null>(null);
+  const [post, setPost] = useState<PublicBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -61,10 +47,7 @@ function BlogPostPage() {
         )
         .eq("slug", slug)
         .eq("status", "published")
-        .lte(
-          "published_at",
-          new Date().toISOString(),
-        )
+        .lte("published_at", new Date().toISOString())
         .maybeSingle();
 
       if (!active) {
@@ -72,9 +55,7 @@ function BlogPostPage() {
       }
 
       if (error) {
-        setErrorMessage(
-          "A blogbejegyzés átmenetileg nem tölthető be.",
-        );
+        setErrorMessage("A blogbejegyzés átmenetileg nem tölthető be.");
         setLoading(false);
         return;
       }
@@ -85,8 +66,7 @@ function BlogPostPage() {
         return;
       }
 
-      const loadedPost =
-        data as PublicBlogPost;
+      const loadedPost = data as PublicBlogPost;
 
       setPost(loadedPost);
       synchronizeHead(loadedPost);
@@ -105,9 +85,7 @@ function BlogPostPage() {
       post?.featured_image_path
         ? supabase.storage
             .from("blog-media")
-            .getPublicUrl(
-              post.featured_image_path,
-            ).data.publicUrl
+            .getPublicUrl(post.featured_image_path).data.publicUrl
         : "",
     [post?.featured_image_path],
   );
@@ -134,8 +112,7 @@ function BlogPostPage() {
           </h1>
 
           <p className="mt-3 text-ink-soft">
-            Lehet, hogy a cikket visszavonták vagy
-            megváltozott a címe.
+            Lehet, hogy a cikket visszavonták vagy megváltozott a címe.
           </p>
 
           <Link
@@ -154,8 +131,7 @@ function BlogPostPage() {
     return (
       <main className="container-page py-20">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
-          {errorMessage ||
-            "A blogbejegyzés nem tölthető be."}
+          {errorMessage || "A blogbejegyzés nem tölthető be."}
         </div>
       </main>
     );
@@ -191,17 +167,12 @@ function BlogPostPage() {
 
                 <span className="inline-flex items-center gap-2">
                   <CalendarDays className="h-4 w-4" />
-                  {formatDate(
-                    post.published_at,
-                  )}
+                  {formatDate(post.published_at)}
                 </span>
 
                 <span className="inline-flex items-center gap-2">
                   <Clock3 className="h-4 w-4" />
-                  {readingTime(
-                    post.content_html,
-                  )}{" "}
-                  perc olvasás
+                  {readingTime(post.content_html)} perc olvasás
                 </span>
               </div>
             </div>
@@ -232,29 +203,15 @@ function BlogPostPage() {
 }
 
 function synchronizeHead(post: PublicBlogPost) {
-  const title =
-    post.seo_title.trim() ||
-    `${post.title} — PandaDesign`;
+  const title = post.seo_title.trim() || `${post.title} — PandaDesign`;
 
-  const description =
-    post.seo_description.trim() ||
-    post.excerpt;
+  const description = post.seo_description.trim() || post.excerpt;
 
   document.title = title;
 
-  setMeta(
-    'meta[name="description"]',
-    "name",
-    "description",
-    description,
-  );
+  setMeta('meta[name="description"]', "name", "description", description);
 
-  setMeta(
-    'meta[property="og:title"]',
-    "property",
-    "og:title",
-    title,
-  );
+  setMeta('meta[property="og:title"]', "property", "og:title", title);
 
   setMeta(
     'meta[property="og:description"]',
@@ -270,10 +227,7 @@ function setMeta(
   key: string,
   content: string,
 ) {
-  let element =
-    document.head.querySelector<HTMLMetaElement>(
-      selector,
-    );
+  let element = document.head.querySelector<HTMLMetaElement>(selector);
 
   if (!element) {
     element = document.createElement("meta");

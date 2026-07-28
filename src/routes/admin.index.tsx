@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase/client";
 
@@ -75,9 +71,7 @@ function AdminDashboardPage() {
         }
 
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Ismeretlen hiba történt.",
+          error instanceof Error ? error.message : "Ismeretlen hiba történt.",
         );
 
         setLoading(false);
@@ -118,9 +112,7 @@ function AdminDashboardPage() {
             Adminfelületi hiba
           </h1>
 
-          <p className="mt-3 text-red-700">
-            {errorMessage}
-          </p>
+          <p className="mt-3 text-red-700">{errorMessage}</p>
         </div>
       </main>
     );
@@ -135,13 +127,9 @@ function AdminDashboardPage() {
               PandaDesign admin
             </p>
 
-            <h1 className="text-3xl font-bold">
-              Áttekintés
-            </h1>
+            <h1 className="text-3xl font-bold">Áttekintés</h1>
 
-            <p className="mt-2 text-muted-foreground">
-              Bejelentkezve: {email}
-            </p>
+            <p className="mt-2 text-muted-foreground">Bejelentkezve: {email}</p>
           </div>
 
           <button
@@ -158,13 +146,9 @@ function AdminDashboardPage() {
             to="/admin/hero"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Főoldal
-            </p>
+            <p className="text-sm text-muted-foreground">Főoldal</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Hero szerkesztése
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Hero szerkesztése</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Főcím, leírás és gombok módosítása.
@@ -175,13 +159,9 @@ function AdminDashboardPage() {
             to="/admin/services"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Tartalom
-            </p>
+            <p className="text-sm text-muted-foreground">Tartalom</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Szolgáltatások
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Szolgáltatások</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Hozzáadás, szerkesztés, sorrend és láthatóság.
@@ -192,13 +172,9 @@ function AdminDashboardPage() {
             to="/admin/process"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Főoldal
-            </p>
+            <p className="text-sm text-muted-foreground">Főoldal</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Munkafolyamat
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Munkafolyamat</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Lépések hozzáadása, szerkesztése és sorrendezése.
@@ -209,13 +185,9 @@ function AdminDashboardPage() {
             to="/admin/projects"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Tartalom
-            </p>
+            <p className="text-sm text-muted-foreground">Tartalom</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Referenciák
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Referenciák</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Projektek, képek, kategóriák és láthatóság kezelése.
@@ -226,13 +198,9 @@ function AdminDashboardPage() {
             to="/admin/pricing"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Értékesítés
-            </p>
+            <p className="text-sm text-muted-foreground">Értékesítés</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Árak és csomagok
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Árak és csomagok</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Árak, csomagelemek, kiemelés, CTA és sorrend kezelése.
@@ -243,13 +211,9 @@ function AdminDashboardPage() {
             to="/admin/why"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Főoldal
-            </p>
+            <p className="text-sm text-muted-foreground">Főoldal</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Miért a PandaDesign?
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Miért a PandaDesign?</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Szekciócím, leírás, előnyök, ikonok és sorrend kezelése.
@@ -260,13 +224,9 @@ function AdminDashboardPage() {
             to="/admin/testimonials"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Bizalomépítés
-            </p>
+            <p className="text-sm text-muted-foreground">Bizalomépítés</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Véleménykezelő
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Véleménykezelő</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Ügyfélvélemények, értékelések, sorrend és láthatóság kezelése.
@@ -277,13 +237,9 @@ function AdminDashboardPage() {
             to="/admin/cta"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Konverzió
-            </p>
+            <p className="text-sm text-muted-foreground">Konverzió</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Záró CTA
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Záró CTA</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Kiemelt üzenet, gomb, ikon és láthatóság kezelése.
@@ -294,13 +250,9 @@ function AdminDashboardPage() {
             to="/admin/faq"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Tartalom
-            </p>
+            <p className="text-sm text-muted-foreground">Tartalom</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              GYIK szerkesztő
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">GYIK szerkesztő</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Kérdések, válaszok, sorrend és láthatóság kezelése.
@@ -311,16 +263,13 @@ function AdminDashboardPage() {
             to="/admin/leads"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Értékesítés
-            </p>
+            <p className="text-sm text-muted-foreground">Értékesítés</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Leadkezelő
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Leadkezelő</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Ajánlatkérések, státuszok, prioritások és belső jegyzetek kezelése.
+              Ajánlatkérések, státuszok, prioritások és belső jegyzetek
+              kezelése.
             </p>
           </Link>
 
@@ -328,16 +277,13 @@ function AdminDashboardPage() {
             to="/admin/blog"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Tartalommarketing
-            </p>
+            <p className="text-sm text-muted-foreground">Tartalommarketing</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Blog
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Blog</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Blogbejegyzések, kiemelt képek, SEO és gazdag szöveges tartalom kezelése.
+              Blogbejegyzések, kiemelt képek, SEO és gazdag szöveges tartalom
+              kezelése.
             </p>
           </Link>
 
@@ -345,13 +291,9 @@ function AdminDashboardPage() {
             to="/admin/navigation"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Globális megjelenés
-            </p>
+            <p className="text-sm text-muted-foreground">Globális megjelenés</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Fejléc és lábléc
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Fejléc és lábléc</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
               Menüpontok, mobilmenü, értesítési sáv, CTA és lábléccsoportok.
@@ -362,16 +304,13 @@ function AdminDashboardPage() {
             to="/admin/settings"
             className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <p className="text-sm text-muted-foreground">
-              Beállítások
-            </p>
+            <p className="text-sm text-muted-foreground">Beállítások</p>
 
-            <h2 className="mt-2 text-xl font-bold">
-              Weboldal adatai
-            </h2>
+            <h2 className="mt-2 text-xl font-bold">Weboldal adatai</h2>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Arculat, kapcsolattartás, közösségi linkek, SEO és lábléc kezelése.
+              Arculat, kapcsolattartás, közösségi linkek, SEO és lábléc
+              kezelése.
             </p>
           </Link>
         </section>

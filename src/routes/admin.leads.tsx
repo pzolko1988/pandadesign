@@ -1,14 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   Archive,
   BellRing,
@@ -35,18 +26,9 @@ export const Route = createFileRoute("/admin/leads")({
 });
 
 type LeadStatus =
-  | "new"
-  | "contacted"
-  | "qualified"
-  | "proposal_sent"
-  | "won"
-  | "lost"
-  | "spam";
+  "new" | "contacted" | "qualified" | "proposal_sent" | "won" | "lost" | "spam";
 
-type LeadPriority =
-  | "low"
-  | "normal"
-  | "high";
+type LeadPriority = "low" | "normal" | "high";
 
 type ContactLead = {
   id: string;
@@ -74,22 +56,13 @@ type ContactLead = {
   user_agent: string;
   viewed_at: string | null;
   last_contacted_at: string | null;
-  notification_status:
-    | "pending"
-    | "sent"
-    | "failed"
-    | "skipped";
+  notification_status: "pending" | "sent" | "failed" | "skipped";
   notification_sent_at: string | null;
   notification_last_attempt_at: string | null;
   notification_attempts: number;
   notification_email_id: string | null;
   notification_error: string | null;
-  autoreply_status:
-    | "disabled"
-    | "pending"
-    | "sent"
-    | "failed"
-    | "skipped";
+  autoreply_status: "disabled" | "pending" | "sent" | "failed" | "skipped";
   autoreply_sent_at: string | null;
   autoreply_email_id: string | null;
   autoreply_error: string | null;
@@ -128,17 +101,11 @@ const PRIORITY_OPTIONS: Array<{
 ];
 
 const STATUS_LABELS = Object.fromEntries(
-  STATUS_OPTIONS.map((item) => [
-    item.value,
-    item.label,
-  ]),
+  STATUS_OPTIONS.map((item) => [item.value, item.label]),
 ) as Record<LeadStatus, string>;
 
 const PRIORITY_LABELS = Object.fromEntries(
-  PRIORITY_OPTIONS.map((item) => [
-    item.value,
-    item.label,
-  ]),
+  PRIORITY_OPTIONS.map((item) => [item.value, item.label]),
 ) as Record<LeadPriority, string>;
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
@@ -154,31 +121,24 @@ const STATUS_STYLES: Record<LeadStatus, string> = {
 function AdminLeadsPage() {
   const navigate = useNavigate();
 
-  const [leads, setLeads] =
-    useState<ContactLead[]>([]);
-  const [selectedId, setSelectedId] =
-    useState<string | null>(null);
-  const [notes, setNotes] =
-    useState<LeadNote[]>([]);
+  const [leads, setLeads] = useState<ContactLead[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [notes, setNotes] = useState<LeadNote[]>([]);
   const [noteText, setNoteText] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<LeadStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
 
   const [loading, setLoading] = useState(true);
-  const [detailLoading, setDetailLoading] =
-    useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
-  const [
-    sendingNotificationId,
-    setSendingNotificationId,
-  ] = useState<string | null>(null);
+  const [sendingNotificationId, setSendingNotificationId] = useState<
+    string | null
+  >(null);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     void initializePage();
@@ -193,20 +153,16 @@ function AdminLeadsPage() {
   }, [selectedId]);
 
   const selectedLead = useMemo(
-    () =>
-      leads.find((lead) => lead.id === selectedId) ??
-      null,
+    () => leads.find((lead) => lead.id === selectedId) ?? null,
     [leads, selectedId],
   );
 
   const filteredLeads = useMemo(() => {
-    const normalizedSearch =
-      searchTerm.trim().toLocaleLowerCase("hu-HU");
+    const normalizedSearch = searchTerm.trim().toLocaleLowerCase("hu-HU");
 
     return leads.filter((lead) => {
       const matchesStatus =
-        statusFilter === "all" ||
-        lead.status === statusFilter;
+        statusFilter === "all" || lead.status === statusFilter;
 
       if (!matchesStatus) {
         return false;
@@ -225,9 +181,7 @@ function AdminLeadsPage() {
         lead.budget_range,
         lead.message,
       ].some((value) =>
-        value
-          .toLocaleLowerCase("hu-HU")
-          .includes(normalizedSearch),
+        value.toLocaleLowerCase("hu-HU").includes(normalizedSearch),
       );
     });
   }, [leads, searchTerm, statusFilter]);
@@ -235,19 +189,11 @@ function AdminLeadsPage() {
   const stats = useMemo(
     () => ({
       total: leads.length,
-      new: leads.filter(
-        (lead) => lead.status === "new",
-      ).length,
+      new: leads.filter((lead) => lead.status === "new").length,
       active: leads.filter((lead) =>
-        [
-          "contacted",
-          "qualified",
-          "proposal_sent",
-        ].includes(lead.status),
+        ["contacted", "qualified", "proposal_sent"].includes(lead.status),
       ).length,
-      won: leads.filter(
-        (lead) => lead.status === "won",
-      ).length,
+      won: leads.filter((lead) => lead.status === "won").length,
     }),
     [leads],
   );
@@ -316,31 +262,21 @@ function AdminLeadsPage() {
       throw error;
     }
 
-    const loadedLeads =
-      (data ?? []) as ContactLead[];
+    const loadedLeads = (data ?? []) as ContactLead[];
 
     setLeads(loadedLeads);
 
-    if (
-      selectedId &&
-      !loadedLeads.some(
-        (lead) => lead.id === selectedId,
-      )
-    ) {
+    if (selectedId && !loadedLeads.some((lead) => lead.id === selectedId)) {
       setSelectedId(null);
     }
   }
 
-  async function loadSelectedLeadData(
-    leadId: string,
-  ) {
+  async function loadSelectedLeadData(leadId: string) {
     setDetailLoading(true);
     setErrorMessage("");
 
     try {
-      const lead = leads.find(
-        (item) => item.id === leadId,
-      );
+      const lead = leads.find((item) => item.id === leadId);
 
       if (lead && !lead.viewed_at) {
         const viewedAt = new Date().toISOString();
@@ -370,9 +306,7 @@ function AdminLeadsPage() {
 
       const { data, error } = await supabase
         .from("contact_lead_notes")
-        .select(
-          "id, lead_id, note, created_by, created_at",
-        )
+        .select("id, lead_id, note, created_by, created_at")
         .eq("lead_id", leadId)
         .order("created_at", {
           ascending: false,
@@ -408,12 +342,8 @@ function AdminLeadsPage() {
         ...changes,
       };
 
-      if (
-        changes.status === "contacted" &&
-        !selectedLead?.last_contacted_at
-      ) {
-        payload.last_contacted_at =
-          new Date().toISOString();
+      if (changes.status === "contacted" && !selectedLead?.last_contacted_at) {
+        payload.last_contacted_at = new Date().toISOString();
       }
 
       const { error } = await supabase
@@ -428,10 +358,10 @@ function AdminLeadsPage() {
       setLeads((current) =>
         current.map((lead) =>
           lead.id === leadId
-            ? {
+            ? ({
                 ...lead,
                 ...payload,
-              } as ContactLead
+              } as ContactLead)
             : lead,
         ),
       );
@@ -448,9 +378,7 @@ function AdminLeadsPage() {
     }
   }
 
-  async function addNote(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function addNote(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!selectedLead) {
@@ -481,9 +409,7 @@ function AdminLeadsPage() {
       }
 
       if (!user) {
-        throw new Error(
-          "A felhasználói munkamenet nem található.",
-        );
+        throw new Error("A felhasználói munkamenet nem található.");
       }
 
       const { data, error } = await supabase
@@ -493,19 +419,14 @@ function AdminLeadsPage() {
           note,
           created_by: user.id,
         })
-        .select(
-          "id, lead_id, note, created_by, created_at",
-        )
+        .select("id, lead_id, note, created_by, created_at")
         .single();
 
       if (error) {
         throw error;
       }
 
-      setNotes((current) => [
-        data as LeadNote,
-        ...current,
-      ]);
+      setNotes((current) => [data as LeadNote, ...current]);
       setNoteText("");
       setSuccessMessage("A belső jegyzet elmentve.");
     } catch (error: unknown) {
@@ -520,9 +441,7 @@ function AdminLeadsPage() {
   }
 
   async function deleteNote(note: LeadNote) {
-    const confirmed = window.confirm(
-      "Biztosan törlöd ezt a belső jegyzetet?",
-    );
+    const confirmed = window.confirm("Biztosan törlöd ezt a belső jegyzetet?");
 
     if (!confirmed) {
       return;
@@ -542,10 +461,7 @@ function AdminLeadsPage() {
       }
 
       setNotes((current) =>
-        current.filter(
-          (currentNote) =>
-            currentNote.id !== note.id,
-        ),
+        current.filter((currentNote) => currentNote.id !== note.id),
       );
 
       setSuccessMessage("A jegyzet törölve.");
@@ -558,43 +474,33 @@ function AdminLeadsPage() {
     }
   }
 
-  async function resendLeadNotification(
-    leadId: string,
-  ) {
+  async function resendLeadNotification(leadId: string) {
     setSendingNotificationId(leadId);
     setErrorMessage("");
     setSuccessMessage("");
 
     try {
-      const { data, error } =
-        await supabase.functions.invoke(
-          "lead-notification",
-          {
-            body: {
-              mode: "manual",
-              lead_id: leadId,
-            },
+      const { data, error } = await supabase.functions.invoke(
+        "lead-notification",
+        {
+          body: {
+            mode: "manual",
+            lead_id: leadId,
           },
-        );
+        },
+      );
 
       if (error) {
         throw error;
       }
 
-      if (
-        data &&
-        typeof data === "object" &&
-        "error" in data &&
-        data.error
-      ) {
+      if (data && typeof data === "object" && "error" in data && data.error) {
         throw new Error(String(data.error));
       }
 
       await loadLeads();
 
-      setSuccessMessage(
-        "A leadértesítő e-mail sikeresen elküldve.",
-      );
+      setSuccessMessage("A leadértesítő e-mail sikeresen elküldve.");
     } catch (error: unknown) {
       setErrorMessage(
         error instanceof Error
@@ -630,10 +536,7 @@ function AdminLeadsPage() {
       }
 
       setLeads((current) =>
-        current.filter(
-          (currentLead) =>
-            currentLead.id !== lead.id,
-        ),
+        current.filter((currentLead) => currentLead.id !== lead.id),
       );
 
       if (selectedId === lead.id) {
@@ -643,9 +546,7 @@ function AdminLeadsPage() {
       setSuccessMessage("A lead végleg törölve.");
     } catch (error: unknown) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "A lead törlése nem sikerült.",
+        error instanceof Error ? error.message : "A lead törlése nem sikerült.",
       );
     } finally {
       setSaving(false);
@@ -681,9 +582,7 @@ function AdminLeadsPage() {
         STATUS_LABELS[lead.status],
         PRIORITY_LABELS[lead.priority],
         lead.message,
-        lead.marketing_consent
-          ? "Igen"
-          : "Nem",
+        lead.marketing_consent ? "Igen" : "Nem",
         lead.utm_source,
         lead.utm_medium,
         lead.utm_campaign,
@@ -692,29 +591,21 @@ function AdminLeadsPage() {
 
     const csv = rows
       .map((row) =>
-        row
-          .map((cell) =>
-            `"${String(cell).replace(/"/g, '""')}"`,
-          )
-          .join(";"),
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";"),
       )
       .join("\n");
 
-    const blob = new Blob(
-      [`\uFEFF${csv}`],
-      {
-        type: "text/csv;charset=utf-8",
-      },
-    );
+    const blob = new Blob([`\uFEFF${csv}`], {
+      type: "text/csv;charset=utf-8",
+    });
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
 
     link.href = url;
-    link.download =
-      `pandadesign-leads-${new Date()
-        .toISOString()
-        .slice(0, 10)}.csv`;
+    link.download = `pandadesign-leads-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
 
     document.body.appendChild(link);
     link.click();
@@ -750,8 +641,8 @@ function AdminLeadsPage() {
             </h1>
 
             <p className="mt-2 max-w-3xl text-muted-foreground">
-              Beérkező ajánlatkérések, státuszok,
-              prioritások és belső jegyzetek kezelése.
+              Beérkező ajánlatkérések, státuszok, prioritások és belső jegyzetek
+              kezelése.
             </p>
           </div>
 
@@ -796,29 +687,13 @@ function AdminLeadsPage() {
         )}
 
         <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            label="Összes lead"
-            value={stats.total}
-            icon={Archive}
-          />
+          <StatCard label="Összes lead" value={stats.total} icon={Archive} />
 
-          <StatCard
-            label="Új"
-            value={stats.new}
-            icon={Star}
-          />
+          <StatCard label="Új" value={stats.new} icon={Star} />
 
-          <StatCard
-            label="Folyamatban"
-            value={stats.active}
-            icon={Clock3}
-          />
+          <StatCard label="Folyamatban" value={stats.active} icon={Clock3} />
 
-          <StatCard
-            label="Megnyert"
-            value={stats.won}
-            icon={CheckCircle2}
-          />
+          <StatCard label="Megnyert" value={stats.won} icon={CheckCircle2} />
         </section>
 
         <section className="mb-6 grid gap-4 rounded-2xl border bg-background p-4 shadow-sm md:grid-cols-[1fr_260px]">
@@ -828,9 +703,7 @@ function AdminLeadsPage() {
             <input
               type="search"
               value={searchTerm}
-              onChange={(event) =>
-                setSearchTerm(event.target.value)
-              }
+              onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Keresés név, e-mail, cég, üzenet vagy szolgáltatás alapján..."
               className="w-full rounded-xl border bg-background py-3 pl-11 pr-4 outline-none transition focus:ring-2 focus:ring-brand"
             />
@@ -839,23 +712,14 @@ function AdminLeadsPage() {
           <select
             value={statusFilter}
             onChange={(event) =>
-              setStatusFilter(
-                event.target.value as
-                  | LeadStatus
-                  | "all",
-              )
+              setStatusFilter(event.target.value as LeadStatus | "all")
             }
             className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
           >
-            <option value="all">
-              Minden státusz
-            </option>
+            <option value="all">Minden státusz</option>
 
             {STATUS_OPTIONS.map((status) => (
-              <option
-                key={status.value}
-                value={status.value}
-              >
+              <option key={status.value} value={status.value}>
                 {status.label}
               </option>
             ))}
@@ -865,9 +729,7 @@ function AdminLeadsPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)]">
           <section className="overflow-hidden rounded-2xl border bg-background shadow-sm">
             <div className="border-b px-5 py-4">
-              <h2 className="font-bold">
-                Leadlista
-              </h2>
+              <h2 className="font-bold">Leadlista</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
                 {filteredLeads.length} találat
@@ -876,13 +738,10 @@ function AdminLeadsPage() {
 
             {filteredLeads.length === 0 ? (
               <div className="p-10 text-center">
-                <h3 className="font-bold">
-                  Nincs megjeleníthető lead
-                </h3>
+                <h3 className="font-bold">Nincs megjeleníthető lead</h3>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Módosítsd a keresést vagy a
-                  státuszszűrőt.
+                  Módosítsd a keresést vagy a státuszszűrőt.
                 </p>
               </div>
             ) : (
@@ -891,21 +750,15 @@ function AdminLeadsPage() {
                   <button
                     key={lead.id}
                     type="button"
-                    onClick={() =>
-                      setSelectedId(lead.id)
-                    }
+                    onClick={() => setSelectedId(lead.id)}
                     className={`w-full p-5 text-left transition hover:bg-muted/50 ${
-                      selectedId === lead.id
-                        ? "bg-brand/5"
-                        : ""
+                      selectedId === lead.id ? "bg-brand/5" : ""
                     }`}
                   >
                     <div className="flex items-start gap-4">
                       <span
                         className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${
-                          lead.viewed_at
-                            ? "bg-slate-300"
-                            : "bg-brand"
+                          lead.viewed_at ? "bg-slate-300" : "bg-brand"
                         }`}
                         title={
                           lead.viewed_at
@@ -916,9 +769,7 @@ function AdminLeadsPage() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="truncate font-bold">
-                            {lead.name}
-                          </h3>
+                          <h3 className="truncate font-bold">{lead.name}</h3>
 
                           <span
                             className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
@@ -935,17 +786,13 @@ function AdminLeadsPage() {
                           )}
 
                           <NotificationBadge
-                            status={
-                              lead.notification_status
-                            }
+                            status={lead.notification_status}
                           />
                         </div>
 
                         <p className="mt-1 truncate text-sm text-muted-foreground">
                           {lead.email}
-                          {lead.company
-                            ? ` • ${lead.company}`
-                            : ""}
+                          {lead.company ? ` • ${lead.company}` : ""}
                         </p>
 
                         <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
@@ -953,17 +800,11 @@ function AdminLeadsPage() {
                         </p>
 
                         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                          <span>
-                            {lead.service_type}
-                          </span>
+                          <span>{lead.service_type}</span>
 
-                          <span>
-                            {lead.budget_range}
-                          </span>
+                          <span>{lead.budget_range}</span>
 
-                          <span>
-                            {formatDate(lead.created_at)}
-                          </span>
+                          <span>{formatDate(lead.created_at)}</span>
                         </div>
                       </div>
 
@@ -980,13 +821,10 @@ function AdminLeadsPage() {
               <div className="p-10 text-center">
                 <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground/30" />
 
-                <h2 className="mt-4 font-bold">
-                  Válassz ki egy leadet
-                </h2>
+                <h2 className="mt-4 font-bold">Válassz ki egy leadet</h2>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                  A részletes adatok, státuszok és
-                  jegyzetek itt jelennek meg.
+                  A részletes adatok, státuszok és jegyzetek itt jelennek meg.
                 </p>
               </div>
             ) : (
@@ -997,10 +835,7 @@ function AdminLeadsPage() {
                 detailLoading={detailLoading}
                 saving={saving}
                 addingNote={addingNote}
-                sendingNotification={
-                  sendingNotificationId ===
-                  selectedLead.id
-                }
+                sendingNotification={sendingNotificationId === selectedLead.id}
                 onNoteTextChange={setNoteText}
                 onStatusChange={(status) =>
                   void updateLead(
@@ -1017,17 +852,11 @@ function AdminLeadsPage() {
                   )
                 }
                 onAddNote={addNote}
-                onDeleteNote={(note) =>
-                  void deleteNote(note)
-                }
+                onDeleteNote={(note) => void deleteNote(note)}
                 onResendNotification={() =>
-                  void resendLeadNotification(
-                    selectedLead.id,
-                  )
+                  void resendLeadNotification(selectedLead.id)
                 }
-                onDeleteLead={() =>
-                  void deleteLead(selectedLead)
-                }
+                onDeleteLead={() => void deleteLead(selectedLead)}
               />
             )}
           </aside>
@@ -1043,22 +872,14 @@ type StatCardProps = {
   icon: typeof Archive;
 };
 
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-}: StatCardProps) {
+function StatCard({ label, value, icon: Icon }: StatCardProps) {
   return (
     <article className="rounded-2xl border bg-background p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">
-            {label}
-          </p>
+          <p className="text-sm text-muted-foreground">{label}</p>
 
-          <p className="mt-2 text-3xl font-bold">
-            {value}
-          </p>
+          <p className="mt-2 text-3xl font-bold">{value}</p>
         </div>
 
         <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand/10 text-brand">
@@ -1079,12 +900,8 @@ type LeadDetailProps = {
   sendingNotification: boolean;
   onNoteTextChange: (value: string) => void;
   onStatusChange: (status: LeadStatus) => void;
-  onPriorityChange: (
-    priority: LeadPriority,
-  ) => void;
-  onAddNote: (
-    event: FormEvent<HTMLFormElement>,
-  ) => void;
+  onPriorityChange: (priority: LeadPriority) => void;
+  onAddNote: (event: FormEvent<HTMLFormElement>) => void;
   onDeleteNote: (note: LeadNote) => void;
   onResendNotification: () => void;
   onDeleteLead: () => void;
@@ -1115,9 +932,7 @@ function LeadDetail({
           </span>
 
           <div className="min-w-0">
-            <h2 className="text-xl font-bold">
-              {lead.name}
-            </h2>
+            <h2 className="text-xl font-bold">{lead.name}</h2>
 
             <p className="mt-1 text-sm text-muted-foreground">
               Beérkezett: {formatDate(lead.created_at)}
@@ -1137,17 +952,12 @@ function LeadDetail({
               value={lead.status}
               disabled={saving}
               onChange={(event) =>
-                onStatusChange(
-                  event.target.value as LeadStatus,
-                )
+                onStatusChange(event.target.value as LeadStatus)
               }
               className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand"
             >
               {STATUS_OPTIONS.map((status) => (
-                <option
-                  key={status.value}
-                  value={status.value}
-                >
+                <option key={status.value} value={status.value}>
                   {status.label}
                 </option>
               ))}
@@ -1163,17 +973,12 @@ function LeadDetail({
               value={lead.priority}
               disabled={saving}
               onChange={(event) =>
-                onPriorityChange(
-                  event.target.value as LeadPriority,
-                )
+                onPriorityChange(event.target.value as LeadPriority)
               }
               className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand"
             >
               {PRIORITY_OPTIONS.map((priority) => (
-                <option
-                  key={priority.value}
-                  value={priority.value}
-                >
+                <option key={priority.value} value={priority.value}>
                   {priority.label}
                 </option>
               ))}
@@ -1226,11 +1031,7 @@ function LeadDetail({
         <div className="grid gap-3 text-sm sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <MetaItem
             label="Marketing"
-            value={
-              lead.marketing_consent
-                ? "Hozzájárult"
-                : "Nem járult hozzá"
-            }
+            value={lead.marketing_consent ? "Hozzájárult" : "Nem járult hozzá"}
           />
 
           <MetaItem
@@ -1238,19 +1039,12 @@ function LeadDetail({
             value={lead.privacy_policy_version}
           />
 
-          <MetaItem
-            label="Forrásoldal"
-            value={lead.source_page || "—"}
-          />
+          <MetaItem label="Forrásoldal" value={lead.source_page || "—"} />
 
           <MetaItem
             label="UTM kampány"
             value={
-              [
-                lead.utm_source,
-                lead.utm_medium,
-                lead.utm_campaign,
-              ]
+              [lead.utm_source, lead.utm_medium, lead.utm_campaign]
                 .filter(Boolean)
                 .join(" / ") || "—"
             }
@@ -1265,15 +1059,9 @@ function LeadDetail({
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-bold">
-                  E-mail-értesítés
-                </h3>
+                <h3 className="font-bold">E-mail-értesítés</h3>
 
-                <NotificationBadge
-                  status={
-                    lead.notification_status
-                  }
-                />
+                <NotificationBadge status={lead.notification_status} />
               </div>
 
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -1283,38 +1071,27 @@ function LeadDetail({
               {lead.notification_error && (
                 <div className="mt-3 flex gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-700">
                   <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span className="break-words">
-                    {lead.notification_error}
-                  </span>
+                  <span className="break-words">{lead.notification_error}</span>
                 </div>
               )}
 
               <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                <span>
-                  Kísérletek:{" "}
-                  {lead.notification_attempts}
-                </span>
+                <span>Kísérletek: {lead.notification_attempts}</span>
 
                 <span>
                   Utolsó próbálkozás:{" "}
                   {lead.notification_last_attempt_at
-                    ? formatDate(
-                        lead.notification_last_attempt_at,
-                      )
+                    ? formatDate(lead.notification_last_attempt_at)
                     : "—"}
                 </span>
 
                 <span>
                   Érdeklődő visszaigazolása:{" "}
-                  {autoreplyLabel(
-                    lead.autoreply_status,
-                  )}
+                  {autoreplyLabel(lead.autoreply_status)}
                 </span>
 
                 <span>
-                  Resend azonosító:{" "}
-                  {lead.notification_email_id ||
-                    "—"}
+                  Resend azonosító: {lead.notification_email_id || "—"}
                 </span>
               </div>
 
@@ -1336,26 +1113,18 @@ function LeadDetail({
 
         <section>
           <div className="mb-3">
-            <h3 className="font-bold">
-              Belső jegyzetek
-            </h3>
+            <h3 className="font-bold">Belső jegyzetek</h3>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              Ezek a jegyzetek csak az adminfelületen
-              láthatók.
+              Ezek a jegyzetek csak az adminfelületen láthatók.
             </p>
           </div>
 
-          <form
-            onSubmit={onAddNote}
-            className="space-y-3"
-          >
+          <form onSubmit={onAddNote} className="space-y-3">
             <textarea
               rows={4}
               value={noteText}
-              onChange={(event) =>
-                onNoteTextChange(event.target.value)
-              }
+              onChange={(event) => onNoteTextChange(event.target.value)}
               placeholder="Például: Telefonon egyeztettünk, kedden küldöm az ajánlatot."
               className="w-full resize-y rounded-xl border bg-background px-4 py-3 text-sm leading-6 outline-none focus:ring-2 focus:ring-brand"
             />
@@ -1367,9 +1136,7 @@ function LeadDetail({
             >
               <Send className="h-4 w-4" />
 
-              {addingNote
-                ? "Mentés..."
-                : "Jegyzet hozzáadása"}
+              {addingNote ? "Mentés..." : "Jegyzet hozzáadása"}
             </button>
           </form>
 
@@ -1384,10 +1151,7 @@ function LeadDetail({
           ) : (
             <div className="mt-4 space-y-3">
               {notes.map((note) => (
-                <article
-                  key={note.id}
-                  className="rounded-xl border p-4"
-                >
+                <article key={note.id} className="rounded-xl border p-4">
                   <p className="whitespace-pre-line text-sm leading-6">
                     {note.note}
                   </p>
@@ -1399,9 +1163,7 @@ function LeadDetail({
 
                     <button
                       type="button"
-                      onClick={() =>
-                        onDeleteNote(note)
-                      }
+                      onClick={() => onDeleteNote(note)}
                       className="text-xs font-semibold text-red-600 hover:underline"
                     >
                       Törlés
@@ -1435,14 +1197,10 @@ function NotificationBadge({
   status: ContactLead["notification_status"];
 }) {
   const styles = {
-    pending:
-      "bg-amber-100 text-amber-800",
-    sent:
-      "bg-green-100 text-green-800",
-    failed:
-      "bg-red-100 text-red-800",
-    skipped:
-      "bg-slate-100 text-slate-700",
+    pending: "bg-amber-100 text-amber-800",
+    sent: "bg-green-100 text-green-800",
+    failed: "bg-red-100 text-red-800",
+    skipped: "bg-slate-100 text-slate-700",
   };
 
   const labels = {
@@ -1461,9 +1219,7 @@ function NotificationBadge({
   );
 }
 
-function notificationDescription(
-  lead: ContactLead,
-) {
+function notificationDescription(lead: ContactLead) {
   switch (lead.notification_status) {
     case "sent":
       return lead.notification_sent_at
@@ -1480,9 +1236,7 @@ function notificationDescription(
   }
 }
 
-function autoreplyLabel(
-  status: ContactLead["autoreply_status"],
-) {
+function autoreplyLabel(status: ContactLead["autoreply_status"]) {
   switch (status) {
     case "sent":
       return "elküldve";
@@ -1504,12 +1258,7 @@ type DetailLinkProps = {
   href?: string;
 };
 
-function DetailLink({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: DetailLinkProps) {
+function DetailLink({ icon: Icon, label, value, href }: DetailLinkProps) {
   const content = (
     <>
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground">
@@ -1517,9 +1266,7 @@ function DetailLink({
       </span>
 
       <span className="min-w-0">
-        <span className="block text-xs text-muted-foreground">
-          {label}
-        </span>
+        <span className="block text-xs text-muted-foreground">{label}</span>
 
         <span className="mt-0.5 block truncate text-sm font-semibold">
           {value}
@@ -1546,22 +1293,12 @@ function DetailLink({
   );
 }
 
-function MetaItem({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function MetaItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border p-3">
-      <p className="text-xs text-muted-foreground">
-        {label}
-      </p>
+      <p className="text-xs text-muted-foreground">{label}</p>
 
-      <p className="mt-1 break-words text-sm font-medium">
-        {value}
-      </p>
+      <p className="mt-1 break-words text-sm font-medium">{value}</p>
     </div>
   );
 }

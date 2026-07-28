@@ -1,9 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, Smartphone, Zap, Search, Settings, Layers, ShoppingBag, RefreshCw, LifeBuoy, Code2, Sparkles, Users, TrendingUp, Globe, MessageSquare, Star, Rocket, type LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Smartphone,
+  Zap,
+  Search,
+  Settings,
+  Layers,
+  ShoppingBag,
+  RefreshCw,
+  LifeBuoy,
+  Code2,
+  Sparkles,
+  Users,
+  TrendingUp,
+  Globe,
+  MessageSquare,
+  Star,
+  Rocket,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Section } from "@/components/site/Section";
 import { BrowserMockup } from "@/components/site/BrowserMockup";
 import { supabase } from "@/lib/supabase/client";
@@ -16,10 +41,24 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek" },
-      { name: "description", content: "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig." },
-      { property: "og:title", content: "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek" },
-      { property: "og:description", content: "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig." },
+      {
+        title: "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek",
+      },
+      {
+        name: "description",
+        content:
+          "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig.",
+      },
+      {
+        property: "og:title",
+        content:
+          "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek",
+      },
+      {
+        property: "og:description",
+        content:
+          "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig.",
+      },
       { property: "og:url", content: "/" },
     ],
     links: [{ rel: "canonical", href: "/" }],
@@ -124,7 +163,6 @@ type PricingPackage = {
   is_featured: boolean;
   is_visible: boolean;
 };
-
 
 type WhySectionSettings = {
   id: number;
@@ -273,14 +311,38 @@ type FaqItem = {
 };
 
 const DEFAULT_FAQS = [
-  { q: "Mennyi idő alatt készül el egy weboldal?", a: "A tipikus átfutási idő 2–6 hét a projekt összetettségétől és a tartalom rendelkezésre állásától függően. A pontos ütemezést a kezdeti egyeztetés során rögzítjük." },
-  { q: "Mennyibe kerül egy weboldal?", a: "A landing oldalak 69 000 Ft-tól, a klasszikus céges weboldalak 119 000 Ft-tól, a nagyobb prezentációs oldalak 199 000 Ft-tól, a webshopok pedig 299 000 Ft-tól indulnak. A végleges ár az egyedi igényektől függ." },
-  { q: "Nekem kell biztosítanom a szöveget és a képeket?", a: "Alapesetben igen, de segítünk a struktúrálásban, és opcióként copywritinget, valamint képválogatást is vállalunk." },
-  { q: "Mobiltelefonon is jól fog működni?", a: "Igen, minden általunk készített oldal mobilra optimalizált, és a Google Core Web Vitals szempontjait is figyelembe vesszük." },
-  { q: "Később én is tudom szerkeszteni?", a: "Igen. WordPress alapú oldalaknál egyszerű adminfelületet kapsz, egyedi fejlesztéseknél pedig a projekthez illeszkedő szerkesztőt biztosítunk." },
-  { q: "Vállaltok karbantartást?", a: "Igen, havi karbantartási csomagokat is kínálunk: frissítések, biztonsági mentések, kisebb tartalmi módosítások." },
-  { q: "Tudtok webáruházat is készíteni?", a: "Igen, WooCommerce vagy egyedi megoldás alapján is készítünk webshopokat online fizetéssel és szállítási integrációval." },
-  { q: "Mi történik az átadás után?", a: "Betanítást, dokumentációt és opcionális karbantartási csomagot biztosítunk, hogy hosszú távon is biztonságban tudd az oldalad." },
+  {
+    q: "Mennyi idő alatt készül el egy weboldal?",
+    a: "A tipikus átfutási idő 2–6 hét a projekt összetettségétől és a tartalom rendelkezésre állásától függően. A pontos ütemezést a kezdeti egyeztetés során rögzítjük.",
+  },
+  {
+    q: "Mennyibe kerül egy weboldal?",
+    a: "A landing oldalak 69 000 Ft-tól, a klasszikus céges weboldalak 119 000 Ft-tól, a nagyobb prezentációs oldalak 199 000 Ft-tól, a webshopok pedig 299 000 Ft-tól indulnak. A végleges ár az egyedi igényektől függ.",
+  },
+  {
+    q: "Nekem kell biztosítanom a szöveget és a képeket?",
+    a: "Alapesetben igen, de segítünk a struktúrálásban, és opcióként copywritinget, valamint képválogatást is vállalunk.",
+  },
+  {
+    q: "Mobiltelefonon is jól fog működni?",
+    a: "Igen, minden általunk készített oldal mobilra optimalizált, és a Google Core Web Vitals szempontjait is figyelembe vesszük.",
+  },
+  {
+    q: "Később én is tudom szerkeszteni?",
+    a: "Igen. WordPress alapú oldalaknál egyszerű adminfelületet kapsz, egyedi fejlesztéseknél pedig a projekthez illeszkedő szerkesztőt biztosítunk.",
+  },
+  {
+    q: "Vállaltok karbantartást?",
+    a: "Igen, havi karbantartási csomagokat is kínálunk: frissítések, biztonsági mentések, kisebb tartalmi módosítások.",
+  },
+  {
+    q: "Tudtok webáruházat is készíteni?",
+    a: "Igen, WooCommerce vagy egyedi megoldás alapján is készítünk webshopokat online fizetéssel és szállítási integrációval.",
+  },
+  {
+    q: "Mi történik az átadás után?",
+    a: "Betanítást, dokumentációt és opcionális karbantartási csomagot biztosítunk, hogy hosszú távon is biztonságban tudd az oldalad.",
+  },
 ];
 
 type FinalCtaSettings = {
@@ -345,7 +407,6 @@ function Home() {
   );
 }
 
-
 function SiteSettingsHeadSync() {
   useEffect(() => {
     let active = true;
@@ -356,10 +417,7 @@ function SiteSettingsHeadSync() {
       key: string,
       content: string,
     ) {
-      let element =
-        document.head.querySelector<HTMLMetaElement>(
-          selector,
-        );
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
 
       if (!element) {
         element = document.createElement("meta");
@@ -386,12 +444,7 @@ function SiteSettingsHeadSync() {
           settings.default_meta_description ||
           DEFAULT_SITE_SETTINGS.default_meta_description;
 
-        setMeta(
-          'meta[name="description"]',
-          "name",
-          "description",
-          description,
-        );
+        setMeta('meta[name="description"]', "name", "description", description);
 
         setMeta(
           'meta[property="og:title"]',
@@ -416,8 +469,7 @@ function SiteSettingsHeadSync() {
           );
         }
 
-        const ogImageUrl =
-          getSiteAssetUrl(settings.og_image_path);
+        const ogImageUrl = getSiteAssetUrl(settings.og_image_path);
 
         if (ogImageUrl) {
           setMeta(
@@ -428,14 +480,11 @@ function SiteSettingsHeadSync() {
           );
         }
 
-        const faviconUrl =
-          getSiteAssetUrl(settings.favicon_path);
+        const faviconUrl = getSiteAssetUrl(settings.favicon_path);
 
         if (faviconUrl) {
           let favicon =
-            document.head.querySelector<HTMLLinkElement>(
-              'link[rel="icon"]',
-            );
+            document.head.querySelector<HTMLLinkElement>('link[rel="icon"]');
 
           if (!favicon) {
             favicon = document.createElement("link");
@@ -446,8 +495,7 @@ function SiteSettingsHeadSync() {
           favicon.href = faviconUrl;
         }
 
-        const logoUrl =
-          getSiteAssetUrl(settings.logo_path);
+        const logoUrl = getSiteAssetUrl(settings.logo_path);
 
         const sameAs = [
           settings.facebook_url,
@@ -459,48 +507,35 @@ function SiteSettingsHeadSync() {
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
           name: settings.site_name,
-          legalName:
-            settings.legal_name || undefined,
+          legalName: settings.legal_name || undefined,
           url: settings.base_url || undefined,
           logo: logoUrl || undefined,
           image: ogImageUrl || undefined,
           email:
-            settings.show_contact_details &&
-            settings.email
+            settings.show_contact_details && settings.email
               ? settings.email
               : undefined,
           telephone:
-            settings.show_contact_details &&
-            settings.phone
+            settings.show_contact_details && settings.phone
               ? settings.phone
               : undefined,
           address:
             settings.show_contact_details &&
-            (
-              settings.address_line ||
-              settings.city ||
-              settings.postal_code
-            )
+            (settings.address_line || settings.city || settings.postal_code)
               ? {
                   "@type": "PostalAddress",
-                  streetAddress:
-                    settings.address_line || undefined,
-                  postalCode:
-                    settings.postal_code || undefined,
-                  addressLocality:
-                    settings.city || undefined,
-                  addressCountry:
-                    settings.country || undefined,
+                  streetAddress: settings.address_line || undefined,
+                  postalCode: settings.postal_code || undefined,
+                  addressLocality: settings.city || undefined,
+                  addressCountry: settings.country || undefined,
                 }
               : undefined,
-          sameAs:
-            sameAs.length > 0 ? sameAs : undefined,
+          sameAs: sameAs.length > 0 ? sameAs : undefined,
         };
 
-        let script =
-          document.head.querySelector<HTMLScriptElement>(
-            "#pandadesign-business-jsonld",
-          );
+        let script = document.head.querySelector<HTMLScriptElement>(
+          "#pandadesign-business-jsonld",
+        );
 
         if (!script) {
           script = document.createElement("script");
@@ -509,8 +544,7 @@ function SiteSettingsHeadSync() {
           document.head.appendChild(script);
         }
 
-        script.textContent =
-          JSON.stringify(structuredData);
+        script.textContent = JSON.stringify(structuredData);
       } catch (error) {
         console.error(
           "Az általános weboldal-beállítások nem tölthetők be:",
@@ -608,9 +642,7 @@ function HeroSection() {
 
             {hero.secondaryButtonText && hero.secondaryButtonUrl && (
               <Button asChild size="lg" variant="outline">
-                <a href={hero.secondaryButtonUrl}>
-                  {hero.secondaryButtonText}
-                </a>
+                <a href={hero.secondaryButtonUrl}>{hero.secondaryButtonText}</a>
               </Button>
             )}
           </div>
@@ -641,9 +673,21 @@ function HeroSection() {
 
 function TrustSection() {
   const items = [
-    { icon: Sparkles, title: "Professzionális megjelenés", desc: "Letisztult, modern arculat, ami első pillantásra bizalmat épít." },
-    { icon: TrendingUp, title: "Több érdeklődő", desc: "Világos üzenetek és jó helyen elhelyezett CTA-k – konverzióra hangolva." },
-    { icon: Globe, title: "Erősebb online jelenlét", desc: "Keresőbarát felépítés, mobil-optimalizáció, mérhető eredmények." },
+    {
+      icon: Sparkles,
+      title: "Professzionális megjelenés",
+      desc: "Letisztult, modern arculat, ami első pillantásra bizalmat épít.",
+    },
+    {
+      icon: TrendingUp,
+      title: "Több érdeklődő",
+      desc: "Világos üzenetek és jó helyen elhelyezett CTA-k – konverzióra hangolva.",
+    },
+    {
+      icon: Globe,
+      title: "Erősebb online jelenlét",
+      desc: "Keresőbarát felépítés, mobil-optimalizáció, mérhető eredmények.",
+    },
   ];
   return (
     <Section
@@ -660,7 +704,9 @@ function TrustSection() {
                 <i.icon className="h-5 w-5" />
               </span>
               <h3 className="mt-5 text-lg font-semibold text-ink">{i.title}</h3>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">{i.desc}</p>
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+                {i.desc}
+              </p>
             </CardContent>
           </Card>
         ))}
@@ -787,9 +833,7 @@ function ProcessSection() {
     async function loadSteps() {
       const { data, error } = await supabase
         .from("process_steps")
-        .select(
-          "id, step_number, title, description, sort_order, is_visible",
-        )
+        .select("id, step_number, title, description, sort_order, is_visible")
         .eq("is_visible", true)
         .order("sort_order", { ascending: true });
 
@@ -971,9 +1015,8 @@ function PortfolioSection() {
 
 function PortfolioCard({ project }: { project: PortfolioProject }) {
   const imageUrl = project.image_path
-    ? supabase.storage
-        .from("portfolio")
-        .getPublicUrl(project.image_path).data.publicUrl
+    ? supabase.storage.from("portfolio").getPublicUrl(project.image_path).data
+        .publicUrl
     : "";
 
   return (
@@ -1132,9 +1175,7 @@ function PricingSection() {
               )}
 
               <CardContent className="p-7 flex flex-col h-full">
-                <p className="text-sm font-semibold text-brand">
-                  {plan.name}
-                </p>
+                <p className="text-sm font-semibold text-brand">{plan.name}</p>
 
                 <p className="mt-1 text-xs text-ink-soft min-h-8">
                   {plan.description}
@@ -1187,10 +1228,7 @@ function PricingSection() {
 
       <p className="mt-8 text-center text-sm text-ink-soft">
         A végleges ár a projekt összetettségétől és az egyedi igényektől függ.{" "}
-        <Link
-          to="/arak"
-          className="text-brand font-semibold hover:underline"
-        >
+        <Link to="/arak" className="text-brand font-semibold hover:underline">
           Részletes összehasonlítás →
         </Link>
       </p>
@@ -1201,8 +1239,7 @@ function PricingSection() {
 function WhySection() {
   const [section, setSection] =
     useState<WhySectionSettings>(DEFAULT_WHY_SECTION);
-  const [items, setItems] =
-    useState<WhyItem[]>(DEFAULT_WHY_ITEMS);
+  const [items, setItems] = useState<WhyItem[]>(DEFAULT_WHY_ITEMS);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -1221,9 +1258,7 @@ function WhySection() {
           .maybeSingle(),
         supabase
           .from("why_items")
-          .select(
-            "id, title, description, icon_key, sort_order, is_visible",
-          )
+          .select("id, title, description, icon_key, sort_order, is_visible")
           .eq("is_visible", true)
           .order("sort_order", { ascending: true }),
       ]);
@@ -1330,10 +1365,9 @@ function WhySection() {
 }
 
 function TestimonialsSection() {
-  const [section, setSection] =
-    useState<TestimonialSectionSettings>(
-      DEFAULT_TESTIMONIAL_SECTION,
-    );
+  const [section, setSection] = useState<TestimonialSectionSettings>(
+    DEFAULT_TESTIMONIAL_SECTION,
+  );
   const [testimonials, setTestimonials] =
     useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
   const [loading, setLoading] = useState(true);
@@ -1379,14 +1413,10 @@ function TestimonialsSection() {
       }
 
       if (settingsData) {
-        setSection(
-          settingsData as TestimonialSectionSettings,
-        );
+        setSection(settingsData as TestimonialSectionSettings);
       }
 
-      setTestimonials(
-        (testimonialsData ?? []) as Testimonial[],
-      );
+      setTestimonials((testimonialsData ?? []) as Testimonial[]);
       setErrorMessage("");
       setLoading(false);
     }
@@ -1434,10 +1464,7 @@ function TestimonialsSection() {
       {!loading && testimonials.length > 0 && (
         <div className="grid gap-4 md:grid-cols-3 md:gap-5">
           {testimonials.map((testimonial) => (
-            <Card
-              key={testimonial.id}
-              className="h-full border shadow-soft"
-            >
+            <Card key={testimonial.id} className="h-full border shadow-soft">
               <CardContent className="flex h-full flex-col p-7">
                 <div className="flex items-center justify-between gap-4">
                   <MessageSquare className="h-6 w-6 text-brand" />
@@ -1446,18 +1473,16 @@ function TestimonialsSection() {
                     className="flex items-center gap-1"
                     aria-label={`${testimonial.rating} csillagos értékelés`}
                   >
-                    {Array.from({ length: 5 }).map(
-                      (_, starIndex) => (
-                        <Star
-                          key={starIndex}
-                          className={`h-4 w-4 ${
-                            starIndex < testimonial.rating
-                              ? "fill-current text-amber-500"
-                              : "text-ink-soft/20"
-                          }`}
-                        />
-                      ),
-                    )}
+                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                      <Star
+                        key={starIndex}
+                        className={`h-4 w-4 ${
+                          starIndex < testimonial.rating
+                            ? "fill-current text-amber-500"
+                            : "text-ink-soft/20"
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
 
@@ -1589,8 +1614,7 @@ function FAQSection() {
 }
 
 function FinalCTA() {
-  const [cta, setCta] =
-    useState<FinalCtaSettings>(DEFAULT_FINAL_CTA);
+  const [cta, setCta] = useState<FinalCtaSettings>(DEFAULT_FINAL_CTA);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -1610,10 +1634,7 @@ function FinalCTA() {
       }
 
       if (error) {
-        console.error(
-          "A záró CTA nem tölthető be:",
-          error,
-        );
+        console.error("A záró CTA nem tölthető be:", error);
         setLoading(false);
         return;
       }
@@ -1636,8 +1657,7 @@ function FinalCTA() {
     return null;
   }
 
-  const Icon =
-    FINAL_CTA_ICONS[cta.icon_key] ?? Users;
+  const Icon = FINAL_CTA_ICONS[cta.icon_key] ?? Users;
 
   return (
     <section className="py-16 md:py-24">
@@ -1667,12 +1687,7 @@ function FinalCTA() {
             )}
 
             {cta.button_text && cta.button_url && (
-              <Button
-                asChild
-                size="lg"
-                variant="cta"
-                className="mt-8"
-              >
+              <Button asChild size="lg" variant="cta" className="mt-8">
                 <a href={cta.button_url}>
                   {cta.button_text}
                   <ArrowRight className="h-4 w-4" />

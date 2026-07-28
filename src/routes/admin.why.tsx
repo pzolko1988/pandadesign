@@ -1,13 +1,5 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
-import {
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Check,
   MessageSquare,
@@ -83,8 +75,7 @@ function AdminWhyPage() {
   const [settings, setSettings] =
     useState<WhySectionSettings>(DEFAULT_SETTINGS);
   const [items, setItems] = useState<WhyItem[]>([]);
-  const [itemForm, setItemForm] =
-    useState<WhyItemForm>(EMPTY_ITEM_FORM);
+  const [itemForm, setItemForm] = useState<WhyItemForm>(EMPTY_ITEM_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
@@ -104,9 +95,7 @@ function AdminWhyPage() {
       return 10;
     }
 
-    return (
-      Math.max(...currentItems.map((item) => item.sort_order)) + 10
-    );
+    return Math.max(...currentItems.map((item) => item.sort_order)) + 10;
   }
 
   async function initializePage() {
@@ -170,9 +159,7 @@ function AdminWhyPage() {
         .maybeSingle(),
       supabase
         .from("why_items")
-        .select(
-          "id, title, description, icon_key, sort_order, is_visible",
-        )
+        .select("id, title, description, icon_key, sort_order, is_visible")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true }),
     ]);
@@ -221,9 +208,7 @@ function AdminWhyPage() {
     }));
   }
 
-  async function saveSettings(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function saveSettings(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const eyebrow = settings.eyebrow.trim();
@@ -249,20 +234,18 @@ function AdminWhyPage() {
     setSuccessMessage("");
 
     try {
-      const { error } = await supabase
-        .from("why_section_settings")
-        .upsert(
-          {
-            id: 1,
-            eyebrow,
-            title,
-            description,
-            is_visible: settings.is_visible,
-          },
-          {
-            onConflict: "id",
-          },
-        );
+      const { error } = await supabase.from("why_section_settings").upsert(
+        {
+          id: 1,
+          eyebrow,
+          title,
+          description,
+          is_visible: settings.is_visible,
+        },
+        {
+          onConflict: "id",
+        },
+      );
 
       if (error) {
         throw error;
@@ -300,12 +283,10 @@ function AdminWhyPage() {
     setErrorMessage("");
     setSuccessMessage("");
 
-    document
-      .getElementById("why-item-editor")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    document.getElementById("why-item-editor")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 
   function resetItemEditor(currentItems = items) {
@@ -318,9 +299,7 @@ function AdminWhyPage() {
     setSuccessMessage("");
   }
 
-  async function saveItem(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function saveItem(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const title = itemForm.title.trim();
@@ -366,9 +345,7 @@ function AdminWhyPage() {
 
         setSuccessMessage("Az előny sikeresen frissítve.");
       } else {
-        const { error } = await supabase
-          .from("why_items")
-          .insert(payload);
+        const { error } = await supabase.from("why_items").insert(payload);
 
         if (error) {
           throw error;
@@ -382,9 +359,7 @@ function AdminWhyPage() {
 
       const { data } = await supabase
         .from("why_items")
-        .select(
-          "id, title, description, icon_key, sort_order, is_visible",
-        )
+        .select("id, title, description, icon_key, sort_order, is_visible")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true });
 
@@ -424,9 +399,7 @@ function AdminWhyPage() {
       }
 
       setSuccessMessage(
-        item.is_visible
-          ? "Az előny elrejtve."
-          : "Az előny láthatóvá téve.",
+        item.is_visible ? "Az előny elrejtve." : "Az előny láthatóvá téve.",
       );
 
       await loadContent();
@@ -441,24 +414,15 @@ function AdminWhyPage() {
     }
   }
 
-  async function moveItem(
-    item: WhyItem,
-    direction: "up" | "down",
-  ) {
+  async function moveItem(item: WhyItem, direction: "up" | "down") {
     const currentIndex = items.findIndex(
       (currentItem) => currentItem.id === item.id,
     );
 
     const targetIndex =
-      direction === "up"
-        ? currentIndex - 1
-        : currentIndex + 1;
+      direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
-    if (
-      currentIndex < 0 ||
-      targetIndex < 0 ||
-      targetIndex >= items.length
-    ) {
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= items.length) {
       return;
     }
 
@@ -571,8 +535,8 @@ function AdminWhyPage() {
           </h1>
 
           <p className="mt-2 max-w-3xl text-muted-foreground">
-            A szekció címének, leírásának, láthatóságának és
-            előnykártyáinak kezelése.
+            A szekció címének, leírásának, láthatóságának és előnykártyáinak
+            kezelése.
           </p>
         </header>
 
@@ -599,9 +563,7 @@ function AdminWhyPage() {
           className="mb-8 rounded-2xl border bg-background p-6 shadow-sm"
         >
           <div className="mb-6">
-            <h2 className="text-xl font-bold">
-              Szekcióbeállítások
-            </h2>
+            <h2 className="text-xl font-bold">Szekcióbeállítások</h2>
 
             <p className="mt-1 text-sm text-muted-foreground">
               Ezek az adatok a teljes blokk fejlécét szabályozzák.
@@ -658,10 +620,7 @@ function AdminWhyPage() {
                 rows={4}
                 value={settings.description}
                 onChange={(event) =>
-                  updateSettings(
-                    "description",
-                    event.target.value,
-                  )
+                  updateSettings("description", event.target.value)
                 }
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -673,10 +632,7 @@ function AdminWhyPage() {
               type="checkbox"
               checked={settings.is_visible}
               onChange={(event) =>
-                updateSettings(
-                  "is_visible",
-                  event.target.checked,
-                )
+                updateSettings("is_visible", event.target.checked)
               }
               className="h-4 w-4"
             />
@@ -687,8 +643,8 @@ function AdminWhyPage() {
               </span>
 
               <span className="mt-1 block text-xs text-muted-foreground">
-                Kikapcsolva a teljes „Miért a PandaDesign?” blokk
-                eltűnik a publikus főoldalról.
+                Kikapcsolva a teljes „Miért a PandaDesign?” blokk eltűnik a
+                publikus főoldalról.
               </span>
             </span>
           </label>
@@ -698,9 +654,7 @@ function AdminWhyPage() {
             disabled={savingSettings}
             className="mt-5 rounded-xl bg-brand px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {savingSettings
-              ? "Mentés..."
-              : "Szekcióbeállítások mentése"}
+            {savingSettings ? "Mentés..." : "Szekcióbeállítások mentése"}
           </button>
         </form>
 
@@ -712,9 +666,7 @@ function AdminWhyPage() {
           >
             <div className="flex items-center justify-between gap-4">
               <h2 className="text-xl font-bold">
-                {editingId
-                  ? "Előny szerkesztése"
-                  : "Új előny"}
+                {editingId ? "Előny szerkesztése" : "Új előny"}
               </h2>
 
               {editingId && (
@@ -762,10 +714,7 @@ function AdminWhyPage() {
                 rows={5}
                 value={itemForm.description}
                 onChange={(event) =>
-                  updateItemField(
-                    "description",
-                    event.target.value,
-                  )
+                  updateItemField("description", event.target.value)
                 }
                 placeholder="Röviden fejtsd ki, mit jelent ez az előny."
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 leading-relaxed outline-none transition focus:ring-2 focus:ring-brand"
@@ -784,18 +733,12 @@ function AdminWhyPage() {
                 id="why-item-icon"
                 value={itemForm.icon_key}
                 onChange={(event) =>
-                  updateItemField(
-                    "icon_key",
-                    event.target.value,
-                  )
+                  updateItemField("icon_key", event.target.value)
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               >
                 {ICON_OPTIONS.map((option) => (
-                  <option
-                    key={option.key}
-                    value={option.key}
-                  >
+                  <option key={option.key} value={option.key}>
                     {option.label}
                   </option>
                 ))}
@@ -817,10 +760,7 @@ function AdminWhyPage() {
                 step={1}
                 value={itemForm.sort_order}
                 onChange={(event) =>
-                  updateItemField(
-                    "sort_order",
-                    Number(event.target.value),
-                  )
+                  updateItemField("sort_order", Number(event.target.value))
                 }
                 className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
               />
@@ -831,10 +771,7 @@ function AdminWhyPage() {
                 type="checkbox"
                 checked={itemForm.is_visible}
                 onChange={(event) =>
-                  updateItemField(
-                    "is_visible",
-                    event.target.checked,
-                  )
+                  updateItemField("is_visible", event.target.checked)
                 }
                 className="h-4 w-4"
               />
@@ -865,9 +802,7 @@ function AdminWhyPage() {
 
           <section>
             <div className="mb-4">
-              <h2 className="text-xl font-bold">
-                Meglévő előnyök
-              </h2>
+              <h2 className="text-xl font-bold">Meglévő előnyök</h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
                 {items.length} darab elem
@@ -876,13 +811,10 @@ function AdminWhyPage() {
 
             {items.length === 0 ? (
               <div className="rounded-2xl border border-dashed bg-background p-10 text-center">
-                <h3 className="font-bold">
-                  Még nincs előny létrehozva
-                </h3>
+                <h3 className="font-bold">Még nincs előny létrehozva</h3>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Az első elemet a bal oldali szerkesztőben
-                  hozhatod létre.
+                  Az első elemet a bal oldali szerkesztőben hozhatod létre.
                 </p>
               </div>
             ) : (
@@ -895,9 +827,7 @@ function AdminWhyPage() {
                     <article
                       key={item.id}
                       className={`rounded-2xl border bg-background p-5 shadow-sm ${
-                        item.is_visible
-                          ? ""
-                          : "opacity-60"
+                        item.is_visible ? "" : "opacity-60"
                       }`}
                     >
                       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -919,9 +849,7 @@ function AdminWhyPage() {
                                     : "bg-slate-100 text-slate-600"
                                 }`}
                               >
-                                {item.is_visible
-                                  ? "Látható"
-                                  : "Elrejtve"}
+                                {item.is_visible ? "Látható" : "Elrejtve"}
                               </span>
                             </div>
 
@@ -940,12 +868,8 @@ function AdminWhyPage() {
                         <div className="flex shrink-0 flex-wrap gap-2 xl:max-w-[230px] xl:justify-end">
                           <button
                             type="button"
-                            disabled={
-                              itemBusy || index === 0
-                            }
-                            onClick={() =>
-                              void moveItem(item, "up")
-                            }
+                            disabled={itemBusy || index === 0}
+                            onClick={() => void moveItem(item, "up")}
                             title="Mozgatás felfelé"
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                           >
@@ -954,13 +878,8 @@ function AdminWhyPage() {
 
                           <button
                             type="button"
-                            disabled={
-                              itemBusy ||
-                              index === items.length - 1
-                            }
-                            onClick={() =>
-                              void moveItem(item, "down")
-                            }
+                            disabled={itemBusy || index === items.length - 1}
+                            onClick={() => void moveItem(item, "down")}
                             title="Mozgatás lefelé"
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                           >
@@ -979,22 +898,16 @@ function AdminWhyPage() {
                           <button
                             type="button"
                             disabled={itemBusy}
-                            onClick={() =>
-                              void toggleItem(item)
-                            }
+                            onClick={() => void toggleItem(item)}
                             className="rounded-lg border px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:opacity-50"
                           >
-                            {item.is_visible
-                              ? "Elrejtés"
-                              : "Aktiválás"}
+                            {item.is_visible ? "Elrejtés" : "Aktiválás"}
                           </button>
 
                           <button
                             type="button"
                             disabled={itemBusy}
-                            onClick={() =>
-                              void deleteItem(item)
-                            }
+                            onClick={() => void deleteItem(item)}
                             className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
                           >
                             Törlés

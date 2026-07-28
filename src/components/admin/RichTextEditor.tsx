@@ -1,7 +1,4 @@
-import {
-  EditorContent,
-  useEditor,
-} from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import {
@@ -21,17 +18,11 @@ import {
   Undo2,
   Unlink,
 } from "lucide-react";
-import {
-  useEffect,
-  type ReactNode,
-} from "react";
+import { useEffect, type ReactNode } from "react";
 
 type RichTextEditorProps = {
   value: string;
-  onChange: (
-    html: string,
-    json: Record<string, unknown>,
-  ) => void;
+  onChange: (html: string, json: Record<string, unknown>) => void;
   placeholder?: string;
   disabled?: boolean;
 };
@@ -39,8 +30,7 @@ type RichTextEditorProps = {
 export function RichTextEditor({
   value,
   onChange,
-  placeholder =
-    "Kezdd el megírni a tartalmat...",
+  placeholder = "Kezdd el megírni a tartalmat...",
   disabled = false,
 }: RichTextEditorProps) {
   const editor = useEditor({
@@ -75,10 +65,7 @@ export function RichTextEditor({
     onUpdate: ({ editor: currentEditor }) => {
       onChange(
         currentEditor.getHTML(),
-        currentEditor.getJSON() as Record<
-          string,
-          unknown
-        >,
+        currentEditor.getJSON() as Record<string, unknown>,
       );
     },
   });
@@ -109,15 +96,9 @@ export function RichTextEditor({
   }
 
   function setLink() {
-    const previousUrl =
-      editor.getAttributes("link").href as
-        | string
-        | undefined;
+    const previousUrl = editor.getAttributes("link").href as string | undefined;
 
-    const url = window.prompt(
-      "Hivatkozás címe:",
-      previousUrl ?? "https://",
-    );
+    const url = window.prompt("Hivatkozás címe:", previousUrl ?? "https://");
 
     if (url === null) {
       return;
@@ -126,12 +107,7 @@ export function RichTextEditor({
     const normalizedUrl = url.trim();
 
     if (!normalizedUrl) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .unsetLink()
-        .run();
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
 
       return;
     }
@@ -153,13 +129,7 @@ export function RichTextEditor({
           label="Félkövér"
           active={editor.isActive("bold")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleBold()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <Bold className="h-4 w-4" />
         </ToolbarButton>
@@ -168,13 +138,7 @@ export function RichTextEditor({
           label="Dőlt"
           active={editor.isActive("italic")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleItalic()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <Italic className="h-4 w-4" />
         </ToolbarButton>
@@ -183,13 +147,7 @@ export function RichTextEditor({
           label="Áthúzott"
           active={editor.isActive("strike")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleStrike()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <Strikethrough className="h-4 w-4" />
         </ToolbarButton>
@@ -240,13 +198,7 @@ export function RichTextEditor({
           label="Felsorolás"
           active={editor.isActive("bulletList")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleBulletList()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
           <List className="h-4 w-4" />
         </ToolbarButton>
@@ -255,13 +207,7 @@ export function RichTextEditor({
           label="Számozott lista"
           active={editor.isActive("orderedList")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleOrderedList()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
           <ListOrdered className="h-4 w-4" />
         </ToolbarButton>
@@ -270,13 +216,7 @@ export function RichTextEditor({
           label="Idézet"
           active={editor.isActive("blockquote")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleBlockquote()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >
           <Quote className="h-4 w-4" />
         </ToolbarButton>
@@ -285,13 +225,7 @@ export function RichTextEditor({
           label="Kódblokk"
           active={editor.isActive("codeBlock")}
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .toggleCodeBlock()
-              .run()
-          }
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         >
           <Braces className="h-4 w-4" />
         </ToolbarButton>
@@ -299,13 +233,7 @@ export function RichTextEditor({
         <ToolbarButton
           label="Elválasztó vonal"
           disabled={disabled}
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .setHorizontalRule()
-              .run()
-          }
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
         >
           <Minus className="h-4 w-4" />
         </ToolbarButton>
@@ -323,17 +251,8 @@ export function RichTextEditor({
 
         <ToolbarButton
           label="Hivatkozás eltávolítása"
-          disabled={
-            disabled ||
-            !editor.isActive("link")
-          }
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .unsetLink()
-              .run()
-          }
+          disabled={disabled || !editor.isActive("link")}
+          onClick={() => editor.chain().focus().unsetLink().run()}
         >
           <Unlink className="h-4 w-4" />
         </ToolbarButton>
@@ -344,12 +263,7 @@ export function RichTextEditor({
           label="Formázás törlése"
           disabled={disabled}
           onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .unsetAllMarks()
-              .clearNodes()
-              .run()
+            editor.chain().focus().unsetAllMarks().clearNodes().run()
           }
         >
           <RemoveFormatting className="h-4 w-4" />
@@ -357,34 +271,16 @@ export function RichTextEditor({
 
         <ToolbarButton
           label="Visszavonás"
-          disabled={
-            disabled ||
-            !editor.can().chain().focus().undo().run()
-          }
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .undo()
-              .run()
-          }
+          disabled={disabled || !editor.can().chain().focus().undo().run()}
+          onClick={() => editor.chain().focus().undo().run()}
         >
           <Undo2 className="h-4 w-4" />
         </ToolbarButton>
 
         <ToolbarButton
           label="Újra"
-          disabled={
-            disabled ||
-            !editor.can().chain().focus().redo().run()
-          }
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .redo()
-              .run()
-          }
+          disabled={disabled || !editor.can().chain().focus().redo().run()}
+          onClick={() => editor.chain().focus().redo().run()}
         >
           <Redo2 className="h-4 w-4" />
         </ToolbarButton>
@@ -393,8 +289,7 @@ export function RichTextEditor({
       <EditorContent editor={editor} />
 
       <div className="border-t bg-muted/20 px-4 py-2 text-xs text-muted-foreground">
-        Címsorok, listák, idézetek, kódblokkok és
-        hivatkozások használhatók.
+        Címsorok, listák, idézetek, kódblokkok és hivatkozások használhatók.
       </div>
     </div>
   );
@@ -435,10 +330,5 @@ function ToolbarButton({
 }
 
 function ToolbarSeparator() {
-  return (
-    <span
-      aria-hidden="true"
-      className="mx-1 h-9 w-px bg-border"
-    />
-  );
+  return <span aria-hidden="true" className="mx-1 h-9 w-px bg-border" />;
 }

@@ -51,10 +51,7 @@ function AdminLoginPage() {
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm font-medium">
               E-mail-cím
             </label>
 
