@@ -63,3 +63,5 @@ supabase/.branches/
 .env*
 !.env.example
 !.env.*.example
+seo-code-audit.txt
+seo-critical-files.txt
