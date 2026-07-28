@@ -24,9 +24,12 @@ type AdminTemplateOptions = {
 };
 
 export function buildAdminEmail({ lead, publicSiteUrl }: AdminTemplateOptions) {
+  const safeName = sanitizeHeaderValue(lead.name, 80) || "Ismeretlen érdeklődő";
+  const safeServiceType = sanitizeHeaderValue(lead.service_type, 100);
+
   const subject =
-    `Új ajánlatkérés: ${lead.name}` +
-    (lead.service_type ? ` – ${lead.service_type}` : "");
+    `Új ajánlatkérés: ${safeName}` +
+    (safeServiceType ? ` – ${safeServiceType}` : "");
 
   const adminUrl = `${publicSiteUrl.replace(/\/+$/, "")}/admin/leads`;
 
@@ -209,6 +212,18 @@ export function buildAutoreplyEmail(lead: LeadRecord) {
     html,
     text,
   };
+}
+
+function sanitizeHeaderValue(value: unknown, maxLength: number) {
+  const normalized = Array.from(String(value ?? ""))
+    .map((character) => {
+      const code = character.charCodeAt(0);
+
+      return code < 32 || code === 127 ? " " : character;
+    })
+    .join("");
+
+  return normalized.replace(/\s+/g, " ").trim().slice(0, maxLength);
 }
 
 function escapeHtml(value: unknown) {

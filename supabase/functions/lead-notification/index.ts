@@ -24,16 +24,41 @@ type ResendResponse = {
   name?: string;
 };
 
+type AutoreplyResult = {
+  status: "disabled" | "sent" | "failed" | "skipped";
+  id?: string;
+  error?: string;
+};
+
+const MAX_REQUEST_BODY_BYTES = 64 * 1024;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-webhook-secret",
+    "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
+class HttpError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+    readonly internalMessage?: string,
+  ) {
+    super(message);
+    this.name = "HttpError";
+  }
+}
+
 Deno.serve(async (request) => {
+  let failureLeadId: string | undefined;
+  let deliveryStarted = false;
+  let notificationCompleted = false;
+
   if (request.method === "OPTIONS") {
-    return new Response("ok", {
+    return new Response(null, {
+      status: 204,
       headers: corsHeaders,
     });
   }
@@ -48,12 +73,12 @@ Deno.serve(async (request) => {
   }
 
   try {
+    const body = await parseJsonBody(request);
+
     const resendApiKey = requiredEnv("RESEND_API_KEY");
     const notificationFrom = requiredEnv("LEAD_NOTIFICATION_FROM");
     const publicSiteUrl =
       Deno.env.get("PUBLIC_SITE_URL")?.trim() || "https://pandadesign.hu";
-
-    const body = await request.json();
 
     const supabaseUrl = requiredEnv("SUPABASE_URL");
     const secretKey = getSupabaseKey(
@@ -73,30 +98,48 @@ Deno.serve(async (request) => {
 
     let lead: LeadRecord;
     let idempotencyKey: string;
+    let attemptNumber: number;
 
     if (isManual) {
       await requireAdmin(request, supabaseUrl);
 
       lead = await fetchLead(serviceClient, body.lead_id);
+      failureLeadId = lead.id;
+      attemptNumber = Number(lead.notification_attempts ?? 0) + 1;
 
-      idempotencyKey = `pandadesign-lead-${lead.id}-manual-${Date.now()}`;
+      await startManualDelivery(serviceClient, lead.id, attemptNumber);
+
+      deliveryStarted = true;
+      idempotencyKey = `pandadesign-lead-${lead.id}-manual-${attemptNumber}-${Date.now()}`;
     } else {
       verifyWebhookRequest(request);
+
       const webhook = validateWebhookPayload(body);
+      failureLeadId = webhook.record.id;
 
-      lead = webhook.record;
+      // Mindig az adatbázis aktuális rekordját használjuk,
+      // nem kizárólag a webhook törzsében érkező másolatot.
+      lead = await fetchLead(serviceClient, webhook.record.id);
+      attemptNumber = Number(lead.notification_attempts ?? 0) + 1;
 
+      const claimed = await claimAutomaticDelivery(
+        serviceClient,
+        lead.id,
+        attemptNumber,
+      );
+
+      if (!claimed) {
+        return jsonResponse({
+          ok: true,
+          lead_id: lead.id,
+          skipped: true,
+          reason: "already_processing_or_completed",
+        });
+      }
+
+      deliveryStarted = true;
       idempotencyKey = `pandadesign-lead-${lead.id}-automatic`;
     }
-
-    const attemptNumber = Number(lead.notification_attempts ?? 0) + 1;
-
-    await updateLeadDelivery(serviceClient, lead.id, {
-      notification_status: "pending",
-      notification_last_attempt_at: new Date().toISOString(),
-      notification_attempts: attemptNumber,
-      notification_error: null,
-    });
 
     const recipientList = await resolveNotificationRecipients(serviceClient);
 
@@ -125,88 +168,15 @@ Deno.serve(async (request) => {
       notification_error: null,
     });
 
-    let autoreplyResult:
-      | {
-          status: "disabled" | "sent" | "failed" | "skipped";
-          id?: string;
-          error?: string;
-        }
-      | undefined;
+    notificationCompleted = true;
 
-    const autoreplyEnabled = parseBoolean(
-      Deno.env.get("LEAD_AUTOREPLY_ENABLED"),
-    );
-
-    if (isManual) {
-      autoreplyResult = {
-        status: "skipped",
-      };
-    } else if (!autoreplyEnabled) {
-      autoreplyResult = {
-        status: "disabled",
-      };
-    } else if (!lead.privacy_accepted || !lead.email) {
-      autoreplyResult = {
-        status: "skipped",
-      };
-    } else {
-      await updateLeadDelivery(serviceClient, lead.id, {
-        autoreply_status: "pending",
-        autoreply_error: null,
-      });
-
-      try {
-        const autoreplyFrom =
-          Deno.env.get("LEAD_AUTOREPLY_FROM")?.trim() || notificationFrom;
-
-        const autoreplyEmail = buildAutoreplyEmail(lead);
-
-        const response = await sendResendEmail({
-          apiKey: resendApiKey,
-          idempotencyKey: `pandadesign-lead-${lead.id}-autoreply`,
-          payload: {
-            from: autoreplyFrom,
-            to: [lead.email],
-            subject: autoreplyEmail.subject,
-            html: autoreplyEmail.html,
-            text: autoreplyEmail.text,
-          },
-        });
-
-        await updateLeadDelivery(serviceClient, lead.id, {
-          autoreply_status: "sent",
-          autoreply_sent_at: new Date().toISOString(),
-          autoreply_email_id: response.id ?? null,
-          autoreply_error: null,
-        });
-
-        autoreplyResult = {
-          status: "sent",
-          id: response.id,
-        };
-      } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Ismeretlen automatikus válaszhiba.";
-
-        await updateLeadDelivery(serviceClient, lead.id, {
-          autoreply_status: "failed",
-          autoreply_error: message,
-        });
-
-        autoreplyResult = {
-          status: "failed",
-          error: message,
-        };
-      }
-    }
-
-    if (autoreplyResult) {
-      await updateLeadDelivery(serviceClient, lead.id, {
-        autoreply_status: autoreplyResult.status,
-      });
-    }
+    const autoreplyResult = await processAutoreply({
+      client: serviceClient,
+      lead,
+      isManual,
+      resendApiKey,
+      notificationFrom,
+    });
 
     return jsonResponse({
       ok: true,
@@ -215,20 +185,17 @@ Deno.serve(async (request) => {
       autoreply: autoreplyResult,
     });
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Ismeretlen szerverhiba.";
+    const internalMessage =
+      error instanceof HttpError
+        ? (error.internalMessage ?? error.message)
+        : error instanceof Error
+          ? error.message
+          : "Ismeretlen szerverhiba.";
 
-    console.error("Lead notification failed:", message);
+    console.error("Lead notification failed:", internalMessage);
 
-    try {
-      const body = await cloneJson(request);
-      const leadId = isManualPayload(body)
-        ? body.lead_id
-        : isWebhookPayload(body)
-          ? body.record?.id
-          : undefined;
-
-      if (leadId) {
+    if (deliveryStarted && !notificationCompleted && failureLeadId) {
+      try {
         const supabaseUrl = Deno.env.get("SUPABASE_URL");
         const secretKey = tryGetSupabaseSecretKey();
 
@@ -240,31 +207,137 @@ Deno.serve(async (request) => {
             },
           });
 
-          await updateLeadDelivery(serviceClient, leadId, {
+          await tryUpdateLeadDelivery(serviceClient, failureLeadId, {
             notification_status: "failed",
-            notification_error: message.slice(0, 2000),
+            notification_error: internalMessage.slice(0, 2000),
             notification_last_attempt_at: new Date().toISOString(),
           });
         }
+      } catch {
+        // Az eredeti hibát nem írjuk felül.
       }
-    } catch {
-      // Az eredeti hibát nem írjuk felül.
     }
+
+    const status = error instanceof HttpError ? error.status : 500;
+    const publicMessage =
+      error instanceof HttpError ? error.message : "Belső szerverhiba történt.";
 
     return jsonResponse(
       {
-        error: message,
+        error: publicMessage,
       },
-      500,
+      status,
     );
   }
 });
+
+async function processAutoreply({
+  client,
+  lead,
+  isManual,
+  resendApiKey,
+  notificationFrom,
+}: {
+  client: SupabaseClient;
+  lead: LeadRecord;
+  isManual: boolean;
+  resendApiKey: string;
+  notificationFrom: string;
+}): Promise<AutoreplyResult> {
+  if (isManual) {
+    // A manuális admin-újraküldés nem írja felül
+    // a korábbi automatikus válasz állapotát.
+    return {
+      status: "skipped",
+    };
+  }
+
+  const autoreplyEnabled = parseBoolean(Deno.env.get("LEAD_AUTOREPLY_ENABLED"));
+
+  if (!autoreplyEnabled) {
+    await tryUpdateLeadDelivery(client, lead.id, {
+      autoreply_status: "disabled",
+      autoreply_error: null,
+    });
+
+    return {
+      status: "disabled",
+    };
+  }
+
+  if (!lead.privacy_accepted || !lead.email) {
+    await tryUpdateLeadDelivery(client, lead.id, {
+      autoreply_status: "skipped",
+      autoreply_error: null,
+    });
+
+    return {
+      status: "skipped",
+    };
+  }
+
+  await tryUpdateLeadDelivery(client, lead.id, {
+    autoreply_status: "pending",
+    autoreply_error: null,
+  });
+
+  try {
+    const autoreplyFrom =
+      Deno.env.get("LEAD_AUTOREPLY_FROM")?.trim() || notificationFrom;
+
+    const autoreplyEmail = buildAutoreplyEmail(lead);
+
+    const response = await sendResendEmail({
+      apiKey: resendApiKey,
+      idempotencyKey: `pandadesign-lead-${lead.id}-autoreply`,
+      payload: {
+        from: autoreplyFrom,
+        to: [lead.email],
+        subject: autoreplyEmail.subject,
+        html: autoreplyEmail.html,
+        text: autoreplyEmail.text,
+      },
+    });
+
+    await tryUpdateLeadDelivery(client, lead.id, {
+      autoreply_status: "sent",
+      autoreply_sent_at: new Date().toISOString(),
+      autoreply_email_id: response.id ?? null,
+      autoreply_error: null,
+    });
+
+    return {
+      status: "sent",
+      id: response.id,
+    };
+  } catch (error: unknown) {
+    const message =
+      error instanceof HttpError
+        ? (error.internalMessage ?? error.message)
+        : error instanceof Error
+          ? error.message
+          : "Ismeretlen automatikus válaszhiba.";
+
+    await tryUpdateLeadDelivery(client, lead.id, {
+      autoreply_status: "failed",
+      autoreply_error: message.slice(0, 2000),
+    });
+
+    return {
+      status: "failed",
+      error: "Az automatikus válasz elküldése nem sikerült.",
+    };
+  }
+}
 
 async function requireAdmin(request: Request, supabaseUrl: string) {
   const authorization = request.headers.get("Authorization");
 
   if (!authorization?.startsWith("Bearer ")) {
-    throw new Error("A manuális küldéshez admin bejelentkezés szükséges.");
+    throw new HttpError(
+      401,
+      "A manuális küldéshez admin bejelentkezés szükséges.",
+    );
   }
 
   const publishableKey = getSupabaseKey(
@@ -291,23 +364,34 @@ async function requireAdmin(request: Request, supabaseUrl: string) {
   } = await userClient.auth.getUser();
 
   if (userError || !user) {
-    throw new Error("Érvénytelen vagy lejárt admin munkamenet.");
+    throw new HttpError(
+      401,
+      "Érvénytelen vagy lejárt admin munkamenet.",
+      userError?.message,
+    );
   }
 
   const { data: isAdmin, error: adminError } = await userClient.rpc("is_admin");
 
-  if (adminError || !isAdmin) {
-    throw new Error("A művelethez nincs adminisztrátori jogosultság.");
+  if (adminError) {
+    throw new HttpError(
+      500,
+      "Az adminjogosultság nem ellenőrizhető.",
+      adminError.message,
+    );
+  }
+
+  if (!isAdmin) {
+    throw new HttpError(403, "A művelethez nincs adminisztrátori jogosultság.");
   }
 }
 
 function verifyWebhookRequest(request: Request) {
   const expected = requiredEnv("LEAD_WEBHOOK_SECRET");
-
   const received = request.headers.get("x-webhook-secret")?.trim() ?? "";
 
   if (!received || !constantTimeEqual(received, expected)) {
-    throw new Error("Érvénytelen webhook hitelesítés.");
+    throw new HttpError(403, "Érvénytelen webhook hitelesítés.");
   }
 }
 
@@ -315,7 +399,7 @@ function validateWebhookPayload(value: unknown): DatabaseWebhookPayload & {
   record: LeadRecord;
 } {
   if (!isWebhookPayload(value)) {
-    throw new Error("A webhook törzse nem megfelelő.");
+    throw new HttpError(400, "A webhook törzse nem megfelelő.");
   }
 
   if (
@@ -324,7 +408,7 @@ function validateWebhookPayload(value: unknown): DatabaseWebhookPayload & {
     value.table !== "contact_leads" ||
     !value.record
   ) {
-    throw new Error("A webhook csak új contact_leads rekordot fogad.");
+    throw new HttpError(400, "A webhook csak új contact_leads rekordot fogad.");
   }
 
   validateLead(value.record);
@@ -335,39 +419,115 @@ function validateWebhookPayload(value: unknown): DatabaseWebhookPayload & {
 }
 
 function validateLead(lead: LeadRecord) {
-  if (
-    !lead.id ||
-    !lead.name ||
-    !lead.email ||
-    !lead.message ||
-    !lead.created_at
-  ) {
-    throw new Error("A lead kötelező adatai hiányoznak.");
+  if (!isUuid(lead.id)) {
+    throw new HttpError(400, "A leadazonosító formátuma nem megfelelő.");
   }
+
+  assertTextLength(lead.name, "A név", 2, 120);
+  assertTextLength(lead.email, "Az e-mail-cím", 5, 254);
+  assertTextLength(lead.message, "Az üzenet", 10, 5000);
+
+  if (!isEmail(lead.email)) {
+    throw new HttpError(400, "Az e-mail-cím formátuma nem megfelelő.");
+  }
+
+  if (!lead.created_at || Number.isNaN(Date.parse(lead.created_at))) {
+    throw new HttpError(400, "A lead létrehozási dátuma nem megfelelő.");
+  }
+
+  assertOptionalMaxLength(lead.phone, "A telefonszám", 80);
+  assertOptionalMaxLength(lead.company, "A cégnév", 160);
+  assertOptionalMaxLength(lead.service_type, "A szolgáltatástípus", 120);
+  assertOptionalMaxLength(lead.budget_range, "A költségkeret", 120);
+  assertOptionalMaxLength(lead.source_page, "A forrásoldal", 500);
+  assertOptionalMaxLength(lead.referrer, "A hivatkozó oldal", 1000);
+  assertOptionalMaxLength(lead.utm_source, "Az UTM source", 250);
+  assertOptionalMaxLength(lead.utm_medium, "Az UTM medium", 250);
+  assertOptionalMaxLength(lead.utm_campaign, "Az UTM campaign", 250);
 }
 
 async function fetchLead(client: SupabaseClient, leadId: string) {
-  if (!/^[0-9a-f-]{36}$/i.test(leadId)) {
-    throw new Error("A leadazonosító formátuma nem megfelelő.");
+  if (!isUuid(leadId)) {
+    throw new HttpError(400, "A leadazonosító formátuma nem megfelelő.");
   }
 
   const { data, error } = await client
     .from("contact_leads")
-    .select("*")
+    .select(
+      [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "company",
+        "service_type",
+        "budget_range",
+        "message",
+        "source_page",
+        "referrer",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "marketing_consent",
+        "privacy_accepted",
+        "created_at",
+        "notification_attempts",
+      ].join(","),
+    )
     .eq("id", leadId)
     .maybeSingle();
 
   if (error) {
-    throw error;
+    throw new Error(`A lead nem tölthető be: ${error.message}`);
   }
 
   if (!data) {
-    throw new Error("A lead nem található.");
+    throw new HttpError(404, "A lead nem található.");
   }
 
   validateLead(data as LeadRecord);
 
   return data as LeadRecord;
+}
+
+async function startManualDelivery(
+  client: SupabaseClient,
+  leadId: string,
+  attemptNumber: number,
+) {
+  await updateLeadDelivery(client, leadId, {
+    notification_status: "processing",
+    notification_last_attempt_at: new Date().toISOString(),
+    notification_attempts: attemptNumber,
+    notification_error: null,
+  });
+}
+
+async function claimAutomaticDelivery(
+  client: SupabaseClient,
+  leadId: string,
+  attemptNumber: number,
+) {
+  const { data, error } = await client
+    .from("contact_leads")
+    .update({
+      notification_status: "processing",
+      notification_last_attempt_at: new Date().toISOString(),
+      notification_attempts: attemptNumber,
+      notification_error: null,
+    })
+    .eq("id", leadId)
+    .in("notification_status", ["pending", "failed"])
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(
+      `Az automatikus leadértesítés nem foglalható le: ${error.message}`,
+    );
+  }
+
+  return Boolean(data);
 }
 
 async function resolveNotificationRecipients(client: SupabaseClient) {
@@ -431,10 +591,15 @@ async function sendResendEmail({
   const result = (await response.json().catch(() => ({}))) as ResendResponse;
 
   if (!response.ok) {
-    throw new Error(
+    const details =
       result.message ||
-        result.name ||
-        `A Resend API ${response.status} hibával válaszolt.`,
+      result.name ||
+      `A Resend API ${response.status} hibával válaszolt.`;
+
+    throw new HttpError(
+      502,
+      "Az e-mail-szolgáltató nem fogadta el a küldést.",
+      details,
     );
   }
 
@@ -452,7 +617,26 @@ async function updateLeadDelivery(
     .eq("id", leadId);
 
   if (error) {
-    console.error("A leadértesítési állapot nem frissíthető:", error.message);
+    throw new Error(
+      `A leadértesítési állapot nem frissíthető: ${error.message}`,
+    );
+  }
+}
+
+async function tryUpdateLeadDelivery(
+  client: SupabaseClient,
+  leadId: string,
+  changes: Record<string, unknown>,
+) {
+  try {
+    await updateLeadDelivery(client, leadId, changes);
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Ismeretlen leadállapot-frissítési hiba.";
+
+    console.error(message);
   }
 }
 
@@ -461,40 +645,30 @@ function getSupabaseKey(
   legacyEnvName: string,
   preferredPrefix: string,
 ) {
-  const legacy = Deno.env.get(legacyEnvName)?.trim();
-
-  if (legacy) {
-    return legacy;
-  }
-
   const plural = Deno.env.get(pluralEnvName)?.trim();
 
-  if (!plural) {
-    throw new Error(
-      `Hiányzó Supabase kulcs: ${pluralEnvName} vagy ${legacyEnvName}.`,
-    );
-  }
-
-  try {
-    const parsed = JSON.parse(plural);
-    const values = collectStringValues(parsed);
-
+  if (plural) {
+    const values = parseEnvStringValues(plural);
     const preferred = values.find((value) => value.startsWith(preferredPrefix));
 
     if (preferred) {
       return preferred;
     }
 
-    if (values[0]) {
-      return values[0];
-    }
-  } catch {
-    if (plural.startsWith(preferredPrefix) || plural.length > 20) {
-      return plural;
-    }
+    throw new Error(
+      `A ${pluralEnvName} nem tartalmaz ${preferredPrefix} kezdetű kulcsot.`,
+    );
   }
 
-  throw new Error(`A ${pluralEnvName} formátuma nem értelmezhető.`);
+  const legacy = Deno.env.get(legacyEnvName)?.trim();
+
+  if (legacy) {
+    return legacy;
+  }
+
+  throw new Error(
+    `Hiányzó Supabase kulcs: ${pluralEnvName} vagy ${legacyEnvName}.`,
+  );
 }
 
 function tryGetSupabaseSecretKey() {
@@ -509,9 +683,17 @@ function tryGetSupabaseSecretKey() {
   }
 }
 
+function parseEnvStringValues(rawValue: string) {
+  try {
+    return collectStringValues(JSON.parse(rawValue));
+  } catch {
+    return [rawValue];
+  }
+}
+
 function collectStringValues(value: unknown): string[] {
   if (typeof value === "string") {
-    return [value];
+    return [value.trim()].filter(Boolean);
   }
 
   if (Array.isArray(value)) {
@@ -536,10 +718,26 @@ function requiredEnv(name: string) {
 }
 
 function parseRecipientList(value: string | null | undefined) {
-  return String(value ?? "")
-    .split(/[;,]/)
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const recipients = [
+    ...new Set(
+      String(value ?? "")
+        .split(/[;,]/)
+        .map((item) => item.trim().toLowerCase())
+        .filter(Boolean),
+    ),
+  ];
+
+  if (recipients.length > 10) {
+    throw new Error("Legfeljebb 10 értesítési címzett állítható be.");
+  }
+
+  for (const recipient of recipients) {
+    if (!isEmail(recipient)) {
+      throw new Error(`Érvénytelen értesítési e-mail-cím: ${recipient}`);
+    }
+  }
+
+  return recipients;
 }
 
 function parseBoolean(value: string | null | undefined) {
@@ -547,6 +745,89 @@ function parseBoolean(value: string | null | undefined) {
     String(value ?? "")
       .trim()
       .toLowerCase(),
+  );
+}
+
+async function parseJsonBody(request: Request) {
+  const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+
+  if (!contentType.includes("application/json")) {
+    throw new HttpError(
+      415,
+      "A kérés Content-Type értéke application/json kell legyen.",
+    );
+  }
+
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+
+  if (
+    Number.isFinite(contentLength) &&
+    contentLength > MAX_REQUEST_BODY_BYTES
+  ) {
+    throw new HttpError(413, "A kérés törzse túl nagy.");
+  }
+
+  const text = await request.text();
+  const byteLength = new TextEncoder().encode(text).length;
+
+  if (byteLength > MAX_REQUEST_BODY_BYTES) {
+    throw new HttpError(413, "A kérés törzse túl nagy.");
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new HttpError(400, "A kérés törzse nem érvényes JSON.");
+  }
+}
+
+function assertTextLength(
+  value: unknown,
+  fieldName: string,
+  minimum: number,
+  maximum: number,
+) {
+  if (typeof value !== "string") {
+    throw new HttpError(400, `${fieldName} nem megfelelő típusú.`);
+  }
+
+  const length = value.trim().length;
+
+  if (length < minimum || length > maximum) {
+    throw new HttpError(400, `${fieldName} hossza nem megfelelő.`);
+  }
+}
+
+function assertOptionalMaxLength(
+  value: unknown,
+  fieldName: string,
+  maximum: number,
+) {
+  if (value === null || value === undefined || value === "") {
+    return;
+  }
+
+  if (typeof value !== "string" || value.length > maximum) {
+    throw new HttpError(
+      400,
+      `${fieldName} túl hosszú vagy nem megfelelő típusú.`,
+    );
+  }
+}
+
+function isUuid(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value,
+    )
+  );
+}
+
+function isEmail(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)
   );
 }
 
@@ -590,20 +871,14 @@ function isWebhookPayload(value: unknown): value is DatabaseWebhookPayload {
   );
 }
 
-async function cloneJson(request: Request) {
-  try {
-    return await request.clone().json();
-  } catch {
-    return null;
-  }
-}
-
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       ...corsHeaders,
+      "Cache-Control": "no-store",
       "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
     },
   });
 }
