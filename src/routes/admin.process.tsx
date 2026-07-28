@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/process")({
@@ -36,51 +36,7 @@ function AdminProcessPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    void initializePage();
-  }, []);
-
-  async function initializePage() {
-    setLoading(true);
-    setErrorMessage("");
-
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
-
-    if (sessionError) {
-      setErrorMessage(sessionError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!session) {
-      await navigate({
-        to: "/admin/login",
-        replace: true,
-      });
-      return;
-    }
-
-    const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
-
-    if (adminError) {
-      setErrorMessage(adminError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!isAdmin) {
-      setErrorMessage("Ehhez az oldalhoz nincs adminisztrátori jogosultságod.");
-      setLoading(false);
-      return;
-    }
-
-    await loadSteps();
-  }
-
-  async function loadSteps() {
+  const loadSteps = useCallback(async (): Promise<ProcessStep[] | null> => {
     const { data, error } = await supabase
       .from("process_steps")
       .select("id, step_number, title, description, sort_order, is_visible")
@@ -88,13 +44,67 @@ function AdminProcessPage() {
 
     if (error) {
       setErrorMessage(error.message);
-      setLoading(false);
-      return;
+      return null;
     }
 
-    setSteps((data ?? []) as ProcessStep[]);
-    setLoading(false);
-  }
+    const items = (data ?? []) as ProcessStep[];
+
+    setSteps(items);
+
+    return items;
+  }, []);
+
+  const initializePage = useCallback(async () => {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!session) {
+        await navigate({
+          to: "/admin/login",
+          replace: true,
+        });
+
+        return;
+      }
+
+      const { data: isAdmin, error: adminError } =
+        await supabase.rpc("is_admin");
+
+      if (adminError) {
+        throw adminError;
+      }
+
+      if (!isAdmin) {
+        throw new Error(
+          "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
+        );
+      }
+
+      await loadSteps();
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "A munkafolyamat betöltése közben hiba történt.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [loadSteps, navigate]);
+
+  useEffect(() => {
+    void initializePage();
+  }, [initializePage]);
 
   function updateField<K extends keyof ProcessForm>(
     field: K,
@@ -187,15 +197,20 @@ function AdminProcessPage() {
       setSuccessMessage("Az új munkafolyamat-lépés létrehozva.");
     }
 
-    setEditingId(null);
-    await loadSteps();
+    const items = await loadSteps();
 
-    const nextOrder = steps.length + (editingId ? 1 : 2);
-    setForm({
-      ...emptyForm,
-      step_number: String(nextOrder).padStart(2, "0"),
-      sort_order: nextOrder,
-    });
+    if (items) {
+      setEditingId(null);
+
+      const nextOrder = items.length + 1;
+
+      setForm({
+        ...emptyForm,
+        step_number: String(nextOrder).padStart(2, "0"),
+        sort_order: nextOrder,
+      });
+    }
+
     setSaving(false);
   }
 
