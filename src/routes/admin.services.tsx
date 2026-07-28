@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/services")({
@@ -38,6 +38,24 @@ const iconOptions = [
   { value: "code", label: "Kód / egyedi fejlesztés" },
 ];
 
+function createSlug(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getNextSortOrder(items: Service[]) {
+  if (items.length === 0) {
+    return 1;
+  }
+
+  return Math.max(...items.map((item) => item.sort_order)) + 1;
+}
+
 function AdminServicesPage() {
   const navigate = useNavigate();
 
@@ -50,52 +68,7 @@ function AdminServicesPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    void initializePage();
-  }, []);
-
-  async function initializePage() {
-    setLoading(true);
-    setErrorMessage("");
-
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
-
-    if (sessionError) {
-      setErrorMessage(sessionError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!session) {
-      await navigate({
-        to: "/admin/login",
-        replace: true,
-      });
-
-      return;
-    }
-
-    const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
-
-    if (adminError) {
-      setErrorMessage(adminError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!isAdmin) {
-      setErrorMessage("Ehhez az oldalhoz nincs adminisztrátori jogosultságod.");
-      setLoading(false);
-      return;
-    }
-
-    await loadServices();
-  }
-
-  async function loadServices() {
+  const loadServices = useCallback(async (): Promise<Service[] | null> => {
     const { data, error } = await supabase
       .from("services")
       .select(
@@ -105,13 +78,67 @@ function AdminServicesPage() {
 
     if (error) {
       setErrorMessage(error.message);
-      setLoading(false);
-      return;
+      return null;
     }
 
-    setServices((data ?? []) as Service[]);
-    setLoading(false);
-  }
+    const items = (data ?? []) as Service[];
+
+    setServices(items);
+
+    return items;
+  }, []);
+
+  const initializePage = useCallback(async () => {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!session) {
+        await navigate({
+          to: "/admin/login",
+          replace: true,
+        });
+
+        return;
+      }
+
+      const { data: isAdmin, error: adminError } =
+        await supabase.rpc("is_admin");
+
+      if (adminError) {
+        throw adminError;
+      }
+
+      if (!isAdmin) {
+        throw new Error(
+          "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
+        );
+      }
+
+      await loadServices();
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "A szolgáltatások betöltése közben hiba történt.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [loadServices, navigate]);
+
+  useEffect(() => {
+    void initializePage();
+  }, [initializePage]);
 
   function updateField<K extends keyof ServiceForm>(
     field: K,
@@ -121,16 +148,6 @@ function AdminServicesPage() {
       ...current,
       [field]: value,
     }));
-  }
-
-  function createSlug(value: string) {
-    return value
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
   }
 
   function startEditing(service: Service) {
@@ -159,7 +176,7 @@ function AdminServicesPage() {
     setEditingId(null);
     setForm({
       ...emptyForm,
-      sort_order: services.length + 1,
+      sort_order: getNextSortOrder(services),
     });
     setErrorMessage("");
     setSuccessMessage("");
@@ -222,10 +239,13 @@ function AdminServicesPage() {
       setSuccessMessage("Az új szolgáltatás sikeresen létrehozva.");
     }
 
-    setEditingId(null);
-    setForm(emptyForm);
+    const items = await loadServices();
 
-    await loadServices();
+    setEditingId(null);
+    setForm({
+      ...emptyForm,
+      sort_order: getNextSortOrder(items ?? services),
+    });
     setSaving(false);
   }
 
