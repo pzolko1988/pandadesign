@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -95,10 +96,6 @@ function AdminBlogPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    void initializePage();
-  }, []);
-
   const filteredPosts = useMemo(() => {
     const search = searchTerm.trim().toLocaleLowerCase("hu-HU");
 
@@ -117,7 +114,24 @@ function AdminBlogPage() {
     });
   }, [posts, searchTerm, statusFilter]);
 
-  async function initializePage() {
+  const loadPosts = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select(
+        "id, title, slug, excerpt, content_html, content_json, featured_image_path, author_name, status, published_at, seo_title, seo_description, created_by, updated_by, created_at, updated_at",
+      )
+      .order("updated_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    setPosts((data ?? []) as BlogPost[]);
+  }, []);
+
+  const initializePage = useCallback(async () => {
     setLoading(true);
     setErrorMessage("");
 
@@ -163,24 +177,11 @@ function AdminBlogPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [loadPosts, navigate]);
 
-  async function loadPosts() {
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select(
-        "id, title, slug, excerpt, content_html, content_json, featured_image_path, author_name, status, published_at, seo_title, seo_description, created_by, updated_by, created_at, updated_at",
-      )
-      .order("updated_at", {
-        ascending: false,
-      });
-
-    if (error) {
-      throw error;
-    }
-
-    setPosts((data ?? []) as BlogPost[]);
-  }
+  useEffect(() => {
+    void initializePage();
+  }, [initializePage]);
 
   function updateField<K extends keyof BlogForm>(field: K, value: BlogForm[K]) {
     setForm((current) => ({
