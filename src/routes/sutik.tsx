@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
+import { absoluteUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/sutik")({
   head: () => ({
@@ -15,10 +16,10 @@ export const Route = createFileRoute("/sutik")({
         property: "og:description",
         content: "Süti tájékoztató – helyőrző tartalom.",
       },
-      { property: "og:url", content: "/sutik" },
+      { property: "og:url", content: absoluteUrl("/sutik") },
       { name: "robots", content: "noindex" },
     ],
-    links: [{ rel: "canonical", href: "/sutik" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/sutik") }],
   }),
   component: Cookies,
 });

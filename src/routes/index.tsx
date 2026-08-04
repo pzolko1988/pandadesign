@@ -32,7 +32,7 @@ import {
 import { Section } from "@/components/site/Section";
 import { BrowserMockup } from "@/components/site/BrowserMockup";
 import { fetchPublicHomeSeoData } from "@/lib/public-home-seo";
-import { buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
+import { buildSeoHead } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -48,7 +48,6 @@ export const Route = createFileRoute("/")({
     const description =
       loaderData.settings.default_meta_description.trim() ||
       "Modern, gyors és keresőbarát weboldalak magyar vállalkozásoknak.";
-    const baseUrl = resolveBaseUrl(loaderData.settings.base_url);
     const jsonLd =
       loaderData.faqs.length > 0
         ? {
@@ -69,7 +68,6 @@ export const Route = createFileRoute("/")({
       title,
       description,
       path: "/",
-      baseUrl,
       image: loaderData.ogImageUrl || undefined,
       type: "website",
       jsonLd,
@@ -77,22 +75,6 @@ export const Route = createFileRoute("/")({
   },
   component: Home,
 });
-
-function resolveBaseUrl(baseUrl: string) {
-  const candidate = baseUrl.trim();
-
-  try {
-    const url = new URL(candidate);
-
-    if (url.protocol === "http:" || url.protocol === "https:") {
-      return candidate;
-    }
-  } catch {
-    // A hibás CMS-érték helyett a production domain használatos.
-  }
-
-  return DEFAULT_SITE_URL;
-}
 
 const TRUST = [
   { icon: Smartphone, label: "Mobilbarát" },

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
+import { absoluteUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/aszf")({
   head: () => ({
@@ -15,10 +16,10 @@ export const Route = createFileRoute("/aszf")({
         content: "Általános szerződési feltételek — PandaDesign",
       },
       { property: "og:description", content: "ÁSZF – helyőrző tartalom." },
-      { property: "og:url", content: "/aszf" },
+      { property: "og:url", content: absoluteUrl("/aszf") },
       { name: "robots", content: "noindex" },
     ],
-    links: [{ rel: "canonical", href: "/aszf" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/aszf") }],
   }),
   component: ASZF,
 });

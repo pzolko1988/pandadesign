@@ -219,6 +219,15 @@ function normalizeBaseUrl(baseUrl: string) {
     const url = new URL(candidate);
 
     if (url.protocol === "http:" || url.protocol === "https:") {
+      const productionHostname = new URL(DEFAULT_SITE_URL).hostname;
+
+      if (
+        url.hostname === productionHostname ||
+        url.hostname === productionHostname.replace(/^www\./, "")
+      ) {
+        return DEFAULT_SITE_URL;
+      }
+
       url.hash = "";
       url.search = "";
 
