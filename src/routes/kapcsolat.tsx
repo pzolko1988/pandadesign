@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { buildSeoHead } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
 import {
   DEFAULT_SITE_SETTINGS,
@@ -21,18 +22,13 @@ import {
 } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/kapcsolat")({
-  head: () => ({
-    meta: [
-      {
-        title: "Kapcsolat és ajánlatkérés — PandaDesign",
-      },
-      {
-        name: "description",
-        content:
-          "Írd meg, milyen weboldalra van szükséged. A PandaDesign rövid időn belül felveszi veled a kapcsolatot.",
-      },
-    ],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Weboldal készítés ajánlatkérés — PandaDesign",
+      description:
+        "Írd meg, milyen weboldalra van szükséged. A PandaDesign rövid időn belül felveszi veled a kapcsolatot.",
+      path: "/kapcsolat",
+    }),
   component: ContactPage,
 });
 

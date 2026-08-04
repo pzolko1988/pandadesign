@@ -2,21 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight, CalendarDays, Clock3, FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { buildSeoHead } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
 
 export const Route = createFileRoute("/blog/")({
-  head: () => ({
-    meta: [
-      {
-        title: "Blog — PandaDesign",
-      },
-      {
-        name: "description",
-        content:
-          "Weboldalkészítési, online marketing- és digitális üzleti útmutatók a PandaDesign blogján.",
-      },
-    ],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Weboldal készítés és SEO tudástár — PandaDesign",
+      description:
+        "Weboldalkészítési, online marketing- és digitális üzleti útmutatók a PandaDesign blogján.",
+      path: "/blog",
+    }),
   component: BlogIndexPage,
 });
 
