@@ -31,54 +31,68 @@ import {
 } from "@/components/ui/accordion";
 import { Section } from "@/components/site/Section";
 import { BrowserMockup } from "@/components/site/BrowserMockup";
+import { fetchPublicHomeSeoData } from "@/lib/public-home-seo";
+import { buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
-import {
-  DEFAULT_SITE_SETTINGS,
-  getSiteAssetUrl,
-  loadSiteSettings,
-} from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      {
-        title: "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek",
-      },
-      {
-        name: "description",
-        content:
-          "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig.",
-      },
-      {
-        property: "og:title",
-        content:
-          "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek",
-      },
-      {
-        property: "og:description",
-        content:
-          "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig.",
-      },
-      { property: "og:url", content: "/" },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: DEFAULT_FAQS.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }),
-      },
-    ],
-  }),
+  loader: () => fetchPublicHomeSeoData(),
+  head: ({ loaderData }) => {
+    if (!loaderData) {
+      return {};
+    }
+
+    const title =
+      loaderData.settings.default_meta_title.trim() ||
+      "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek";
+    const description =
+      loaderData.settings.default_meta_description.trim() ||
+      "Modern, gyors és keresőbarát weboldalak magyar vállalkozásoknak.";
+    const baseUrl = resolveBaseUrl(loaderData.settings.base_url);
+    const jsonLd =
+      loaderData.faqs.length > 0
+        ? {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: loaderData.faqs.map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.answer,
+              },
+            })),
+          }
+        : undefined;
+
+    return buildSeoHead({
+      title,
+      description,
+      path: "/",
+      baseUrl,
+      image: loaderData.ogImageUrl || undefined,
+      type: "website",
+      jsonLd,
+    });
+  },
   component: Home,
 });
+
+function resolveBaseUrl(baseUrl: string) {
+  const candidate = baseUrl.trim();
+
+  try {
+    const url = new URL(candidate);
+
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      return candidate;
+    }
+  } catch {
+    // A hibás CMS-érték helyett a production domain használatos.
+  }
+
+  return DEFAULT_SITE_URL;
+}
 
 const TRUST = [
   { icon: Smartphone, label: "Mobilbarát" },
@@ -392,7 +406,6 @@ const DEFAULT_HERO: HeroContent = {
 function Home() {
   return (
     <>
-      <SiteSettingsHeadSync />
       <HeroSection />
       <TrustSection />
       <ServicesSection />
@@ -405,162 +418,6 @@ function Home() {
       <FinalCTA />
     </>
   );
-}
-
-function SiteSettingsHeadSync() {
-  useEffect(() => {
-    let active = true;
-
-    function setMeta(
-      selector: string,
-      attribute: "name" | "property",
-      key: string,
-      content: string,
-    ) {
-      let element = document.head.querySelector<HTMLMetaElement>(selector);
-
-      if (!element) {
-        element = document.createElement("meta");
-        element.setAttribute(attribute, key);
-        document.head.appendChild(element);
-      }
-
-      element.content = content;
-    }
-
-    async function synchronizeHead() {
-      try {
-        const settings = await loadSiteSettings();
-
-        if (!active) {
-          return;
-        }
-
-        document.title =
-          settings.default_meta_title ||
-          DEFAULT_SITE_SETTINGS.default_meta_title;
-
-        const description =
-          settings.default_meta_description ||
-          DEFAULT_SITE_SETTINGS.default_meta_description;
-
-        setMeta('meta[name="description"]', "name", "description", description);
-
-        setMeta(
-          'meta[property="og:title"]',
-          "property",
-          "og:title",
-          document.title,
-        );
-
-        setMeta(
-          'meta[property="og:description"]',
-          "property",
-          "og:description",
-          description,
-        );
-
-        if (settings.base_url) {
-          setMeta(
-            'meta[property="og:url"]',
-            "property",
-            "og:url",
-            settings.base_url,
-          );
-        }
-
-        const ogImageUrl = getSiteAssetUrl(settings.og_image_path);
-
-        if (ogImageUrl) {
-          setMeta(
-            'meta[property="og:image"]',
-            "property",
-            "og:image",
-            ogImageUrl,
-          );
-        }
-
-        const faviconUrl = getSiteAssetUrl(settings.favicon_path);
-
-        if (faviconUrl) {
-          let favicon =
-            document.head.querySelector<HTMLLinkElement>('link[rel="icon"]');
-
-          if (!favicon) {
-            favicon = document.createElement("link");
-            favicon.rel = "icon";
-            document.head.appendChild(favicon);
-          }
-
-          favicon.href = faviconUrl;
-        }
-
-        const logoUrl = getSiteAssetUrl(settings.logo_path);
-
-        const sameAs = [
-          settings.facebook_url,
-          settings.instagram_url,
-          settings.linkedin_url,
-        ].filter(Boolean);
-
-        const structuredData = {
-          "@context": "https://schema.org",
-          "@type": "ProfessionalService",
-          name: settings.site_name,
-          legalName: settings.legal_name || undefined,
-          url: settings.base_url || undefined,
-          logo: logoUrl || undefined,
-          image: ogImageUrl || undefined,
-          email:
-            settings.show_contact_details && settings.email
-              ? settings.email
-              : undefined,
-          telephone:
-            settings.show_contact_details && settings.phone
-              ? settings.phone
-              : undefined,
-          address:
-            settings.show_contact_details &&
-            (settings.address_line || settings.city || settings.postal_code)
-              ? {
-                  "@type": "PostalAddress",
-                  streetAddress: settings.address_line || undefined,
-                  postalCode: settings.postal_code || undefined,
-                  addressLocality: settings.city || undefined,
-                  addressCountry: settings.country || undefined,
-                }
-              : undefined,
-          sameAs: sameAs.length > 0 ? sameAs : undefined,
-        };
-
-        let script = document.head.querySelector<HTMLScriptElement>(
-          "#pandadesign-business-jsonld",
-        );
-
-        if (!script) {
-          script = document.createElement("script");
-          script.id = "pandadesign-business-jsonld";
-          script.type = "application/ld+json";
-          document.head.appendChild(script);
-        }
-
-        script.textContent = JSON.stringify(structuredData);
-      } catch (error) {
-        console.error(
-          "Az általános weboldal-beállítások nem tölthetők be:",
-          error,
-        );
-      }
-    }
-
-    void synchronizeHead();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  return null;
 }
 
 function HeroSection() {
