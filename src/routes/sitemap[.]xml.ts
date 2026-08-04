@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import {
   fetchPublishedBlogPostsForSitemap,
+  fetchPublishedLegalPagesForSitemap,
   fetchPublishedProjectsForSitemap,
 } from "@/lib/public-sitemap";
 import { absoluteUrl } from "@/lib/seo";
@@ -25,9 +26,10 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const [blogPosts, projects] = await Promise.all([
+        const [blogPosts, projects, legalPages] = await Promise.all([
           fetchPublishedBlogPostsForSitemap(),
           fetchPublishedProjectsForSitemap(),
+          fetchPublishedLegalPagesForSitemap(),
         ]);
 
         const entries: SitemapEntry[] = [
@@ -41,6 +43,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           ...projects.map((project) => ({
             loc: absoluteUrl(`/referenciak/${project.slug}`),
             lastmod: toIsoDate(project.updated_at),
+          })),
+          ...legalPages.map((page) => ({
+            loc: absoluteUrl(`/${page.slug}`),
+            lastmod: toIsoDate(page.updated_at),
           })),
         ];
 

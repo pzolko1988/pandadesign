@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
 const KEY = "pandadesign.cookie-consent";
@@ -36,7 +37,17 @@ export function CookieBanner() {
             <div className="text-sm text-ink-soft max-w-2xl">
               <p className="font-semibold text-ink mb-1">Sütik használata</p>A
               weboldal működéséhez szükséges sütiket használunk. Analitikai és
-              marketing sütiket kizárólag az Ön hozzájárulásával töltünk be.
+              marketing sütiket kizárólag az Ön hozzájárulásával töltünk be. Az
+              alkalmazott sütikről a{" "}
+              <Link
+                to="/cookie-tajekoztato"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-brand underline"
+              >
+                süti- és cookie-tájékoztatóban
+              </Link>{" "}
+              olvashatsz részletesen.
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">
               <Button
@@ -61,6 +72,18 @@ export function CookieBanner() {
         ) : (
           <div className="space-y-3 text-sm">
             <p className="font-semibold text-ink">Süti beállítások</p>
+            <p className="text-ink-soft">
+              Részletes információ a{" "}
+              <Link
+                to="/cookie-tajekoztato"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-brand underline"
+              >
+                süti- és cookie-tájékoztatóban
+              </Link>
+              .
+            </p>
             <ul className="space-y-2 text-ink-soft">
               <li>
                 <span className="font-medium text-ink">Szükséges sütik:</span>{" "}

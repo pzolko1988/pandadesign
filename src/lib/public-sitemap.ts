@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/client";
+import { LEGAL_PAGE_SLUGS } from "@/lib/legal-pages";
 
 export type SitemapBlogPost = {
   slug: string;
@@ -7,6 +8,11 @@ export type SitemapBlogPost = {
 };
 
 export type SitemapProject = {
+  slug: string;
+  updated_at: string | null;
+};
+
+export type SitemapLegalPage = {
   slug: string;
   updated_at: string | null;
 };
@@ -52,6 +58,27 @@ export async function fetchPublishedProjectsForSitemap(): Promise<
       updated_at: normalizeNullableText(project.updated_at),
     }))
     .filter((project) => project.slug);
+}
+
+export async function fetchPublishedLegalPagesForSitemap(): Promise<
+  SitemapLegalPage[]
+> {
+  const { data, error } = await supabase
+    .from("legal_pages")
+    .select("slug, updated_at")
+    .eq("status", "published")
+    .in("slug", LEGAL_PAGE_SLUGS);
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? [])
+    .map((page) => ({
+      slug: normalizeText(page.slug),
+      updated_at: normalizeNullableText(page.updated_at),
+    }))
+    .filter((page) => page.slug);
 }
 
 function normalizeText(value: unknown) {

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Scale } from "lucide-react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/admin/")({
@@ -311,6 +312,23 @@ function AdminDashboardPage() {
             <p className="mt-3 text-sm text-muted-foreground">
               Arculat, kapcsolattartás, közösségi linkek, SEO és lábléc
               kezelése.
+            </p>
+          </Link>
+
+          <Link
+            to="/admin/legal"
+            className="rounded-2xl border bg-background p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+          >
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand">
+              <Scale className="h-5 w-5" />
+            </span>
+
+            <p className="mt-4 text-sm text-muted-foreground">Jogi tartalom</p>
+
+            <h2 className="mt-2 text-xl font-bold">Jogi dokumentumok</h2>
+
+            <p className="mt-3 text-sm text-muted-foreground">
+              Piszkozatok, közzététel, előnézet és verzióelőzmények kezelése.
             </p>
           </Link>
         </section>

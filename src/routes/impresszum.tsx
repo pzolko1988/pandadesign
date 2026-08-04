@@ -9,18 +9,18 @@ import {
   fetchPublishedLegalPage,
 } from "@/lib/legal-pages";
 
-export const Route = createFileRoute("/adatkezeles")({
-  loader: () => fetchPublishedLegalPage("adatkezeles"),
-  head: ({ loaderData }) => buildLegalPageHead("adatkezeles", loaderData),
+export const Route = createFileRoute("/impresszum")({
+  loader: () => fetchPublishedLegalPage("impresszum"),
+  head: ({ loaderData }) => buildLegalPageHead("impresszum", loaderData),
   errorComponent: LegalDocumentError,
-  component: PrivacyPage,
+  component: ImprintPage,
 });
 
-function PrivacyPage() {
+function ImprintPage() {
   return (
     <LegalDocumentPage
       page={Route.useLoaderData()}
-      fallbackTitle={LEGAL_PAGE_DEFINITIONS.adatkezeles.fallbackTitle}
+      fallbackTitle={LEGAL_PAGE_DEFINITIONS.impresszum.fallbackTitle}
     />
   );
 }

@@ -14,6 +14,9 @@ import { Route as AdatkezelesRouteImport } from './routes/adatkezeles'
 import { Route as ArakRouteImport } from './routes/arak'
 import { Route as AszfRouteImport } from './routes/aszf'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as CookieRouteImport } from './routes/cookie'
+import { Route as CookieTajekoztatoRouteImport } from './routes/cookie-tajekoztato'
+import { Route as ImpresszumRouteImport } from './routes/impresszum'
 import { Route as KapcsolatRouteImport } from './routes/kapcsolat'
 import { Route as ReferenciakRouteImport } from './routes/referenciak'
 import { Route as RolunkRouteImport } from './routes/rolunk'
@@ -27,6 +30,7 @@ import { Route as AdminCtaRouteImport } from './routes/admin.cta'
 import { Route as AdminFaqRouteImport } from './routes/admin.faq'
 import { Route as AdminHeroRouteImport } from './routes/admin.hero'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AdminLegalRouteImport } from './routes/admin.legal'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminNavigationRouteImport } from './routes/admin.navigation'
 import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
@@ -68,6 +72,21 @@ const AszfRoute = AszfRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookieRoute = CookieRouteImport.update({
+  id: '/cookie',
+  path: '/cookie',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookieTajekoztatoRoute = CookieTajekoztatoRouteImport.update({
+  id: '/cookie-tajekoztato',
+  path: '/cookie-tajekoztato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpresszumRoute = ImpresszumRouteImport.update({
+  id: '/impresszum',
+  path: '/impresszum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KapcsolatRoute = KapcsolatRouteImport.update({
@@ -133,6 +152,11 @@ const AdminHeroRoute = AdminHeroRouteImport.update({
 const AdminLeadsRoute = AdminLeadsRouteImport.update({
   id: '/admin/leads',
   path: '/admin/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLegalRoute = AdminLegalRouteImport.update({
+  id: '/admin/legal',
+  path: '/admin/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -227,6 +251,9 @@ export interface FileRoutesByFullPath {
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cookie': typeof CookieRoute
+  '/cookie-tajekoztato': typeof CookieTajekoztatoRoute
+  '/impresszum': typeof ImpresszumRoute
   '/kapcsolat': typeof KapcsolatRoute
   '/referenciak': typeof ReferenciakRouteWithChildren
   '/rolunk': typeof RolunkRoute
@@ -239,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/legal': typeof AdminLegalRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/navigation': typeof AdminNavigationRoute
   '/admin/pricing': typeof AdminPricingRoute
@@ -263,6 +291,9 @@ export interface FileRoutesByTo {
   '/adatkezeles': typeof AdatkezelesRoute
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
+  '/cookie': typeof CookieRoute
+  '/cookie-tajekoztato': typeof CookieTajekoztatoRoute
+  '/impresszum': typeof ImpresszumRoute
   '/kapcsolat': typeof KapcsolatRoute
   '/rolunk': typeof RolunkRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -274,6 +305,7 @@ export interface FileRoutesByTo {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/legal': typeof AdminLegalRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/navigation': typeof AdminNavigationRoute
   '/admin/pricing': typeof AdminPricingRoute
@@ -300,6 +332,9 @@ export interface FileRoutesById {
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cookie': typeof CookieRoute
+  '/cookie-tajekoztato': typeof CookieTajekoztatoRoute
+  '/impresszum': typeof ImpresszumRoute
   '/kapcsolat': typeof KapcsolatRoute
   '/referenciak': typeof ReferenciakRouteWithChildren
   '/rolunk': typeof RolunkRoute
@@ -312,6 +347,7 @@ export interface FileRoutesById {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/legal': typeof AdminLegalRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/navigation': typeof AdminNavigationRoute
   '/admin/pricing': typeof AdminPricingRoute
@@ -339,6 +375,9 @@ export interface FileRouteTypes {
     | '/arak'
     | '/aszf'
     | '/blog'
+    | '/cookie'
+    | '/cookie-tajekoztato'
+    | '/impresszum'
     | '/kapcsolat'
     | '/referenciak'
     | '/rolunk'
@@ -351,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/hero'
     | '/admin/leads'
+    | '/admin/legal'
     | '/admin/login'
     | '/admin/navigation'
     | '/admin/pricing'
@@ -375,6 +415,9 @@ export interface FileRouteTypes {
     | '/adatkezeles'
     | '/arak'
     | '/aszf'
+    | '/cookie'
+    | '/cookie-tajekoztato'
+    | '/impresszum'
     | '/kapcsolat'
     | '/rolunk'
     | '/sitemap.xml'
@@ -386,6 +429,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/hero'
     | '/admin/leads'
+    | '/admin/legal'
     | '/admin/login'
     | '/admin/navigation'
     | '/admin/pricing'
@@ -411,6 +455,9 @@ export interface FileRouteTypes {
     | '/arak'
     | '/aszf'
     | '/blog'
+    | '/cookie'
+    | '/cookie-tajekoztato'
+    | '/impresszum'
     | '/kapcsolat'
     | '/referenciak'
     | '/rolunk'
@@ -423,6 +470,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/hero'
     | '/admin/leads'
+    | '/admin/legal'
     | '/admin/login'
     | '/admin/navigation'
     | '/admin/pricing'
@@ -449,6 +497,9 @@ export interface RootRouteChildren {
   ArakRoute: typeof ArakRoute
   AszfRoute: typeof AszfRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CookieRoute: typeof CookieRoute
+  CookieTajekoztatoRoute: typeof CookieTajekoztatoRoute
+  ImpresszumRoute: typeof ImpresszumRoute
   KapcsolatRoute: typeof KapcsolatRoute
   ReferenciakRoute: typeof ReferenciakRouteWithChildren
   RolunkRoute: typeof RolunkRoute
@@ -461,6 +512,7 @@ export interface RootRouteChildren {
   AdminFaqRoute: typeof AdminFaqRoute
   AdminHeroRoute: typeof AdminHeroRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminLegalRoute: typeof AdminLegalRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNavigationRoute: typeof AdminNavigationRoute
   AdminPricingRoute: typeof AdminPricingRoute
@@ -512,6 +564,27 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie': {
+      id: '/cookie'
+      path: '/cookie'
+      fullPath: '/cookie'
+      preLoaderRoute: typeof CookieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie-tajekoztato': {
+      id: '/cookie-tajekoztato'
+      path: '/cookie-tajekoztato'
+      fullPath: '/cookie-tajekoztato'
+      preLoaderRoute: typeof CookieTajekoztatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impresszum': {
+      id: '/impresszum'
+      path: '/impresszum'
+      fullPath: '/impresszum'
+      preLoaderRoute: typeof ImpresszumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kapcsolat': {
@@ -603,6 +676,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/leads'
       fullPath: '/admin/leads'
       preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/legal': {
+      id: '/admin/legal'
+      path: '/admin/legal'
+      fullPath: '/admin/legal'
+      preLoaderRoute: typeof AdminLegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -759,6 +839,9 @@ const rootRouteChildren: RootRouteChildren = {
   ArakRoute: ArakRoute,
   AszfRoute: AszfRoute,
   BlogRoute: BlogRouteWithChildren,
+  CookieRoute: CookieRoute,
+  CookieTajekoztatoRoute: CookieTajekoztatoRoute,
+  ImpresszumRoute: ImpresszumRoute,
   KapcsolatRoute: KapcsolatRoute,
   ReferenciakRoute: ReferenciakRouteWithChildren,
   RolunkRoute: RolunkRoute,
@@ -771,6 +854,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFaqRoute: AdminFaqRoute,
   AdminHeroRoute: AdminHeroRoute,
   AdminLeadsRoute: AdminLeadsRoute,
+  AdminLegalRoute: AdminLegalRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNavigationRoute: AdminNavigationRoute,
   AdminPricingRoute: AdminPricingRoute,

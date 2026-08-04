@@ -16,6 +16,7 @@ import {
   RemoveFormatting,
   Strikethrough,
   Undo2,
+  Underline,
   Unlink,
 } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
@@ -150,6 +151,15 @@ export function RichTextEditor({
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <Strikethrough className="h-4 w-4" />
+        </ToolbarButton>
+
+        <ToolbarButton
+          label="Aláhúzott"
+          active={editor.isActive("underline")}
+          disabled={disabled}
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+        >
+          <Underline className="h-4 w-4" />
         </ToolbarButton>
 
         <ToolbarSeparator />
