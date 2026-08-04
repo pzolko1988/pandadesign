@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/supabase-test")({
+  head: () => ({
+    meta: [
+      { title: "Rendszerteszt — PandaDesign" },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+    ],
+  }),
   component: SupabaseTestPage,
 });
 
