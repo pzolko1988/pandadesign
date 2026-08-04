@@ -24,6 +24,7 @@ type SeoHeadInput = {
   image?: string;
   type?: string;
   robots?: string;
+  jsonLd?: Record<string, unknown>;
 };
 
 export function buildSeoHead({
@@ -34,6 +35,7 @@ export function buildSeoHead({
   image,
   type = "website",
   robots,
+  jsonLd,
 }: SeoHeadInput) {
   const canonicalUrl = absoluteUrl(path, baseUrl);
   const imageUrl = image ? absoluteUrl(image, baseUrl) : undefined;
@@ -52,6 +54,7 @@ export function buildSeoHead({
       { name: "twitter:description", content: description },
       ...(imageUrl ? [{ name: "twitter:image", content: imageUrl }] : []),
       ...(robots ? [{ name: "robots", content: robots }] : []),
+      ...(jsonLd ? [{ "script:ld+json": jsonLd }] : []),
     ],
     links: [{ rel: "canonical", href: canonicalUrl }],
   };
