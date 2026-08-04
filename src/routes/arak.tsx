@@ -3,9 +3,11 @@ import { Check, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Section } from "@/components/site/Section";
+import { fetchVisiblePricingPackages } from "@/lib/public-pricing";
 import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/arak")({
+  loader: () => fetchVisiblePricingPackages(),
   head: () =>
     buildSeoHead({
       title: "Weboldal készítés árak és csomagok — PandaDesign",
@@ -15,64 +17,6 @@ export const Route = createFileRoute("/arak")({
     }),
   component: Pricing,
 });
-
-const PLANS = [
-  {
-    name: "Landing",
-    price: "69 000",
-    desc: "Egyoldalas kampányoldal",
-    features: [
-      "Egyoldalas weboldal",
-      "Reszponzív dizájn",
-      "Kapcsolatfelvételi űrlap",
-      "Alap SEO beállítás",
-      "Közösségi média linkek",
-      "Alap analitika",
-    ],
-  },
-  {
-    name: "Basic",
-    price: "119 000",
-    desc: "Klasszikus bemutatkozó oldal",
-    features: [
-      "Max. 5 aloldal",
-      "Reszponzív dizájn",
-      "Kapcsolatfelvételi űrlap",
-      "Alap SEO",
-      "Analitika beállítás",
-      "Könnyű adminisztráció",
-    ],
-  },
-  {
-    name: "Medium",
-    price: "199 000",
-    desc: "Bővített prezentációs oldal",
-    featured: true,
-    features: [
-      "Max. 10 aloldal",
-      "Egyedi dizájn",
-      "Blog modul",
-      "Speciális űrlapok",
-      "Sebesség-optimalizálás",
-      "Analitika",
-      "Alap technikai SEO",
-      "Betanítás és átadás",
-    ],
-  },
-  {
-    name: "Webshop",
-    price: "299 000",
-    desc: "Modern online áruház",
-    features: [
-      "Termékkatalógus",
-      "Kosár funkció",
-      "Online fizetés integráció",
-      "Szállítási opciók",
-      "Rendeléskezelés",
-      "Alap webshop betanítás",
-    ],
-  },
-];
 
 const EXTRAS = [
   { name: "Extra aloldal", price: "12 000 Ft-tól / oldal" },
@@ -181,6 +125,8 @@ const COMPARE: Array<{
 ];
 
 function Pricing() {
+  const plans = Route.useLoaderData();
+
   return (
     <>
       <Section
@@ -189,25 +135,36 @@ function Pricing() {
         description="Nincsenek rejtett díjak. Válaszd ki a hozzád illő csomagot, a többit megbeszéljük."
       >
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {PLANS.map((p) => (
+          {plans.map((p) => (
             <Card
-              key={p.name}
-              className={`relative border shadow-soft h-full flex flex-col ${p.featured ? "border-brand border-2 shadow-elegant" : ""}`}
+              key={p.id}
+              className={`relative border shadow-soft h-full flex flex-col ${p.is_featured ? "border-brand border-2 shadow-elegant" : ""}`}
             >
-              {p.featured && (
+              {p.is_featured && p.badge_text && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-success text-success-foreground px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm">
-                  Legnépszerűbb
+                  {p.badge_text}
                 </span>
               )}
               <CardContent className="p-7 h-full flex flex-col">
                 <p className="text-sm font-semibold text-brand">{p.name}</p>
-                <p className="mt-1 text-xs text-ink-soft min-h-8">{p.desc}</p>
+                <p className="mt-1 text-xs text-ink-soft min-h-8">
+                  {p.description}
+                </p>
                 <p className="mt-4 flex items-baseline gap-1">
                   <span className="text-3xl font-bold text-ink tracking-tight">
-                    {p.price} Ft
+                    {p.price_label}
                   </span>
+                  {p.currency && (
+                    <span className="text-lg font-semibold text-ink">
+                      {p.currency}
+                    </span>
+                  )}
                 </p>
-                <p className="text-xs text-ink-soft mt-0.5">-tól, +ÁFA</p>
+                {p.price_suffix && (
+                  <p className="text-xs text-ink-soft mt-0.5">
+                    {p.price_suffix}
+                  </p>
+                )}
                 <ul className="mt-6 space-y-2.5 flex-1">
                   {p.features.map((f) => (
                     <li
@@ -222,9 +179,9 @@ function Pricing() {
                 <Button
                   asChild
                   className="mt-6 w-full"
-                  variant={p.featured ? "cta" : "outline"}
+                  variant={p.is_featured ? "cta" : "outline"}
                 >
-                  <Link to="/kapcsolat">Ajánlatot kérek</Link>
+                  <a href={p.cta_url}>{p.cta_text}</a>
                 </Button>
               </CardContent>
             </Card>
@@ -245,16 +202,14 @@ function Pricing() {
                   <th className="text-left font-semibold text-ink px-5 py-4 w-1/3">
                     Funkció
                   </th>
-                  {(["landing", "basic", "medium", "webshop"] as const).map(
-                    (k) => (
-                      <th
-                        key={k}
-                        className={`text-center font-semibold px-4 py-4 ${k === "medium" ? "text-brand bg-brand-soft/40" : "text-ink"}`}
-                      >
-                        {PLANS.find((p) => p.name.toLowerCase() === k)!.name}
-                      </th>
-                    ),
-                  )}
+                  {plans.map((plan) => (
+                    <th
+                      key={plan.id}
+                      className={`text-center font-semibold px-4 py-4 ${plan.is_featured ? "text-brand bg-brand-soft/40" : "text-ink"}`}
+                    >
+                      {plan.name}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -266,16 +221,14 @@ function Pricing() {
                     <td className="px-5 py-3.5 text-ink font-medium">
                       {row.label}
                     </td>
-                    {(["landing", "basic", "medium", "webshop"] as const).map(
-                      (k) => (
-                        <td
-                          key={k}
-                          className={`px-4 py-3.5 text-center ${k === "medium" ? "bg-brand-soft/20" : ""}`}
-                        >
-                          <CellValue value={row[k]} />
-                        </td>
-                      ),
-                    )}
+                    {plans.map((plan) => (
+                      <td
+                        key={plan.id}
+                        className={`px-4 py-3.5 text-center ${plan.is_featured ? "bg-brand-soft/20" : ""}`}
+                      >
+                        <CellValue value={getComparisonValue(row, plan.slug)} />
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -312,7 +265,23 @@ function Pricing() {
   );
 }
 
-function CellValue({ value }: { value: boolean | string }) {
+function getComparisonValue(
+  row: (typeof COMPARE)[number],
+  slug: string,
+): boolean | string | undefined {
+  if (
+    slug === "landing" ||
+    slug === "basic" ||
+    slug === "medium" ||
+    slug === "webshop"
+  ) {
+    return row[slug];
+  }
+
+  return undefined;
+}
+
+function CellValue({ value }: { value: boolean | string | undefined }) {
   if (value === true)
     return <Check className="mx-auto h-4 w-4 text-success" aria-label="Igen" />;
   if (value === false)
@@ -322,5 +291,7 @@ function CellValue({ value }: { value: boolean | string }) {
         aria-label="Nem tartalmazza"
       />
     );
+  if (value === undefined)
+    return <span className="text-sm text-ink/40">—</span>;
   return <span className="text-sm font-medium text-ink">{value}</span>;
 }
