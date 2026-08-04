@@ -3,26 +3,16 @@ import { Check, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Section } from "@/components/site/Section";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/arak")({
-  head: () => ({
-    meta: [
-      { title: "Árak — PandaDesign" },
-      {
-        name: "description",
-        content:
-          "Átlátható árcsomagok landing oldaltól webshopig. Havidíjas karbantartás és opcionális extra szolgáltatások.",
-      },
-      { property: "og:title", content: "Árak — PandaDesign" },
-      {
-        property: "og:description",
-        content:
-          "Landing 69 000 Ft-tól, Basic 119 000 Ft-tól, Medium 199 000 Ft-tól, Webshop 299 000 Ft-tól.",
-      },
-      { property: "og:url", content: "/arak" },
-    ],
-    links: [{ rel: "canonical", href: "/arak" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Weboldal készítés árak és csomagok — PandaDesign",
+      description:
+        "Átlátható árcsomagok landing oldaltól webshopig. Havidíjas karbantartás és opcionális extra szolgáltatások.",
+      path: "/arak",
+    }),
   component: Pricing,
 });
 

@@ -10,26 +10,16 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/rolunk")({
-  head: () => ({
-    meta: [
-      { title: "Rólunk — PandaDesign" },
-      {
-        name: "description",
-        content:
-          "PandaDesign egy modern magyar web ügynökség, amely a vállalkozások üzleti céljait támogató weboldalakat készít.",
-      },
-      { property: "og:title", content: "Rólunk — PandaDesign" },
-      {
-        property: "og:description",
-        content:
-          "Küldetésünk, értékeink és munkamódszerünk – modern, hosszú távú weboldalak magyar vállalkozásoknak.",
-      },
-      { property: "og:url", content: "/rolunk" },
-    ],
-    links: [{ rel: "canonical", href: "/rolunk" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "PandaDesign weboldal-készítő csapat",
+      description:
+        "PandaDesign egy modern magyar web ügynökség, amely a vállalkozások üzleti céljait támogató weboldalakat készít.",
+      path: "/rolunk",
+    }),
   component: About,
 });
 

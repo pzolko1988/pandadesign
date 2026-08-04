@@ -18,6 +18,12 @@ import { RichTextContent } from "@/components/site/RichTextContent";
 import { supabase } from "@/lib/supabase/client";
 
 export const Route = createFileRoute("/preview/project/$token")({
+  head: () => ({
+    meta: [
+      { title: "Projekt-előnézet — PandaDesign" },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+    ],
+  }),
   component: ProjectPreviewPage,
 });
 

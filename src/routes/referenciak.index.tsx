@@ -2,21 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Image as ImageIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { buildSeoHead } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
 
 export const Route = createFileRoute("/referenciak/")({
-  head: () => ({
-    meta: [
-      {
-        title: "Referenciák és esettanulmányok — PandaDesign",
-      },
-      {
-        name: "description",
-        content:
-          "Tekintsd meg a PandaDesign weboldal-, webshop- és egyedi fejlesztési projektjeit.",
-      },
-    ],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Weboldal referenciák és esettanulmányok — PandaDesign",
+      description:
+        "Tekintsd meg a PandaDesign weboldal-, webshop- és egyedi fejlesztési projektjeit.",
+      path: "/referenciak",
+    }),
   component: ReferencesIndexPage,
 });
 

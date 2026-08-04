@@ -1,38 +1,56 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import {
+  fetchPublishedBlogPostsForSitemap,
+  fetchPublishedProjectsForSitemap,
+} from "@/lib/public-sitemap";
+import { absoluteUrl } from "@/lib/seo";
 
-// TODO: replace with your project URL once a project name or custom domain is set.
-const BASE_URL = "";
+const STATIC_PATHS = [
+  "/",
+  "/szolgaltatasok",
+  "/arak",
+  "/referenciak",
+  "/blog",
+  "/rolunk",
+  "/kapcsolat",
+] as const;
 
-interface SitemapEntry {
-  path: string;
-  changefreq?:
-    "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
-}
+type SitemapEntry = {
+  loc: string;
+  lastmod?: string;
+};
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        const [blogPosts, projects] = await Promise.all([
+          fetchPublishedBlogPostsForSitemap(),
+          fetchPublishedProjectsForSitemap(),
+        ]);
+
         const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/szolgaltatasok", changefreq: "monthly", priority: "0.9" },
-          { path: "/referenciak", changefreq: "monthly", priority: "0.8" },
-          { path: "/arak", changefreq: "monthly", priority: "0.9" },
-          { path: "/rolunk", changefreq: "yearly", priority: "0.6" },
-          { path: "/blog", changefreq: "weekly", priority: "0.7" },
-          { path: "/kapcsolat", changefreq: "yearly", priority: "0.8" },
+          ...STATIC_PATHS.map((path) => ({
+            loc: absoluteUrl(path),
+          })),
+          ...blogPosts.map((post) => ({
+            loc: absoluteUrl(`/blog/${post.slug}`),
+            lastmod: toIsoDate(post.updated_at) ?? toIsoDate(post.published_at),
+          })),
+          ...projects.map((project) => ({
+            loc: absoluteUrl(`/referenciak/${project.slug}`),
+            lastmod: toIsoDate(project.updated_at),
+          })),
         ];
 
-        const urls = entries.map((e) =>
+        const urls = entries.map((entry) =>
           [
             `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
-            e.changefreq
-              ? `    <changefreq>${e.changefreq}</changefreq>`
+            `    <loc>${escapeXml(entry.loc)}</loc>`,
+            entry.lastmod
+              ? `    <lastmod>${escapeXml(entry.lastmod)}</lastmod>`
               : null,
-            e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,
           ]
             .filter(Boolean)
@@ -48,11 +66,36 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         return new Response(xml, {
           headers: {
-            "Content-Type": "application/xml",
-            "Cache-Control": "public, max-age=3600",
+            "Content-Type": "application/xml; charset=utf-8",
+            "Cache-Control":
+              "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
           },
         });
       },
     },
   },
 });
+
+function toIsoDate(value: string | null | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
+function escapeXml(value: string) {
+  return value.replace(/[<>&'"]/g, (character) => {
+    const entities: Record<string, string> = {
+      "<": "&lt;",
+      ">": "&gt;",
+      "&": "&amp;",
+      "'": "&apos;",
+      '"': "&quot;",
+    };
+
+    return entities[character] ?? character;
+  });
+}

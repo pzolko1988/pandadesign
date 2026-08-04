@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useMemo } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,159 +13,80 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RichTextContent } from "@/components/site/RichTextContent";
-import { supabase } from "@/lib/supabase/client";
+import {
+  fetchPublishedProject,
+  getPortfolioImageUrl,
+} from "@/lib/public-project";
+import { absoluteUrl, buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
 
 export const Route = createFileRoute("/referenciak/$slug")({
-  head: () => ({
-    meta: [
-      {
-        title: "Projekt és esettanulmány — PandaDesign",
+  loader: async ({ params }) => {
+    const project = await fetchPublishedProject(params.slug);
+
+    if (!project) {
+      throw notFound();
+    }
+
+    return project;
+  },
+  head: ({ loaderData: project }) => {
+    if (!project) {
+      return {};
+    }
+
+    const title =
+      project.seo_title.trim() || `${project.title} — PandaDesign referencia`;
+    const description = project.seo_description.trim() || project.description;
+    const path = `/referenciak/${project.slug}`;
+    const url = absoluteUrl(path);
+    const image = project.image_path
+      ? getPortfolioImageUrl(project.image_path)
+      : "";
+    const keywords = [...project.services, ...project.technologies];
+
+    return buildSeoHead({
+      title,
+      description,
+      path,
+      type: "article",
+      image: image || undefined,
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: project.title,
+        description,
+        url,
+        ...(image ? { image } : {}),
+        inLanguage: "hu-HU",
+        creator: {
+          "@type": "Organization",
+          name: "PandaDesign",
+          url: DEFAULT_SITE_URL,
+        },
+        ...(project.category ? { genre: project.category } : {}),
+        ...(keywords.length > 0 ? { keywords } : {}),
       },
-    ],
-  }),
+    });
+  },
   component: ReferenceDetailPage,
 });
 
-type PublicProject = {
-  id: string;
-  slug: string;
-  title: string;
-  industry: string;
-  category: string;
-  description: string;
-  image_path: string | null;
-  project_url: string;
-  is_concept: boolean;
-  client_name: string;
-  location: string;
-  completed_year: string;
-  duration_label: string;
-  challenge: string;
-  solution: string;
-  results: string[];
-  services: string[];
-  technologies: string[];
-  content_html: string;
-  gallery_paths: string[];
-  seo_title: string;
-  seo_description: string;
-  cta_title: string;
-  cta_text: string;
-  cta_button_text: string;
-};
-
 function ReferenceDetailPage() {
-  const { slug } = Route.useParams();
-
-  const [project, setProject] = useState<PublicProject | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadProject() {
-      const { data, error } = await supabase
-        .from("projects")
-        .select(
-          "id, slug, title, industry, category, description, image_path, project_url, is_concept, client_name, location, completed_year, duration_label, challenge, solution, results, services, technologies, content_html, gallery_paths, seo_title, seo_description, cta_title, cta_text, cta_button_text",
-        )
-        .eq("slug", slug)
-        .eq("is_visible", true)
-        .eq("status", "published")
-        .maybeSingle();
-
-      if (!active) {
-        return;
-      }
-
-      if (error) {
-        setErrorMessage("A projekt átmenetileg nem tölthető be.");
-        setLoading(false);
-        return;
-      }
-
-      if (!data) {
-        setNotFound(true);
-        setLoading(false);
-        return;
-      }
-
-      const loaded = data as PublicProject;
-
-      setProject(loaded);
-      synchronizeHead(loaded);
-      setLoading(false);
-    }
-
-    void loadProject();
-
-    return () => {
-      active = false;
-    };
-  }, [slug]);
+  const project = Route.useLoaderData();
 
   const heroImageUrl = useMemo(
-    () => (project?.image_path ? getPortfolioUrl(project.image_path) : ""),
-    [project?.image_path],
+    () => (project.image_path ? getPortfolioImageUrl(project.image_path) : ""),
+    [project.image_path],
   );
 
   const galleryUrls = useMemo(
     () =>
-      (project?.gallery_paths ?? []).map((path) => ({
+      project.gallery_paths.map((path) => ({
         path,
-        url: getPortfolioUrl(path),
+        url: getPortfolioImageUrl(path),
       })),
-    [project?.gallery_paths],
+    [project.gallery_paths],
   );
-
-  if (loading) {
-    return (
-      <main className="container-page py-20">
-        <div className="mx-auto max-w-5xl animate-pulse space-y-6">
-          <div className="h-5 w-36 rounded bg-muted" />
-          <div className="h-16 rounded bg-muted" />
-          <div className="h-6 w-2/3 rounded bg-muted" />
-          <div className="aspect-video rounded-3xl bg-muted" />
-        </div>
-      </main>
-    );
-  }
-
-  if (notFound) {
-    return (
-      <main className="container-page py-20">
-        <div className="mx-auto max-w-2xl rounded-2xl border bg-white p-10 text-center shadow-soft">
-          <h1 className="text-3xl font-bold text-ink">
-            A projekt nem található
-          </h1>
-
-          <p className="mt-3 text-ink-soft">
-            Lehet, hogy a projektet elrejtették vagy megváltozott az URL-címe.
-          </p>
-
-          <Link
-            to="/referenciak"
-            className="mt-7 inline-flex items-center gap-2 font-semibold text-brand hover:underline"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Vissza a referenciákhoz
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorMessage || !project) {
-    return (
-      <main className="container-page py-20">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
-          {errorMessage || "A projekt nem tölthető be."}
-        </div>
-      </main>
-    );
-  }
 
   const hasExternalUrl =
     project.project_url.startsWith("https://") ||
@@ -461,77 +382,4 @@ function TagGroup({ title, values }: { title: string; values: string[] }) {
       </div>
     </section>
   );
-}
-
-function getPortfolioUrl(path: string) {
-  return supabase.storage.from("portfolio").getPublicUrl(path).data.publicUrl;
-}
-
-function synchronizeHead(project: PublicProject) {
-  const title =
-    project.seo_title.trim() || `${project.title} — PandaDesign referencia`;
-
-  const description = project.seo_description.trim() || project.description;
-
-  document.title = title;
-
-  setMeta('meta[name="description"]', "name", "description", description);
-
-  setMeta('meta[property="og:title"]', "property", "og:title", title);
-
-  setMeta(
-    'meta[property="og:description"]',
-    "property",
-    "og:description",
-    description,
-  );
-
-  if (project.image_path) {
-    setMeta(
-      'meta[property="og:image"]',
-      "property",
-      "og:image",
-      getPortfolioUrl(project.image_path),
-    );
-  }
-
-  let script = document.head.querySelector<HTMLScriptElement>(
-    "#pandadesign-project-jsonld",
-  );
-
-  if (!script) {
-    script = document.createElement("script");
-    script.id = "pandadesign-project-jsonld";
-    script.type = "application/ld+json";
-    document.head.appendChild(script);
-  }
-
-  script.textContent = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: project.title,
-    description,
-    image: project.image_path ? getPortfolioUrl(project.image_path) : undefined,
-    creator: {
-      "@type": "Organization",
-      name: "PandaDesign",
-    },
-  });
-}
-
-function setMeta(
-  selector: string,
-  attribute: "name" | "property",
-  key: string,
-  content: string,
-) {
-  let element = document.head.querySelector<HTMLMetaElement>(selector);
-
-  if (!element) {
-    element = document.createElement("meta");
-    element.setAttribute(attribute, key);
-    document.head.appendChild(element);
-  }
-
-  element.content = content;
 }

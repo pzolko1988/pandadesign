@@ -2,26 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/szolgaltatasok")({
-  head: () => ({
-    meta: [
-      { title: "Szolgáltatások — PandaDesign" },
-      {
-        name: "description",
-        content:
-          "Prémium weboldalak, webshopok, WordPress karbantartás és egyedi Next.js fejlesztés magyar vállalkozásoknak.",
-      },
-      { property: "og:title", content: "Szolgáltatások — PandaDesign" },
-      {
-        property: "og:description",
-        content:
-          "WordPress, céges oldalak, landing, webshop, újratervezés, karbantartás, SEO és egyedi fejlesztés.",
-      },
-      { property: "og:url", content: "/szolgaltatasok" },
-    ],
-    links: [{ rel: "canonical", href: "/szolgaltatasok" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Weboldal-készítési szolgáltatások — PandaDesign",
+      description:
+        "Prémium weboldalak, webshopok, WordPress karbantartás és egyedi Next.js fejlesztés magyar vállalkozásoknak.",
+      path: "/szolgaltatasok",
+    }),
   component: Services,
 });
 

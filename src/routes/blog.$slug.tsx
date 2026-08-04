@@ -1,141 +1,63 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, Clock3, UserRound } from "lucide-react";
 import { RichTextContent } from "@/components/site/RichTextContent";
-import { supabase } from "@/lib/supabase/client";
+import {
+  fetchPublishedBlogPost,
+  getPublicBlogImageUrl,
+} from "@/lib/public-blog";
+import { absoluteUrl, buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/blog/$slug")({
-  head: () => ({
-    meta: [
-      {
-        title: "Blogbejegyzés — PandaDesign",
+  loader: async ({ params }) => {
+    const post = await fetchPublishedBlogPost(params.slug);
+
+    if (!post) {
+      throw notFound();
+    }
+
+    return post;
+  },
+  head: ({ loaderData: post }) => {
+    if (!post) {
+      return {};
+    }
+
+    const title = post.seo_title.trim() || `${post.title} — PandaDesign`;
+    const description = post.seo_description.trim() || post.excerpt;
+    const path = `/blog/${post.slug}`;
+    const url = absoluteUrl(path);
+    const image = getPublicBlogImageUrl(post.featured_image_path);
+
+    return buildSeoHead({
+      title,
+      description,
+      path,
+      type: "article",
+      image: image || undefined,
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: post.title,
+        description,
+        url,
+        ...(image ? { image } : {}),
+        author: {
+          name: post.author_name,
+        },
+        datePublished: post.published_at,
+        inLanguage: "hu-HU",
+        publisher: {
+          name: "PandaDesign",
+        },
       },
-    ],
-  }),
+    });
+  },
   component: BlogPostPage,
 });
 
-type PublicBlogPost = {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content_html: string;
-  featured_image_path: string | null;
-  author_name: string;
-  published_at: string;
-  seo_title: string;
-  seo_description: string;
-};
-
 function BlogPostPage() {
-  const { slug } = Route.useParams();
-
-  const [post, setPost] = useState<PublicBlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadPost() {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select(
-          "id, title, slug, excerpt, content_html, featured_image_path, author_name, published_at, seo_title, seo_description",
-        )
-        .eq("slug", slug)
-        .eq("status", "published")
-        .lte("published_at", new Date().toISOString())
-        .maybeSingle();
-
-      if (!active) {
-        return;
-      }
-
-      if (error) {
-        setErrorMessage("A blogbejegyzés átmenetileg nem tölthető be.");
-        setLoading(false);
-        return;
-      }
-
-      if (!data) {
-        setNotFound(true);
-        setLoading(false);
-        return;
-      }
-
-      const loadedPost = data as PublicBlogPost;
-
-      setPost(loadedPost);
-      synchronizeHead(loadedPost);
-      setLoading(false);
-    }
-
-    void loadPost();
-
-    return () => {
-      active = false;
-    };
-  }, [slug]);
-
-  const imageUrl = useMemo(
-    () =>
-      post?.featured_image_path
-        ? supabase.storage
-            .from("blog-media")
-            .getPublicUrl(post.featured_image_path).data.publicUrl
-        : "",
-    [post?.featured_image_path],
-  );
-
-  if (loading) {
-    return (
-      <main className="container-page py-20">
-        <div className="mx-auto max-w-4xl animate-pulse space-y-6">
-          <div className="h-5 w-32 rounded bg-muted" />
-          <div className="h-14 rounded bg-muted" />
-          <div className="h-6 w-2/3 rounded bg-muted" />
-          <div className="aspect-video rounded-3xl bg-muted" />
-        </div>
-      </main>
-    );
-  }
-
-  if (notFound) {
-    return (
-      <main className="container-page py-20">
-        <div className="mx-auto max-w-2xl rounded-2xl border bg-white p-10 text-center shadow-soft">
-          <h1 className="text-3xl font-bold text-ink">
-            A bejegyzés nem található
-          </h1>
-
-          <p className="mt-3 text-ink-soft">
-            Lehet, hogy a cikket visszavonták vagy megváltozott a címe.
-          </p>
-
-          <Link
-            to="/blog"
-            className="mt-7 inline-flex items-center gap-2 font-semibold text-brand hover:underline"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Vissza a bloghoz
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorMessage || !post) {
-    return (
-      <main className="container-page py-20">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
-          {errorMessage || "A blogbejegyzés nem tölthető be."}
-        </div>
-      </main>
-    );
-  }
+  const post = Route.useLoaderData();
+  const imageUrl = getPublicBlogImageUrl(post.featured_image_path);
 
   return (
     <main>
@@ -200,42 +122,6 @@ function BlogPostPage() {
       </article>
     </main>
   );
-}
-
-function synchronizeHead(post: PublicBlogPost) {
-  const title = post.seo_title.trim() || `${post.title} — PandaDesign`;
-
-  const description = post.seo_description.trim() || post.excerpt;
-
-  document.title = title;
-
-  setMeta('meta[name="description"]', "name", "description", description);
-
-  setMeta('meta[property="og:title"]', "property", "og:title", title);
-
-  setMeta(
-    'meta[property="og:description"]',
-    "property",
-    "og:description",
-    description,
-  );
-}
-
-function setMeta(
-  selector: string,
-  attribute: "name" | "property",
-  key: string,
-  content: string,
-) {
-  let element = document.head.querySelector<HTMLMetaElement>(selector);
-
-  if (!element) {
-    element = document.createElement("meta");
-    element.setAttribute(attribute, key);
-    document.head.appendChild(element);
-  }
-
-  element.content = content;
 }
 
 function readingTime(html: string) {
