@@ -32,6 +32,10 @@ import {
 import { Section } from "@/components/site/Section";
 import { BrowserMockup } from "@/components/site/BrowserMockup";
 import { fetchPublicHomeSeoData } from "@/lib/public-home-seo";
+import {
+  fetchVisibleServices,
+  type PublicService,
+} from "@/lib/public-services";
 import { buildSeoHead } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
 
@@ -82,17 +86,6 @@ const TRUST = [
   { icon: Search, label: "Keresőbarát" },
   { icon: Settings, label: "Könnyen kezelhető" },
 ];
-
-type ServiceItem = {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  icon_key: string;
-  link_url: string;
-  sort_order: number;
-  is_visible: boolean;
-};
 
 const SERVICE_ICONS: Record<string, LucideIcon> = {
   layers: Layers,
@@ -555,7 +548,7 @@ function TrustSection() {
 }
 
 function ServicesSection() {
-  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [services, setServices] = useState<PublicService[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -563,27 +556,26 @@ function ServicesSection() {
     let active = true;
 
     async function loadServices() {
-      const { data, error } = await supabase
-        .from("services")
-        .select(
-          "id, slug, title, description, icon_key, link_url, sort_order, is_visible",
-        )
-        .eq("is_visible", true)
-        .order("sort_order", { ascending: true });
+      try {
+        const data = await fetchVisibleServices();
 
-      if (!active) {
-        return;
-      }
+        if (!active) {
+          return;
+        }
 
-      if (error) {
+        setServices(data);
+      } catch (error: unknown) {
+        if (!active) {
+          return;
+        }
+
         console.error("A szolgáltatások nem tölthetők be:", error);
         setErrorMessage("A szolgáltatások átmenetileg nem tölthetők be.");
-        setLoading(false);
-        return;
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
-
-      setServices((data ?? []) as ServiceItem[]);
-      setLoading(false);
     }
 
     void loadServices();

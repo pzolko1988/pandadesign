@@ -192,10 +192,7 @@ export async function loadSiteChrome() {
       ...DEFAULT_SITE_CHROME_SETTINGS,
       ...(settingsData as Partial<SiteChromeSettings> | null),
     },
-    navigationItems:
-      navigationData && navigationData.length > 0
-        ? (navigationData as NavigationItem[])
-        : DEFAULT_NAVIGATION_ITEMS,
+    navigationItems: (navigationData ?? []) as NavigationItem[],
   };
 }
 
