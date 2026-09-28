@@ -76,7 +76,9 @@ Deno.serve(async (request) => {
     const body = await parseJsonBody(request);
 
     const resendApiKey = requiredEnv("RESEND_API_KEY");
-    const notificationFrom = requiredEnv("LEAD_NOTIFICATION_FROM");
+    const notificationFrom =
+      Deno.env.get("LEAD_NOTIFICATION_FROM")?.trim() ||
+      "PandaDesign <leads@mail.pandadesign.hu>";
     const publicSiteUrl =
       Deno.env.get("PUBLIC_SITE_URL")?.trim() || "https://pandadesign.hu";
 
