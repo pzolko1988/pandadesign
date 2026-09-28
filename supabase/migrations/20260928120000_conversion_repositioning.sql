@@ -678,3 +678,121 @@ where not exists (
 );
 
 commit;
+
+
+-- Security hardening: restrict SECURITY DEFINER RPC exposure
+-- The live project was hardened with the same statements after the migration
+-- had already been applied. Keeping them here makes fresh installations safe.
+do $$
+declare
+  r record;
+begin
+  for r in
+    select p.oid::regprocedure as fn
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'capture_blog_post_revision',
+        'capture_legal_page_draft_revision',
+        'capture_legal_page_revision',
+        'capture_project_revision'
+      )
+  loop
+    execute format(
+      'revoke all on function %s from public, anon, authenticated',
+      r.fn
+    );
+  end loop;
+
+  for r in
+    select p.oid::regprocedure as fn
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'generate_blog_preview_token',
+        'generate_project_preview_token',
+        'publish_legal_page',
+        'restore_blog_post_revision',
+        'restore_legal_page_revision',
+        'restore_project_revision',
+        'revoke_blog_preview_token',
+        'revoke_project_preview_token',
+        'save_legal_page_draft'
+      )
+  loop
+    execute format(
+      'revoke all on function %s from public, anon, authenticated',
+      r.fn
+    );
+    execute format('grant execute on function %s to authenticated', r.fn);
+    execute format('alter function %s security invoker', r.fn);
+  end loop;
+
+  for r in
+    select p.oid::regprocedure as fn
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'is_admin'
+  loop
+    execute format(
+      'revoke all on function %s from public, anon, authenticated',
+      r.fn
+    );
+    execute format('grant execute on function %s to authenticated', r.fn);
+  end loop;
+
+  for r in
+    select p.oid::regprocedure as fn
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in ('get_blog_post_preview', 'get_project_preview')
+  loop
+    execute format(
+      'revoke all on function %s from public, anon, authenticated',
+      r.fn
+    );
+    execute format(
+      'grant execute on function %s to anon, authenticated',
+      r.fn
+    );
+  end loop;
+
+  for r in
+    select p.oid::regprocedure as fn
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in ('submit_contact_lead', 'submit_audit_request')
+  loop
+    execute format(
+      'revoke all on function %s from public, anon, authenticated',
+      r.fn
+    );
+    execute format(
+      'grant execute on function %s to anon, authenticated',
+      r.fn
+    );
+  end loop;
+end $$;
+
+do $$
+declare
+  r record;
+begin
+  for r in
+    select p.oid::regprocedure as fn
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in ('blog_post_snapshot', 'project_snapshot')
+  loop
+    execute format(
+      'alter function %s set search_path = public, pg_temp',
+      r.fn
+    );
+  end loop;
+end $$;
