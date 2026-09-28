@@ -106,8 +106,9 @@ function Home() {
       <SolutionSection />
       <ServicesSection services={data.services} />
       <ReferencePreview
-        title="Munkáink közelről"
-        description="Valós projektek képernyőképekkel és leírással arról, mi készült el."
+        title="Valódi projektek, nem látványtervek"
+        description="Élő weboldalak és üzleti rendszerek: minden referenciánál megmutatjuk, mi volt a feladat, mit építettünk és milyen technológiával."
+        tone="dark"
       />
       <ProcessSection />
       <Section
