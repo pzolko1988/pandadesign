@@ -81,8 +81,14 @@ for (const reference of references) {
 
 await browser.close();
 
-if (captured !== references.length) {
+if (captured === 0) {
   throw new Error(
-    `Reference capture incomplete: ${captured}/${references.length}. Failed: ${failures.join(", ")}`,
+    `No reference site could be captured. Failed: ${failures.join(", ")}`,
+  );
+}
+
+if (failures.length > 0) {
+  console.warn(
+    `Reference capture partial: ${captured}/${references.length}. Failed: ${failures.join(", ")}`,
   );
 }
