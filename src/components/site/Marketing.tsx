@@ -355,7 +355,7 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
           </span>
         ) : (
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-800 shadow-soft">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <Globe2 className="h-3 w-3" aria-hidden="true" />
             Élő projekt
           </span>
         )}
