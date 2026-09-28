@@ -517,7 +517,7 @@ function AdminSettingsPage() {
               <AssetUploader
                 label="Közösségi megosztási kép"
                 description="Facebookhoz és más megosztásokhoz. Ajánlott: 1200×630 px."
-                imageUrl={ogImageUrl || "/og-pandadesign.svg"}
+                imageUrl={ogImageUrl || "/og-pandadesign.png"}
                 busy={uploadingField === "og_image_path"}
                 onUpload={(event) => void uploadAsset("og_image_path", event)}
                 onRemove={() => void removeAsset("og_image_path")}
