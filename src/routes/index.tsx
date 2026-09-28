@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
-import { BrowserMockup } from "@/components/site/BrowserMockup";
+import { Hero3D } from "@/components/site/Hero3D";
 import {
   AuditCtaBlock,
   BenefitGrid,
@@ -151,7 +151,7 @@ function HeroSection({ hero }: { hero: HeroContent }) {
         className="absolute inset-0 -z-10 bg-[radial-gradient(1100px_560px_at_85%_-10%,color-mix(in_oklab,var(--brand)_9%,transparent),transparent)]"
       />
 
-      <div className="container-page grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      <div className="container-page grid items-center gap-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:gap-12 xl:gap-16">
         <div>
           {hero.eyebrow && (
             <p className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-medium text-ink-soft shadow-soft">
@@ -205,8 +205,8 @@ function HeroSection({ hero }: { hero: HeroContent }) {
           </p>
         </div>
 
-        <div className="relative hidden lg:block">
-          <BrowserMockup />
+        <div className="relative min-w-0">
+          <Hero3D />
         </div>
       </div>
     </section>

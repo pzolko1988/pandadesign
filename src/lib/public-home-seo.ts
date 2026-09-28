@@ -30,10 +30,10 @@ export const DEFAULT_HERO: HeroContent = {
   eyebrow: "Weboldal készítés vállalkozásoknak",
   title: "Ügyfélszerző weboldalak magyar vállalkozásoknak",
   description:
-    "Gyors, modern és mérhető weboldalakat készítünk, amelyek nem csak jól néznek ki, hanem segítenek érdeklődőket és ügyfeleket szerezni.",
-  primaryButtonText: "Kérek ingyenes weboldal-auditot",
+    "Nem csak szép weboldalt kapsz. Olyan gyors, mérhető és továbbfejleszthető online rendszert építünk, amely érdeklődőket szerez és támogatja a vállalkozásod növekedését.",
+  primaryButtonText: "Ingyenes weboldal-audit",
   primaryButtonUrl: AUDIT_PATH,
-  secondaryButtonText: "Megnézem a munkákat",
+  secondaryButtonText: "Munkáink megtekintése",
   secondaryButtonUrl: "/referenciak",
 };
 

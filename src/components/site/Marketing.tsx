@@ -289,6 +289,9 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
     : "";
   const coverUrl = desktopUrl || mobileUrl;
   const hasPublicUrl = /^https?:\/\//.test(project.project_url);
+  const displayDomain = hasPublicUrl
+    ? project.project_url.replace(/^https?:\/\//, "").replace(/\/$/, "")
+    : project.title;
   const highlights = (
     project.features.length > 0 ? project.features : project.services
   ).slice(0, 4);
@@ -296,7 +299,7 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-white shadow-soft transition motion-safe:hover:-translate-y-0.5 hover:shadow-elegant">
       <div className="relative aspect-[16/10] overflow-hidden border-b bg-secondary/40">
-        {coverUrl && (
+        {coverUrl ? (
           <img
             src={coverUrl}
             alt={`${project.title} – képernyőkép`}
@@ -304,6 +307,31 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
             decoding="async"
             className="h-full w-full object-cover object-top transition duration-500 motion-safe:group-hover:scale-[1.02]"
           />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_75%_20%,color-mix(in_oklab,var(--brand)_18%,transparent),transparent_42%),linear-gradient(145deg,color-mix(in_oklab,var(--ink)_96%,white),color-mix(in_oklab,var(--brand)_32%,var(--ink)))] p-5 text-white">
+            <div className="w-full max-w-[92%] overflow-hidden rounded-xl border border-white/15 bg-white/10 shadow-elegant backdrop-blur">
+              <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2">
+                <span className="h-2 w-2 rounded-full bg-white/35" />
+                <span className="h-2 w-2 rounded-full bg-white/25" />
+                <span className="h-2 w-2 rounded-full bg-white/15" />
+                <span className="ml-2 truncate text-[10px] font-medium text-white/65">
+                  {displayDomain}
+                </span>
+              </div>
+              <div className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
+                  Élő projekt
+                </p>
+                <p className="mt-2 text-lg font-bold leading-tight">
+                  {project.title}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-white/65">
+                  Valódi képernyőkép feltöltéséig az élő oldal érhető el a
+                  referencia adatlapjáról.
+                </p>
+              </div>
+            </div>
+          </div>
         )}
 
         {desktopUrl && mobileUrl && (
