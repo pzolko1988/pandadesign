@@ -62,10 +62,7 @@ export const Route = createFileRoute("/blog/$slug")({
   component: BlogPostPage,
 });
 
-const BLOG_RELATED_LINKS: Record<
-  string,
-  { href: string; label: string }[]
-> = {
+const BLOG_RELATED_LINKS: Record<string, { href: string; label: string }[]> = {
   "mennyibe-kerul-egy-weboldal-2026": [
     { href: "/arak", label: "Weboldal készítés árak" },
     { href: "/weboldal-keszites", label: "Ügyfélszerző weboldal készítés" },
