@@ -1,6 +1,10 @@
-import { chromium } from "playwright";
+import { createRequire } from "node:module";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+
+const require = createRequire(import.meta.url);
+const playwrightModule = process.env.PLAYWRIGHT_MODULE || "playwright";
+const { chromium } = require(playwrightModule);
 
 const references = [
   { slug: "klimaflow", url: "https://klima-rendszer.hu/" },
@@ -16,18 +20,32 @@ await mkdir(outputDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
 let captured = 0;
+const failures = [];
 
 async function capture(page, slug, suffix, options) {
   await page.setViewportSize(options.viewport);
-  await page.goto(options.url, {
+  const response = await page.goto(options.url, {
     waitUntil: "domcontentloaded",
     timeout: 45_000,
   });
-  await page.waitForTimeout(2_500);
+
+  if (!response || !response.ok()) {
+    throw new Error(
+      `HTTP ${response?.status() ?? "no-response"} while loading ${options.url}`,
+    );
+  }
+
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+  });
+  await page.waitForTimeout(2_000);
+
   await page.screenshot({
-    path: path.join(outputDir, `${slug}-${suffix}.webp`),
-    type: "webp",
-    quality: 84,
+    path: path.join(outputDir, `${slug}-${suffix}.jpg`),
+    type: "jpeg",
+    quality: 86,
     fullPage: false,
     animations: "disabled",
   });
@@ -54,6 +72,7 @@ for (const reference of references) {
     captured += 1;
     console.log(`Captured ${reference.url}`);
   } catch (error) {
+    failures.push(reference.url);
     console.error(`Could not capture ${reference.url}:`, error);
   } finally {
     await context.close();
@@ -62,6 +81,8 @@ for (const reference of references) {
 
 await browser.close();
 
-if (captured === 0) {
-  throw new Error("No live reference site could be captured.");
+if (captured !== references.length) {
+  throw new Error(
+    `Reference capture incomplete: ${captured}/${references.length}. Failed: ${failures.join(", ")}`,
+  );
 }
