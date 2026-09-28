@@ -1,5 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, Clock3, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  UserRound,
+} from "lucide-react";
+import { AuditCtaBlock } from "@/components/site/Marketing";
 import { RichTextContent } from "@/components/site/RichTextContent";
 import {
   fetchPublishedBlogPost,
@@ -55,9 +62,31 @@ export const Route = createFileRoute("/blog/$slug")({
   component: BlogPostPage,
 });
 
+const BLOG_RELATED_LINKS: Record<
+  string,
+  { href: string; label: string }[]
+> = {
+  "mennyibe-kerul-egy-weboldal-2026": [
+    { href: "/arak", label: "Weboldal készítés árak" },
+    { href: "/weboldal-keszites", label: "Ügyfélszerző weboldal készítés" },
+  ],
+  "mitol-hoz-erdeklodoket-egy-ceges-weboldal": [
+    { href: "/ceges-weboldal-keszites", label: "Céges weboldal készítés" },
+    { href: "/ingyenes-weboldal-audit", label: "Ingyenes weboldal-audit" },
+  ],
+  "wordpress-vagy-egyedi-weboldal": [
+    { href: "/weboldal-keszites", label: "Weboldal készítés" },
+    { href: "/webalkalmazas-fejlesztes", label: "Webalkalmazás fejlesztés" },
+  ],
+};
+
 function BlogPostPage() {
   const post = Route.useLoaderData();
   const imageUrl = getPublicBlogImageUrl(post.featured_image_path);
+  const relatedLinks = BLOG_RELATED_LINKS[post.slug] ?? [
+    { href: "/szolgaltatasok", label: "Szolgáltatások" },
+    { href: "/ingyenes-weboldal-audit", label: "Ingyenes weboldal-audit" },
+  ];
 
   return (
     <div>
@@ -118,8 +147,32 @@ function BlogPostPage() {
             html={post.content_html}
             className="mx-auto max-w-3xl"
           />
+
+          <aside className="mx-auto mt-12 max-w-3xl rounded-2xl border bg-secondary/40 p-6 md:p-7">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand">
+              Kapcsolódó következő lépések
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {relatedLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex min-h-11 items-center justify-between gap-3 rounded-xl border bg-white px-4 py-3 text-sm font-semibold text-ink transition hover:border-brand/30 hover:text-brand"
+                >
+                  {item.label}
+                  <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </aside>
         </div>
       </article>
+
+      <AuditCtaBlock
+        placement={`blog_${post.slug}`}
+        title="Szeretnéd tudni, mi fogja vissza a saját weboldaladat?"
+        description="Az ingyenes mini auditban megmutatjuk a 3 legfontosabb javítási pontot, amely most a leginkább számít."
+      />
     </div>
   );
 }
