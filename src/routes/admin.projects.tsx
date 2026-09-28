@@ -1113,8 +1113,8 @@ function AdminProjectsPage() {
                   PNG, JPG vagy WebP, maximum 8 MB. Ajánlott képarány: 16:9.
                 </p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Valódi ügyfélprojekt képernyőkép nélkül is megjelenhet, ha van élő URL,
-                  valamint kitöltött „Kiindulási probléma” és „Mit
+                  Valódi ügyfélprojekt képernyőkép nélkül is megjelenhet, ha van
+                  élő URL, valamint kitöltött „Kiindulási probléma” és „Mit
                   készítettünk?” rész. Koncepcióprojektnél továbbra is szükséges
                   valódi projektkép.
                 </p>
