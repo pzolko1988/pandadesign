@@ -48,7 +48,9 @@ function AdminHeroPage() {
 
         if (adminError) throw adminError;
         if (!isAdmin) {
-          throw new Error("Ehhez az oldalhoz nincs adminisztrátori jogosultságod.");
+          throw new Error(
+            "Ehhez az oldalhoz nincs adminisztrátori jogosultságod.",
+          );
         }
 
         const { data, error } = await supabase
@@ -60,7 +62,8 @@ function AdminHeroPage() {
 
         if (!active) return;
         if (error) throw error;
-        if (!data) throw new Error("A Hero rekord nem található az adatbázisban.");
+        if (!data)
+          throw new Error("A Hero rekord nem található az adatbázisban.");
 
         const content =
           data.content && typeof data.content === "object"
@@ -182,10 +185,15 @@ function AdminHeroPage() {
     <main className="min-h-screen bg-muted/30 px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <header className="mb-8">
-          <Link to="/admin" className="text-sm font-semibold text-brand hover:underline">
+          <Link
+            to="/admin"
+            className="text-sm font-semibold text-brand hover:underline"
+          >
             ← Vissza az áttekintéshez
           </Link>
-          <h1 className="mt-4 text-3xl font-bold">Hero + 3D vizuál szerkesztése</h1>
+          <h1 className="mt-4 text-3xl font-bold">
+            Hero + 3D vizuál szerkesztése
+          </h1>
           <p className="mt-2 max-w-3xl text-muted-foreground">
             A főoldali hero minden látható szövege innen szerkeszthető. A 3D
             mozgás és a rétegek technikai beállításai fixek maradnak, hogy a
@@ -210,15 +218,44 @@ function AdminHeroPage() {
             description="A bal oldali értékesítési üzenet és a két fő CTA."
           >
             <div className="grid gap-5 md:grid-cols-2">
-              <FormField label="Kis felső szöveg" value={form.eyebrow} onChange={(v) => updateField("eyebrow", v)} />
-              <FormField label="Főcím" value={form.title} onChange={(v) => updateField("title", v)} />
+              <FormField
+                label="Kis felső szöveg"
+                value={form.eyebrow}
+                onChange={(v) => updateField("eyebrow", v)}
+              />
+              <FormField
+                label="Főcím"
+                value={form.title}
+                onChange={(v) => updateField("title", v)}
+              />
               <div className="md:col-span-2">
-                <TextAreaField label="Leírás" value={form.description} onChange={(v) => updateField("description", v)} rows={4} />
+                <TextAreaField
+                  label="Leírás"
+                  value={form.description}
+                  onChange={(v) => updateField("description", v)}
+                  rows={4}
+                />
               </div>
-              <FormField label="Elsődleges gomb felirata" value={form.primaryButtonText} onChange={(v) => updateField("primaryButtonText", v)} />
-              <FormField label="Elsődleges gomb hivatkozása" value={form.primaryButtonUrl} onChange={(v) => updateField("primaryButtonUrl", v)} />
-              <FormField label="Másodlagos gomb felirata" value={form.secondaryButtonText} onChange={(v) => updateField("secondaryButtonText", v)} />
-              <FormField label="Másodlagos gomb hivatkozása" value={form.secondaryButtonUrl} onChange={(v) => updateField("secondaryButtonUrl", v)} />
+              <FormField
+                label="Elsődleges gomb felirata"
+                value={form.primaryButtonText}
+                onChange={(v) => updateField("primaryButtonText", v)}
+              />
+              <FormField
+                label="Elsődleges gomb hivatkozása"
+                value={form.primaryButtonUrl}
+                onChange={(v) => updateField("primaryButtonUrl", v)}
+              />
+              <FormField
+                label="Másodlagos gomb felirata"
+                value={form.secondaryButtonText}
+                onChange={(v) => updateField("secondaryButtonText", v)}
+              />
+              <FormField
+                label="Másodlagos gomb hivatkozása"
+                value={form.secondaryButtonUrl}
+                onChange={(v) => updateField("secondaryButtonUrl", v)}
+              />
             </div>
           </EditorSection>
 
@@ -227,33 +264,122 @@ function AdminHeroPage() {
             description="A jobb oldali animált böngésző-, CRM-, analytics-, automatizáció- és mobilkártya szövegei."
           >
             <div className="grid gap-5 md:grid-cols-2">
-              <FormField label="Böngésző domain" value={form.visual.browserDomain} onChange={(v) => updateVisual("browserDomain", v)} />
-              <FormField label="Böngésző felső címke" value={form.visual.kicker} onChange={(v) => updateVisual("kicker", v)} />
-              <FormField label="Böngésző főcím" value={form.visual.headline} onChange={(v) => updateVisual("headline", v)} />
-              <FormField label="Böngésző CTA" value={form.visual.cta} onChange={(v) => updateVisual("cta", v)} />
+              <FormField
+                label="Böngésző domain"
+                value={form.visual.browserDomain}
+                onChange={(v) => updateVisual("browserDomain", v)}
+              />
+              <FormField
+                label="Böngésző felső címke"
+                value={form.visual.kicker}
+                onChange={(v) => updateVisual("kicker", v)}
+              />
+              <FormField
+                label="Böngésző főcím"
+                value={form.visual.headline}
+                onChange={(v) => updateVisual("headline", v)}
+              />
+              <FormField
+                label="Böngésző CTA"
+                value={form.visual.cta}
+                onChange={(v) => updateVisual("cta", v)}
+              />
               <div className="md:col-span-2">
-                <TextAreaField label="Böngésző rövid leírás" value={form.visual.copy} onChange={(v) => updateVisual("copy", v)} rows={3} />
+                <TextAreaField
+                  label="Böngésző rövid leírás"
+                  value={form.visual.copy}
+                  onChange={(v) => updateVisual("copy", v)}
+                  rows={3}
+                />
               </div>
 
-              <FormField label="CRM címke" value={form.visual.crmLabel} onChange={(v) => updateVisual("crmLabel", v)} />
-              <FormField label="CRM státusz" value={form.visual.crmStatus} onChange={(v) => updateVisual("crmStatus", v)} />
-              <FormField label="CRM főcím" value={form.visual.crmTitle} onChange={(v) => updateVisual("crmTitle", v)} />
-              <FormField label="CRM folyamat szöveg" value={form.visual.crmMeta} onChange={(v) => updateVisual("crmMeta", v)} />
+              <FormField
+                label="CRM címke"
+                value={form.visual.crmLabel}
+                onChange={(v) => updateVisual("crmLabel", v)}
+              />
+              <FormField
+                label="CRM státusz"
+                value={form.visual.crmStatus}
+                onChange={(v) => updateVisual("crmStatus", v)}
+              />
+              <FormField
+                label="CRM főcím"
+                value={form.visual.crmTitle}
+                onChange={(v) => updateVisual("crmTitle", v)}
+              />
+              <FormField
+                label="CRM folyamat szöveg"
+                value={form.visual.crmMeta}
+                onChange={(v) => updateVisual("crmMeta", v)}
+              />
 
-              <FormField label="Analytics címke" value={form.visual.analyticsLabel} onChange={(v) => updateVisual("analyticsLabel", v)} />
-              <FormField label="Analytics státusz" value={form.visual.analyticsStatus} onChange={(v) => updateVisual("analyticsStatus", v)} />
-              <FormField label="Metrika 1 neve" value={form.visual.metricOneLabel} onChange={(v) => updateVisual("metricOneLabel", v)} />
-              <FormField label="Metrika 1 értéke" value={form.visual.metricOneValue} onChange={(v) => updateVisual("metricOneValue", v)} />
-              <FormField label="Metrika 2 neve" value={form.visual.metricTwoLabel} onChange={(v) => updateVisual("metricTwoLabel", v)} />
-              <FormField label="Metrika 2 értéke" value={form.visual.metricTwoValue} onChange={(v) => updateVisual("metricTwoValue", v)} />
-              <FormField label="Metrika 3 neve" value={form.visual.metricThreeLabel} onChange={(v) => updateVisual("metricThreeLabel", v)} />
-              <FormField label="Metrika 3 értéke" value={form.visual.metricThreeValue} onChange={(v) => updateVisual("metricThreeValue", v)} />
+              <FormField
+                label="Analytics címke"
+                value={form.visual.analyticsLabel}
+                onChange={(v) => updateVisual("analyticsLabel", v)}
+              />
+              <FormField
+                label="Analytics státusz"
+                value={form.visual.analyticsStatus}
+                onChange={(v) => updateVisual("analyticsStatus", v)}
+              />
+              <FormField
+                label="Metrika 1 neve"
+                value={form.visual.metricOneLabel}
+                onChange={(v) => updateVisual("metricOneLabel", v)}
+              />
+              <FormField
+                label="Metrika 1 értéke"
+                value={form.visual.metricOneValue}
+                onChange={(v) => updateVisual("metricOneValue", v)}
+              />
+              <FormField
+                label="Metrika 2 neve"
+                value={form.visual.metricTwoLabel}
+                onChange={(v) => updateVisual("metricTwoLabel", v)}
+              />
+              <FormField
+                label="Metrika 2 értéke"
+                value={form.visual.metricTwoValue}
+                onChange={(v) => updateVisual("metricTwoValue", v)}
+              />
+              <FormField
+                label="Metrika 3 neve"
+                value={form.visual.metricThreeLabel}
+                onChange={(v) => updateVisual("metricThreeLabel", v)}
+              />
+              <FormField
+                label="Metrika 3 értéke"
+                value={form.visual.metricThreeValue}
+                onChange={(v) => updateVisual("metricThreeValue", v)}
+              />
 
-              <FormField label="Automatizáció címke" value={form.visual.automationLabel} onChange={(v) => updateVisual("automationLabel", v)} />
-              <FormField label="Mobil CTA" value={form.visual.phoneButton} onChange={(v) => updateVisual("phoneButton", v)} />
-              <FormField label="Automatizáció 1. lépés" value={form.visual.automationNodeOne} onChange={(v) => updateVisual("automationNodeOne", v)} />
-              <FormField label="Automatizáció 2. lépés" value={form.visual.automationNodeTwo} onChange={(v) => updateVisual("automationNodeTwo", v)} />
-              <FormField label="Automatizáció 3. lépés" value={form.visual.automationNodeThree} onChange={(v) => updateVisual("automationNodeThree", v)} />
+              <FormField
+                label="Automatizáció címke"
+                value={form.visual.automationLabel}
+                onChange={(v) => updateVisual("automationLabel", v)}
+              />
+              <FormField
+                label="Mobil CTA"
+                value={form.visual.phoneButton}
+                onChange={(v) => updateVisual("phoneButton", v)}
+              />
+              <FormField
+                label="Automatizáció 1. lépés"
+                value={form.visual.automationNodeOne}
+                onChange={(v) => updateVisual("automationNodeOne", v)}
+              />
+              <FormField
+                label="Automatizáció 2. lépés"
+                value={form.visual.automationNodeTwo}
+                onChange={(v) => updateVisual("automationNodeTwo", v)}
+              />
+              <FormField
+                label="Automatizáció 3. lépés"
+                value={form.visual.automationNodeThree}
+                onChange={(v) => updateVisual("automationNodeThree", v)}
+              />
 
               <div className="md:col-span-2">
                 <TextAreaField
