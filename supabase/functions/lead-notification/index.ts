@@ -254,11 +254,7 @@ async function processAutoreply({
     };
   }
 
-  const autoreplySetting = Deno.env.get("LEAD_AUTOREPLY_ENABLED");
-  const autoreplyEnabled =
-    autoreplySetting == null || autoreplySetting.trim() === ""
-      ? true
-      : parseBoolean(autoreplySetting);
+  const autoreplyEnabled = await resolveAutoreplyEnabled(client);
 
   if (!autoreplyEnabled) {
     await tryUpdateLeadDelivery(client, lead.id, {
@@ -534,6 +530,30 @@ async function claimAutomaticDelivery(
   }
 
   return Boolean(data);
+}
+
+async function resolveAutoreplyEnabled(client: SupabaseClient) {
+  const { data, error } = await client
+    .from("site_settings")
+    .select("lead_autoreply_enabled")
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(
+      `Az automatikus válasz beállítása nem tölthető be: ${error.message}`,
+    );
+  }
+
+  if (typeof data?.lead_autoreply_enabled === "boolean") {
+    return data.lead_autoreply_enabled;
+  }
+
+  const envSetting = Deno.env.get("LEAD_AUTOREPLY_ENABLED");
+
+  return envSetting == null || envSetting.trim() === ""
+    ? true
+    : parseBoolean(envSetting);
 }
 
 async function resolveNotificationRecipients(client: SupabaseClient) {
