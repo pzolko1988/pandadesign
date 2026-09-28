@@ -573,23 +573,24 @@ export function ReferencePreview({
         </div>
 
         <div className="mb-7 flex flex-wrap gap-2">
-          {[
-            "Élő projektek",
-            "Ellenőrizhető URL-ek",
-            "Valós funkciók",
-          ].map((label) => (
-            <span
-              key={label}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                tone === "dark"
-                  ? "border-white/15 bg-white/5 text-white/80"
-                  : "bg-white text-ink-soft"
-              }`}
-            >
-              <Check className="h-3.5 w-3.5 text-success" aria-hidden="true" />
-              {label}
-            </span>
-          ))}
+          {["Élő projektek", "Ellenőrizhető URL-ek", "Valós funkciók"].map(
+            (label) => (
+              <span
+                key={label}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                  tone === "dark"
+                    ? "border-white/15 bg-white/5 text-white/80"
+                    : "bg-white text-ink-soft"
+                }`}
+              >
+                <Check
+                  className="h-3.5 w-3.5 text-success"
+                  aria-hidden="true"
+                />
+                {label}
+              </span>
+            ),
+          )}
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
