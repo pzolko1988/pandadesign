@@ -24,15 +24,42 @@ jobs:
         run: |
           set -euo pipefail
           base="https://www.pandadesign.hu"
-          for attempt in {1..24}; do
+          for attempt in {1..18}; do
             if html="$(curl -fsSL --max-time 20 "$base/" 2>/dev/null)" &&
                grep -Fq "Ügyfélszerző weboldalak magyar vállalkozásoknak" <<<"$html"; then
               echo "Production is serving the expected release."
               exit 0
             fi
-            echo "Waiting for production deployment ($attempt/24)..."
+            echo "Waiting for production deployment ($attempt/18)..."
             sleep 10
           done
+
+          echo "::group::Production diagnostics"
+          echo "DNS www:"
+          dig +short www.pandadesign.hu || true
+          echo "DNS apex:"
+          dig +short pandadesign.hu || true
+
+          curl -sS -L --max-time 20             -D /tmp/pandadesign-headers.txt             -o /tmp/pandadesign-home.html             -w "HTTP %{http_code}\nEffective URL: %{url_effective}\n"             "$base/" || true
+
+          echo "--- Response headers ---"
+          cat /tmp/pandadesign-headers.txt || true
+
+          echo "--- Page title ---"
+          grep -oE '<title>[^<]*</title>' /tmp/pandadesign-home.html | head -n 1 || true
+
+          if grep -Fq "Weboldalak, amelyek ügyfeleket hoznak" /tmp/pandadesign-home.html; then
+            echo "::error::The custom domain is still serving the legacy PandaDesign homepage."
+          elif grep -Fq "Ügyfélszerző weboldalak magyar vállalkozásoknak" /tmp/pandadesign-home.html; then
+            echo "Expected homepage marker found during diagnostics."
+          else
+            echo "::error::The custom domain returned an unexpected homepage version."
+          fi
+
+          echo "--- HTML markers ---"
+          grep -oE 'Ügyfélszerző weboldalak magyar vállalkozásoknak|Weboldalak, amelyek ügyfeleket hoznak|Ingyenes weboldal-audit|Ajánlatot kérek' /tmp/pandadesign-home.html | sort -u || true
+          echo "::endgroup::"
+
           echo "::error::Production did not serve the expected homepage within the retry window."
           exit 1
 
