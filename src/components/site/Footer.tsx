@@ -99,7 +99,8 @@ export function Footer() {
     return Array.from(grouped.entries());
   }, [navigationItems]);
 
-  const logoUrl = getSiteAssetUrl(siteSettings.logo_path);
+  const logoUrl =
+    getSiteAssetUrl(siteSettings.logo_path) || "/pandadesign-logo.svg";
 
   const address = [
     siteSettings.postal_code,
