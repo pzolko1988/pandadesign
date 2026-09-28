@@ -254,7 +254,11 @@ async function processAutoreply({
     };
   }
 
-  const autoreplyEnabled = parseBoolean(Deno.env.get("LEAD_AUTOREPLY_ENABLED"));
+  const autoreplySetting = Deno.env.get("LEAD_AUTOREPLY_ENABLED");
+  const autoreplyEnabled =
+    autoreplySetting == null || autoreplySetting.trim() === ""
+      ? true
+      : parseBoolean(autoreplySetting);
 
   if (!autoreplyEnabled) {
     await tryUpdateLeadDelivery(client, lead.id, {
