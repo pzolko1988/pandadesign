@@ -1,8 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase/client";
 
 export const Route = createFileRoute("/supabase-test")({
+  beforeLoad: () => {
+    if (import.meta.env.PROD) {
+      throw notFound();
+    }
+  },
   head: () => ({
     meta: [
       { title: "Rendszerteszt — PandaDesign" },
