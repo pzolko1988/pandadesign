@@ -185,8 +185,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           },
           {
             rel: "icon",
-            href: business.faviconUrl || "/favicon.ico",
-            ...(business.faviconUrl ? {} : { type: "image/x-icon" }),
+            href: business.faviconUrl || "/favicon.svg",
+            ...(business.faviconUrl ? {} : { type: "image/svg+xml" }),
           },
         ],
         scripts: [
