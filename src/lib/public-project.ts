@@ -57,7 +57,17 @@ export async function fetchPublishedProject(
 // Valódi referencia akkor is publikálható, ha a képernyőkép még nincs
 // feltöltve, de csak akkor, ha élő URL és érdemi esettanulmány-adat is tartozik
 // hozzá. Így nem kell generált vagy félrevezető mockupot képként használni.
-export function isPublishableProject(project: PublicProject) {
+export function isPublishableProject(
+  project: Pick<
+    PublicProject,
+    | "image_path"
+    | "mobile_image_path"
+    | "is_concept"
+    | "project_url"
+    | "challenge"
+    | "solution"
+  >,
+) {
   if (
     project.image_path &&
     BLOCKED_PROJECT_IMAGE_PATHS.includes(project.image_path)
