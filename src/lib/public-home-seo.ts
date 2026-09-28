@@ -152,9 +152,7 @@ function normalizeHero(content: unknown): HeroContent {
     return DEFAULT_HERO;
   }
 
-  const pick = (
-    key: Exclude<keyof HeroContent, "visual">,
-  ) =>
+  const pick = (key: Exclude<keyof HeroContent, "visual">) =>
     typeof record[key] === "string" && (record[key] as string).trim()
       ? (record[key] as string)
       : DEFAULT_HERO[key];
@@ -204,7 +202,6 @@ function normalizeText(value: unknown) {
 function normalizeNullableText(value: unknown) {
   return typeof value === "string" && value ? value : null;
 }
-
 
 function normalizeHeroVisual(value: unknown): HeroVisualContent {
   const record =
