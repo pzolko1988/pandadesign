@@ -72,9 +72,15 @@ export async function fetchPublicBusinessData(): Promise<PublicBusinessData> {
 
   return {
     ...business,
-    logoUrl: getSiteAssetUrl(business.logo_path),
-    faviconUrl: getSiteAssetUrl(business.favicon_path),
-    ogImageUrl: getSiteAssetUrl(business.og_image_path),
+    logoUrl: business.logo_path
+      ? getSiteAssetUrl(business.logo_path)
+      : "/pandadesign-logo.svg",
+    faviconUrl: business.favicon_path
+      ? getSiteAssetUrl(business.favicon_path)
+      : "/favicon.svg",
+    ogImageUrl: business.og_image_path
+      ? getSiteAssetUrl(business.og_image_path)
+      : "/og-pandadesign.svg",
   };
 }
 
