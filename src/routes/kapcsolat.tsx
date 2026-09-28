@@ -72,6 +72,7 @@ const SERVICE_OPTIONS = [
   "Egyedi webalkalmazás / üzleti rendszer",
   "Meglévő oldal újratervezése",
   "SEO-optimalizálás",
+  "300 pontos professzionális weboldal-audit",
   "Karbantartás és támogatás",
   "Egyéb",
 ];
@@ -83,6 +84,10 @@ const PACKAGE_TO_SERVICE: Record<string, string> = {
   "business-lead": "Business / Lead rendszer",
   webshop: "Webshop",
   "egyedi-webapp": "Egyedi webalkalmazás / üzleti rendszer",
+};
+
+const SERVICE_QUERY_TO_SERVICE: Record<string, string> = {
+  "300-pontos-weboldal-audit": "300 pontos professzionális weboldal-audit",
 };
 
 const BUDGET_OPTIONS = [
@@ -110,8 +115,11 @@ function ContactPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const packageSlug = params.get("csomag") ?? "";
+    const requestedService = params.get("szolgaltatas") ?? "";
     const estimate = (params.get("kalkulator") ?? "").slice(0, 1500);
-    const service = PACKAGE_TO_SERVICE[packageSlug];
+    const service =
+      PACKAGE_TO_SERVICE[packageSlug] ??
+      SERVICE_QUERY_TO_SERVICE[requestedService];
 
     if (!service && !estimate) {
       return;
