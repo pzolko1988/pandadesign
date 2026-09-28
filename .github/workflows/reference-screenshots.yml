@@ -1,0 +1,52 @@
+name: Refresh reference screenshots
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/reference-screenshots.yml"
+      - "scripts/capture-reference-screenshots.mjs"
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 1 * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reference-screenshots
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install browser runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Capture live reference sites
+        continue-on-error: true
+        run: node scripts/capture-reference-screenshots.mjs
+
+      - name: Commit refreshed screenshots
+        run: |
+          if [ -z "$(git status --porcelain public/references)" ]; then
+            echo "No screenshot changes."
+            exit 0
+          fi
+          git config user.name "pandadesign-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/references
+          git commit -m "chore: refresh live reference screenshots"
+          git push
