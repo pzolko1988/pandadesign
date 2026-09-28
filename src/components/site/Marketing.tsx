@@ -35,6 +35,7 @@ import {
 } from "@/lib/marketing-content";
 import {
   fetchPublishedProjects,
+  getCapturedReferenceImageUrl,
   getPortfolioImageUrl,
   type PublicProject,
 } from "@/lib/public-project";
@@ -286,12 +287,20 @@ export function formatPriceUnit(currency: string, suffix: string) {
 // Referenciák
 
 export function ReferenceCard({ project }: { project: PublicProject }) {
+  const [capturedDesktopFailed, setCapturedDesktopFailed] = useState(false);
+  const [capturedMobileFailed, setCapturedMobileFailed] = useState(false);
+  const capturedDesktop = getCapturedReferenceImageUrl(project.slug, "desktop");
+  const capturedMobile = getCapturedReferenceImageUrl(project.slug, "mobile");
   const desktopUrl = project.image_path
     ? getPortfolioImageUrl(project.image_path)
-    : "";
+    : capturedDesktopFailed
+      ? ""
+      : capturedDesktop;
   const mobileUrl = project.mobile_image_path
     ? getPortfolioImageUrl(project.mobile_image_path)
-    : "";
+    : capturedMobileFailed
+      ? ""
+      : capturedMobile;
   const coverUrl = desktopUrl || mobileUrl;
   const hasPublicUrl = /^https?:\/\//.test(project.project_url);
   const displayDomain = hasPublicUrl
@@ -310,6 +319,16 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
             alt={`${project.title} – képernyőkép`}
             loading="lazy"
             decoding="async"
+            onError={() => {
+              if (!project.image_path && desktopUrl === capturedDesktop) {
+                setCapturedDesktopFailed(true);
+              } else if (
+                !project.mobile_image_path &&
+                coverUrl === capturedMobile
+              ) {
+                setCapturedMobileFailed(true);
+              }
+            }}
             className="h-full w-full object-cover object-top transition duration-500 motion-safe:group-hover:scale-[1.02]"
           />
         ) : (
@@ -345,6 +364,11 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
             alt={`${project.title} – mobil nézet`}
             loading="lazy"
             decoding="async"
+            onError={() => {
+              if (!project.mobile_image_path) {
+                setCapturedMobileFailed(true);
+              }
+            }}
             className="absolute bottom-3 right-3 h-[70%] w-auto rounded-lg border-4 border-white object-cover object-top shadow-elegant"
           />
         )}
