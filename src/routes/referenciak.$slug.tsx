@@ -110,8 +110,7 @@ function ReferenceDetailPage() {
     });
   }, [project.slug, project.category]);
 
-  const [capturedDesktopFailed, setCapturedDesktopFailed] =
-    useState(false);
+  const [capturedDesktopFailed, setCapturedDesktopFailed] = useState(false);
   const [capturedMobileFailed, setCapturedMobileFailed] = useState(false);
   const capturedDesktop = getCapturedReferenceImageUrl(project.slug, "desktop");
   const capturedMobile = getCapturedReferenceImageUrl(project.slug, "mobile");
