@@ -43,8 +43,8 @@ export async function fetchPublishedBlogPostsForSitemap(): Promise<
 export async function fetchPublishedProjectsForSitemap(): Promise<
   SitemapProject[]
 > {
-  // A "*" a mobil képernyőkép oszlop bevezetése előtt és után is működik;
-  // csak a nyilvánosan is megjelenő (képpel rendelkező) referenciák kerülnek be.
+  // A publikus referencialogikával azonos feltételt használjuk: valódi,
+  // érdemi esettanulmány élő URL-lel képernyőkép nélkül is indexelhető.
   const { data, error } = await supabase
     .from("projects")
     .select("*")
@@ -64,6 +64,10 @@ export async function fetchPublishedProjectsForSitemap(): Promise<
           typeof project.mobile_image_path === "string"
             ? project.mobile_image_path
             : null,
+        is_concept: project.is_concept === true,
+        project_url: normalizeText(project.project_url),
+        challenge: normalizeText(project.challenge),
+        solution: normalizeText(project.solution),
       }),
     )
     .map((project) => ({
