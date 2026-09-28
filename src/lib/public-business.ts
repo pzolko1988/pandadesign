@@ -80,7 +80,7 @@ export async function fetchPublicBusinessData(): Promise<PublicBusinessData> {
       : "/favicon.svg",
     ogImageUrl: business.og_image_path
       ? getSiteAssetUrl(business.og_image_path)
-      : "/og-pandadesign.svg",
+      : "/og-pandadesign.png",
   };
 }
 
