@@ -1,4 +1,5 @@
 export const DEFAULT_SITE_URL = "https://www.pandadesign.hu";
+export const DEFAULT_OG_IMAGE = "/og-pandadesign.png";
 
 const ABSOLUTE_URL_PATTERN = /^[a-z][a-z\d+.-]*:\/\//i;
 
@@ -38,7 +39,7 @@ export function buildSeoHead({
   jsonLd,
 }: SeoHeadInput) {
   const canonicalUrl = absoluteUrl(path, baseUrl);
-  const imageUrl = image ? absoluteUrl(image, baseUrl) : undefined;
+  const imageUrl = absoluteUrl(image || DEFAULT_OG_IMAGE, baseUrl);
 
   return {
     meta: [
@@ -48,11 +49,11 @@ export function buildSeoHead({
       { property: "og:description", content: description },
       { property: "og:url", content: canonicalUrl },
       { property: "og:type", content: type },
-      ...(imageUrl ? [{ property: "og:image", content: imageUrl }] : []),
+      { property: "og:image", content: imageUrl },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      ...(imageUrl ? [{ name: "twitter:image", content: imageUrl }] : []),
+      { name: "twitter:image", content: imageUrl },
       ...(robots ? [{ name: "robots", content: robots }] : []),
       ...(jsonLd ? [{ "script:ld+json": jsonLd }] : []),
     ],
