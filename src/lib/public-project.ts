@@ -80,6 +80,21 @@ export function isPublishableProject(project: PublicProject) {
 // elérhetőségekkel – nem jelenhet meg. A 20260928120000 migráció a projektet
 // is elrejti; ez a lista addig is véd. Valódi képernyőkép feltöltése után
 // az útvonal automatikusan megváltozik, így a szűrés nem akadályozza.
+const CAPTURED_REFERENCE_SLUGS = new Set([
+  "klimaflow",
+  "berbeadva",
+  "tetojavitas-mesterfokon",
+]);
+
+export function getCapturedReferenceImageUrl(
+  slug: string,
+  viewport: "desktop" | "mobile",
+) {
+  return CAPTURED_REFERENCE_SLUGS.has(slug)
+    ? `/references/${slug}-${viewport}.webp`
+    : "";
+}
+
 const BLOCKED_PROJECT_IMAGE_PATHS = [
   "f1c91ab0-0f89-4f76-8a7b-975e37edc0a7.png",
 ];
