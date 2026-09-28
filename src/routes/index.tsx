@@ -41,6 +41,7 @@ import type { PublicService } from "@/lib/public-services";
 import {
   ABOUT_SUMMARY,
   AUDIT_PATH,
+  CONTACT_PATH,
   HERO_TRUST_ITEMS,
   PROBLEMS,
 } from "@/lib/marketing-content";
@@ -201,9 +202,22 @@ function HeroSection({ hero }: { hero: HeroContent }) {
             )}
           </div>
 
-          <p className="mt-4 text-sm text-ink-soft">
-            15 perces, kötelezettségmentes átnézés – 3 konkrét javítási ponttal.
-          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-soft">
+            <span>
+              15 perces, kötelezettségmentes átnézés – 3 konkrét javítási
+              ponttal.
+            </span>
+            <span className="hidden sm:inline" aria-hidden="true">
+              ·
+            </span>
+            <a
+              href={CONTACT_PATH}
+              data-track-placement="hero_direct_quote"
+              className="font-semibold text-brand underline-offset-4 hover:underline"
+            >
+              Már tudod, mire van szükséged? Kérj személyre szabott ajánlatot.
+            </a>
+          </div>
         </div>
 
         <div className="relative min-w-0">
