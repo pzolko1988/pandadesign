@@ -103,7 +103,7 @@ export function getCapturedReferenceImageUrl(
   viewport: "desktop" | "mobile",
 ) {
   return CAPTURED_REFERENCE_SLUGS.has(slug)
-    ? `/references/${slug}-${viewport}.webp`
+    ? `/references/${slug}-${viewport}.jpg`
     : "";
 }
 
