@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/accordion";
 import {
   AUDIT_PATH,
+  CONTACT_PATH,
   BENEFITS,
   OWNERSHIP_POINTS,
   isNumericPrice,
@@ -691,25 +692,35 @@ export function AuditCtaBlock({
               {children}
             </div>
 
-            <div className="flex flex-col gap-3 lg:items-end">
+            <div className="flex w-full flex-col gap-3 lg:max-w-sm lg:justify-self-end">
               <Button
                 asChild
                 size="lg"
                 variant="cta"
-                className="h-auto min-h-12 whitespace-normal py-3 text-center"
+                className="h-auto min-h-12 w-full whitespace-normal py-3 text-center"
               >
                 <a href={buttonUrl} data-track-placement={placement}>
                   {buttonText}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </a>
               </Button>
-              <a
-                href="/kapcsolat"
-                data-track-placement={placement}
-                className="text-sm font-semibold text-brand-foreground/80 underline-offset-4 hover:text-brand-foreground hover:underline"
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-auto min-h-12 w-full whitespace-normal border-white/35 bg-white/10 py-3 text-center text-brand-foreground hover:bg-white/20 hover:text-brand-foreground"
               >
-                Inkább konkrét ajánlatot kérek
-              </a>
+                <a
+                  href={CONTACT_PATH}
+                  data-track-placement={`${placement}_direct_quote`}
+                >
+                  Személyre szabott ajánlatot kérek
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </Button>
+              <p className="text-center text-xs text-brand-foreground/70 lg:text-right">
+                Ha már tudod, mire van szükséged, nem kell auditot kérned.
+              </p>
             </div>
           </div>
         </div>
