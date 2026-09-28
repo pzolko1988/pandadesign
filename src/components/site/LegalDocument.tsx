@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import { reportLovableError } from "@/lib/lovable-error-reporting";
 import type { LegalPageSlug, PublicLegalPage } from "@/lib/legal-pages";
 import { LegalFallbackDocument } from "@/components/site/LegalFallbacks";
 import { sanitizeLegalHtml } from "@/lib/sanitize-legal-html";
@@ -86,7 +85,6 @@ export function LegalDocumentMetadata({
 export function LegalDocumentError({ error }: { error: unknown }) {
   useEffect(() => {
     console.error("A jogi dokumentum nem tölthető be:", error);
-    reportLovableError(error, { boundary: "legal_document" });
   }, [error]);
 
   return (
