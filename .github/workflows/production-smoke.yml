@@ -86,6 +86,43 @@ jobs:
           grep -Fq 'Ingyenes weboldal-audit' <<<"$html"
           grep -Fq 'Ajánlatot kérek' <<<"$html"
 
+      - name: Check compiled GA4 configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://www.pandadesign.hu"
+          html="$(curl -fsSL --max-time 20 "$base/")"
+          printf '%s' "$html" > /tmp/pandadesign-home.html
+
+          mapfile -t scripts < <(
+            grep -oE 'src="[^"]+\.js[^"]*"' /tmp/pandadesign-home.html               | sed -E 's/^src="//; s/"$//'               | sort -u
+          )
+
+          : > /tmp/pandadesign-js.txt
+          for src in "${scripts[@]}"; do
+            if [[ "$src" == http* ]]; then
+              url="$src"
+            else
+              url="$base${src}"
+            fi
+            curl -fsSL --max-time 20 "$url" >> /tmp/pandadesign-js.txt || true
+            printf '\n' >> /tmp/pandadesign-js.txt
+          done
+
+          ga_ids="$(
+            {
+              cat /tmp/pandadesign-home.html
+              cat /tmp/pandadesign-js.txt
+            } | grep -aoE 'G-[A-Z0-9]{6,}' | sort -u || true
+          )"
+
+          if [[ -z "$ga_ids" ]]; then
+            echo "::warning::No GA4 Measurement ID was found in the compiled production assets."
+          else
+            echo "Compiled GA4 Measurement ID(s):"
+            echo "$ga_ids"
+          fi
+
       - name: Check production-only protections
         shell: bash
         run: |
