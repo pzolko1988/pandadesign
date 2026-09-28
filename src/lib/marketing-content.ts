@@ -62,7 +62,6 @@ export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
   keywords: ["Weboldal", "Lead", "CRM", "Automatizáció", "Analytics"],
 };
 
-
 export const HERO_TRUST_ITEMS = [
   "Saját rendszer",
   "Mobilra optimalizálva",
