@@ -547,16 +547,25 @@ function AdminSettingsPage() {
                 placeholder="+36 30 123 4567"
               />
 
-              <TextField
-                id="contact-recipient"
-                label="Leadértesítések címzettje"
-                type="email"
-                value={form.contact_recipient_email}
-                onChange={(value) =>
-                  updateField("contact_recipient_email", value)
-                }
-                description="Ide érkezhetnek majd a kapcsolatfelvételi értesítések."
-              />
+              <div>
+                <TextField
+                  id="contact-recipient"
+                  label="Leadértesítések címzettje"
+                  type="email"
+                  value={form.contact_recipient_email}
+                  onChange={(value) =>
+                    updateField("contact_recipient_email", value)
+                  }
+                  description="Adatbázis-fallback címzett. A LEAD_NOTIFICATION_TO Edge Function secret, ha be van állítva, elsőbbséget élvez."
+                />
+                {!form.contact_recipient_email.trim() && (
+                  <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+                    Nincs adatbázis-fallback címzett megadva. A küldés jelenleg
+                    csak akkor működik, ha a LEAD_NOTIFICATION_TO secret
+                    tartalmaz érvényes címzettet.
+                  </p>
+                )}
+              </div>
 
               <TextField
                 id="opening-hours"
