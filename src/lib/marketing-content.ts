@@ -10,6 +10,59 @@
 export const AUDIT_PATH = "/ingyenes-weboldal-audit";
 export const CONTACT_PATH = "/kapcsolat";
 
+export type HeroVisualContent = {
+  browserDomain: string;
+  kicker: string;
+  headline: string;
+  copy: string;
+  cta: string;
+  crmLabel: string;
+  crmStatus: string;
+  crmTitle: string;
+  crmMeta: string;
+  analyticsLabel: string;
+  analyticsStatus: string;
+  metricOneLabel: string;
+  metricOneValue: string;
+  metricTwoLabel: string;
+  metricTwoValue: string;
+  metricThreeLabel: string;
+  metricThreeValue: string;
+  automationLabel: string;
+  automationNodeOne: string;
+  automationNodeTwo: string;
+  automationNodeThree: string;
+  phoneButton: string;
+  keywords: string[];
+};
+
+export const DEFAULT_HERO_VISUAL: HeroVisualContent = {
+  browserDomain: "vallalkozasod.hu",
+  kicker: "Ügyfélszerző weboldal",
+  headline: "A látogatóból legyen valódi érdeklődő.",
+  copy: "Gyors oldal, világos ajánlat, mérhető CTA és továbbépíthető folyamat.",
+  cta: "Ajánlatot kérek",
+  crmLabel: "CRM",
+  crmStatus: "Új lead",
+  crmTitle: "Új érdeklődő",
+  crmMeta: "Weboldal → ajánlatkérés → következő teendő",
+  analyticsLabel: "Analytics",
+  analyticsStatus: "Mérés aktív",
+  metricOneLabel: "CTA kattintás",
+  metricOneValue: "követve",
+  metricTwoLabel: "Űrlap",
+  metricTwoValue: "követve",
+  metricThreeLabel: "Forrás",
+  metricThreeValue: "UTM",
+  automationLabel: "Automatizáció",
+  automationNodeOne: "Űrlap",
+  automationNodeTwo: "CRM",
+  automationNodeThree: "Értesítés",
+  phoneButton: "Ajánlatkérés",
+  keywords: ["Weboldal", "Lead", "CRM", "Automatizáció", "Analytics"],
+};
+
+
 export const HERO_TRUST_ITEMS = [
   "Saját rendszer",
   "Mobilra optimalizálva",

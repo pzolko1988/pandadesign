@@ -10,44 +10,46 @@ import {
   Workflow,
   Zap,
 } from "lucide-react";
+import {
+  DEFAULT_HERO_VISUAL,
+  type HeroVisualContent,
+} from "@/lib/marketing-content";
 
-const KEYWORDS = ["Weboldal", "Lead", "CRM", "Automatizáció", "Analytics"];
-
-export function Hero3D() {
+export function Hero3D({
+  visual = DEFAULT_HERO_VISUAL,
+}: {
+  visual?: HeroVisualContent;
+}) {
   const sceneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const scene = sceneRef.current;
 
-    if (!scene) {
-      return;
-    }
+    if (!scene) return;
 
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    );
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const finePointer = window.matchMedia("(pointer: fine)");
 
-    if (reducedMotion.matches || !finePointer.matches) {
-      return;
-    }
+    if (reducedMotion.matches || !finePointer.matches) return;
 
     let frame = 0;
 
     const reset = () => {
       cancelAnimationFrame(frame);
-      scene.style.removeProperty("--hero-rx");
-      scene.style.removeProperty("--hero-ry");
-      scene.style.removeProperty("--hero-back-x");
-      scene.style.removeProperty("--hero-back-y");
-      scene.style.removeProperty("--hero-front-x");
-      scene.style.removeProperty("--hero-front-y");
-      scene.style.removeProperty("--hero-opposite-x");
-      scene.style.removeProperty("--hero-opposite-y");
-      scene.style.removeProperty("--hero-mid-x");
-      scene.style.removeProperty("--hero-mid-y");
-      scene.style.removeProperty("--hero-phone-x");
-      scene.style.removeProperty("--hero-phone-y");
+      [
+        "--hero-rx",
+        "--hero-ry",
+        "--hero-back-x",
+        "--hero-back-y",
+        "--hero-front-x",
+        "--hero-front-y",
+        "--hero-opposite-x",
+        "--hero-opposite-y",
+        "--hero-mid-x",
+        "--hero-mid-y",
+        "--hero-phone-x",
+        "--hero-phone-y",
+      ].forEach((property) => scene.style.removeProperty(property));
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -99,22 +101,17 @@ export function Hero3D() {
             <span className="hero3d-dot" />
             <span className="hero3d-dot" />
             <span className="hero3d-dot" />
-            <span className="hero3d-url">vallalkozasod.hu</span>
+            <span className="hero3d-url">{visual.browserDomain}</span>
           </div>
           <div className="hero3d-webcanvas">
             <span className="hero3d-kicker">
               <Sparkles className="h-3 w-3" />
-              Ügyfélszerző weboldal
+              {visual.kicker}
             </span>
-            <p className="hero3d-headline">
-              A látogatóból legyen valódi érdeklődő.
-            </p>
-            <p className="hero3d-copy">
-              Gyors oldal, világos ajánlat, mérhető CTA és továbbépíthető
-              folyamat.
-            </p>
+            <p className="hero3d-headline">{visual.headline}</p>
+            <p className="hero3d-copy">{visual.copy}</p>
             <span className="hero3d-cta">
-              Ajánlatot kérek
+              {visual.cta}
               <MousePointerClick className="h-3 w-3" />
             </span>
 
@@ -130,14 +127,12 @@ export function Hero3D() {
           <div className="hero3d-cardtop">
             <span className="hero3d-cardlabel">
               <UsersRound className="h-3.5 w-3.5" />
-              CRM
+              {visual.crmLabel}
             </span>
-            <span className="hero3d-status">Új lead</span>
+            <span className="hero3d-status">{visual.crmStatus}</span>
           </div>
-          <p className="hero3d-leadname">Új érdeklődő</p>
-          <p className="hero3d-leadmeta">
-            Weboldal → ajánlatkérés → következő teendő
-          </p>
+          <p className="hero3d-leadname">{visual.crmTitle}</p>
+          <p className="hero3d-leadmeta">{visual.crmMeta}</p>
           <div className="hero3d-pipeline">
             <span />
             <span />
@@ -150,23 +145,21 @@ export function Hero3D() {
           <div className="hero3d-cardtop">
             <span className="hero3d-cardlabel">
               <BarChart3 className="h-3.5 w-3.5" />
-              Analytics
+              {visual.analyticsLabel}
             </span>
-            <span className="hero3d-status">Mérés aktív</span>
+            <span className="hero3d-status">{visual.analyticsStatus}</span>
           </div>
           <div className="hero3d-analyticsgrid">
-            <div className="hero3d-metric">
-              <span>CTA kattintás</span>
-              <strong>követve</strong>
-            </div>
-            <div className="hero3d-metric">
-              <span>Űrlap</span>
-              <strong>követve</strong>
-            </div>
-            <div className="hero3d-metric">
-              <span>Forrás</span>
-              <strong>UTM</strong>
-            </div>
+            {[
+              [visual.metricOneLabel, visual.metricOneValue],
+              [visual.metricTwoLabel, visual.metricTwoValue],
+              [visual.metricThreeLabel, visual.metricThreeValue],
+            ].map(([label, value]) => (
+              <div key={label} className="hero3d-metric">
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -174,16 +167,16 @@ export function Hero3D() {
           <div className="hero3d-cardtop">
             <span className="hero3d-cardlabel">
               <Workflow className="h-3.5 w-3.5" />
-              Automatizáció
+              {visual.automationLabel}
             </span>
             <Zap className="h-4 w-4 text-success" />
           </div>
           <div className="hero3d-automationline">
-            <span className="hero3d-node">Űrlap</span>
+            <span className="hero3d-node">{visual.automationNodeOne}</span>
             <span className="hero3d-arrow">→</span>
-            <span className="hero3d-node">CRM</span>
+            <span className="hero3d-node">{visual.automationNodeTwo}</span>
             <span className="hero3d-arrow">→</span>
-            <span className="hero3d-node">Értesítés</span>
+            <span className="hero3d-node">{visual.automationNodeThree}</span>
           </div>
         </div>
 
@@ -194,15 +187,15 @@ export function Hero3D() {
             <div className="hero3d-phonehero mt-2" />
             <div className="hero3d-phoneline" />
             <div className="hero3d-phoneline short" />
-            <div className="hero3d-phonebutton">Ajánlatkérés</div>
+            <div className="hero3d-phonebutton">{visual.phoneButton}</div>
             <CheckCircle2 className="mx-auto mt-3 h-4 w-4 text-success" />
           </div>
         </div>
       </div>
 
       <ul className="hero3d-keywords">
-        {KEYWORDS.map((keyword, index) => (
-          <li key={keyword}>
+        {visual.keywords.map((keyword, index) => (
+          <li key={`${keyword}-${index}`}>
             {index === 0 && <Globe2 className="mr-1 inline h-3 w-3" />}
             {keyword}
           </li>

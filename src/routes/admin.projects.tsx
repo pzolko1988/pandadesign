@@ -104,6 +104,10 @@ const EMPTY_FORM: ProjectForm = {
 
 const CATEGORIES = [
   "Céges oldal",
+  "Ügyfélszerző weboldal",
+  "Weboldal",
+  "Weboldal + admin rendszer",
+  "Webapp / CRM",
   "Landing oldal",
   "Vendéglátás",
   "Egészségügy",
@@ -803,6 +807,7 @@ function AdminProjectsPage() {
 
       await removeStorageFiles([
         project.image_path ?? "",
+        project.mobile_image_path ?? "",
         ...(project.gallery_paths ?? []),
       ]);
 
@@ -1108,8 +1113,9 @@ function AdminProjectsPage() {
                   PNG, JPG vagy WebP, maximum 8 MB. Ajánlott képarány: 16:9.
                 </p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Fontos: képernyőkép nélküli referencia nem jelenik meg a
-                  nyilvános oldalon.
+                  Valódi ügyfélprojekt képernyőkép nélkül is megjelenhet, ha van élő URL,
+                  valamint kitöltött „Kiindulási probléma” és „Mit készítettünk?” rész.
+                  Koncepcióprojektnél továbbra is szükséges valódi projektkép.
                 </p>
               </div>
             </div>

@@ -6,6 +6,10 @@ import {
   ExternalLink,
   KeyRound,
   Search,
+  MessageSquare,
+  Rocket,
+  Sparkles,
+  Users,
   Target,
   BarChart3,
   Puzzle,
@@ -549,17 +553,34 @@ export function FaqList({ items }: { items: FaqEntry[] }) {
 // ---------------------------------------------------------------------------
 // Ingyenes audit CTA
 
+const CTA_ICONS: Record<string, LucideIcon> = {
+  search: Search,
+  users: Users,
+  "message-square": MessageSquare,
+  sparkles: Sparkles,
+  rocket: Rocket,
+};
+
 export function AuditCtaBlock({
+  badgeText = "Ingyenes weboldal-audit",
   title = "Kérd az ingyenes 15 perces weboldal-auditot",
   description = "Megmutatjuk azt a 3 legfontosabb pontot, amely jelenleg visszafoghatja a weboldalad ügyfélszerzését. Kötelezettség nélkül.",
+  buttonText = "Kérem az ingyenes auditot",
+  buttonUrl = AUDIT_PATH,
+  iconKey = "search",
   placement,
   children,
 }: {
+  badgeText?: string;
   title?: string;
   description?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  iconKey?: string;
   placement: string;
   children?: ReactNode;
 }) {
+  const CtaIcon = CTA_ICONS[iconKey] ?? Search;
   return (
     <section
       className="py-16 md:py-24"
@@ -574,8 +595,8 @@ export function AuditCtaBlock({
           <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
-                <Search className="h-3.5 w-3.5" aria-hidden="true" />
-                Ingyenes weboldal-audit
+                <CtaIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                {badgeText}
               </p>
               <h2
                 id={`audit-cta-${placement}`}
@@ -596,8 +617,8 @@ export function AuditCtaBlock({
                 variant="cta"
                 className="h-auto min-h-12 whitespace-normal py-3 text-center"
               >
-                <a href={AUDIT_PATH} data-track-placement={placement}>
-                  Kérem az ingyenes auditot
+                <a href={buttonUrl} data-track-placement={placement}>
+                  {buttonText}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </a>
               </Button>

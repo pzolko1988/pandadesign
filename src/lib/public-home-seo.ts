@@ -1,6 +1,11 @@
 import { DEFAULT_SITE_SETTINGS } from "@/lib/site-settings";
 import { supabase } from "@/lib/supabase/client";
-import { AUDIT_PATH, DEFAULT_PRICING_PACKAGES } from "@/lib/marketing-content";
+import {
+  AUDIT_PATH,
+  DEFAULT_HERO_VISUAL,
+  DEFAULT_PRICING_PACKAGES,
+  type HeroVisualContent,
+} from "@/lib/marketing-content";
 import {
   fetchVisiblePricingPackages,
   type PublicPricingPackage,
@@ -19,6 +24,7 @@ export type HeroContent = {
   primaryButtonUrl: string;
   secondaryButtonText: string;
   secondaryButtonUrl: string;
+  visual: HeroVisualContent;
 };
 
 // A hero tartalma az adminból szerkeszthető (page_sections.content).
@@ -35,6 +41,7 @@ export const DEFAULT_HERO: HeroContent = {
   primaryButtonUrl: AUDIT_PATH,
   secondaryButtonText: "Munkáink megtekintése",
   secondaryButtonUrl: "/referenciak",
+  visual: DEFAULT_HERO_VISUAL,
 };
 
 export type PublicHomeSeoSettings = {
@@ -145,7 +152,9 @@ function normalizeHero(content: unknown): HeroContent {
     return DEFAULT_HERO;
   }
 
-  const pick = (key: keyof HeroContent) =>
+  const pick = (
+    key: Exclude<keyof HeroContent, "visual">,
+  ) =>
     typeof record[key] === "string" && (record[key] as string).trim()
       ? (record[key] as string)
       : DEFAULT_HERO[key];
@@ -158,6 +167,7 @@ function normalizeHero(content: unknown): HeroContent {
     primaryButtonUrl: pick("primaryButtonUrl"),
     secondaryButtonText: pick("secondaryButtonText"),
     secondaryButtonUrl: pick("secondaryButtonUrl"),
+    visual: normalizeHeroVisual(record.visual),
   };
 }
 
@@ -193,4 +203,51 @@ function normalizeText(value: unknown) {
 
 function normalizeNullableText(value: unknown) {
   return typeof value === "string" && value ? value : null;
+}
+
+
+function normalizeHeroVisual(value: unknown): HeroVisualContent {
+  const record =
+    value && typeof value === "object"
+      ? (value as Record<string, unknown>)
+      : {};
+
+  const pick = (key: Exclude<keyof HeroVisualContent, "keywords">) =>
+    typeof record[key] === "string" && (record[key] as string).trim()
+      ? (record[key] as string)
+      : DEFAULT_HERO_VISUAL[key];
+
+  const keywords = Array.isArray(record.keywords)
+    ? record.keywords
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, 8)
+    : DEFAULT_HERO_VISUAL.keywords;
+
+  return {
+    browserDomain: pick("browserDomain"),
+    kicker: pick("kicker"),
+    headline: pick("headline"),
+    copy: pick("copy"),
+    cta: pick("cta"),
+    crmLabel: pick("crmLabel"),
+    crmStatus: pick("crmStatus"),
+    crmTitle: pick("crmTitle"),
+    crmMeta: pick("crmMeta"),
+    analyticsLabel: pick("analyticsLabel"),
+    analyticsStatus: pick("analyticsStatus"),
+    metricOneLabel: pick("metricOneLabel"),
+    metricOneValue: pick("metricOneValue"),
+    metricTwoLabel: pick("metricTwoLabel"),
+    metricTwoValue: pick("metricTwoValue"),
+    metricThreeLabel: pick("metricThreeLabel"),
+    metricThreeValue: pick("metricThreeValue"),
+    automationLabel: pick("automationLabel"),
+    automationNodeOne: pick("automationNodeOne"),
+    automationNodeTwo: pick("automationNodeTwo"),
+    automationNodeThree: pick("automationNodeThree"),
+    phoneButton: pick("phoneButton"),
+    keywords: keywords.length > 0 ? keywords : DEFAULT_HERO_VISUAL.keywords,
+  };
 }

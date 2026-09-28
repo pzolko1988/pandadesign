@@ -206,7 +206,7 @@ function HeroSection({ hero }: { hero: HeroContent }) {
         </div>
 
         <div className="relative min-w-0">
-          <Hero3D />
+          <Hero3D visual={hero.visual} />
         </div>
       </div>
     </section>
@@ -717,34 +717,38 @@ function SocialProofOrWhySection() {
   );
 }
 
-/**
- * A záró CTA szövege az adminból (final_cta_settings) szerkeszthető, de csak
- * akkor, ha a gomb az audit oldalra mutat – így a lead magnet mindig megmarad.
- */
+type FinalCtaContent = {
+  badge_text: string;
+  title: string;
+  description: string;
+  button_text: string;
+  button_url: string;
+  icon_key: string;
+  is_visible: boolean;
+};
+
 function FinalAuditCta() {
-  const [copy, setCopy] = useState<{ title?: string; description?: string }>(
-    {},
-  );
+  const [copy, setCopy] = useState<FinalCtaContent | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let active = true;
 
     void supabase
       .from("final_cta_settings")
-      .select("title, description, button_url, is_visible")
+      .select(
+        "badge_text, title, description, button_text, button_url, icon_key, is_visible",
+      )
       .eq("id", 1)
       .maybeSingle()
       .then(({ data, error }) => {
-        if (!active || error || !data) {
-          return;
+        if (!active) return;
+
+        if (!error && data) {
+          setCopy(data as FinalCtaContent);
         }
 
-        if (data.is_visible && data.button_url === AUDIT_PATH) {
-          setCopy({
-            title: data.title || undefined,
-            description: data.description || undefined,
-          });
-        }
+        setLoaded(true);
       });
 
     return () => {
@@ -752,11 +756,19 @@ function FinalAuditCta() {
     };
   }, []);
 
+  if (loaded && copy?.is_visible === false) {
+    return null;
+  }
+
   return (
     <AuditCtaBlock
       placement="home_final"
-      title={copy.title}
-      description={copy.description}
+      badgeText={copy?.badge_text || undefined}
+      title={copy?.title || undefined}
+      description={copy?.description || undefined}
+      buttonText={copy?.button_text || undefined}
+      buttonUrl={copy?.button_url || undefined}
+      iconKey={copy?.icon_key || undefined}
     />
   );
 }
