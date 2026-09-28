@@ -43,7 +43,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   facebook_url: "",
   instagram_url: "",
   linkedin_url: "",
-  base_url: "https://pandadesign.hu",
+  base_url: "https://www.pandadesign.hu",
   default_meta_title: "Weboldal készítés vállalkozásoknak | PandaDesign",
   default_meta_description:
     "Ügyfélszerző weboldalak magyar vállalkozásoknak: gyors, mobilra optimalizált, mérhető és továbbfejleszthető rendszer, amely a te tulajdonod.",
