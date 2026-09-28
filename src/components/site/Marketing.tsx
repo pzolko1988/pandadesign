@@ -4,6 +4,7 @@ import {
   ArrowRight,
   Check,
   ExternalLink,
+  Globe2,
   KeyRound,
   Search,
   MessageSquare,
@@ -348,9 +349,14 @@ export function ReferenceCard({ project }: { project: PublicProject }) {
           />
         )}
 
-        {project.is_concept && (
+        {project.is_concept ? (
           <span className="absolute left-3 top-3 rounded-full border bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
             Koncepcióprojekt
+          </span>
+        ) : (
+          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-800 shadow-soft">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Élő projekt
           </span>
         )}
       </div>
@@ -464,7 +470,7 @@ export function ReferencePreview({
   title?: string;
   description?: string;
   limit?: number;
-  tone?: "default" | "muted";
+  tone?: "default" | "muted" | "dark";
   /** Ha meg van adva, csak ezekbe a kategóriákba tartozó munkák jelennek meg. */
   categories?: string[];
 }) {
@@ -484,32 +490,82 @@ export function ReferencePreview({
 
   return (
     <section
-      className={`py-16 md:py-24 ${tone === "muted" ? "bg-secondary/50" : ""}`}
+      className={`relative overflow-hidden py-16 md:py-24 ${
+        tone === "muted"
+          ? "bg-secondary/50"
+          : tone === "dark"
+            ? "bg-ink text-white"
+            : ""
+      }`}
       aria-labelledby="reference-preview-title"
     >
-      <div className="container-page">
+      {tone === "dark" && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(800px_420px_at_12%_0%,color-mix(in_oklab,var(--brand)_38%,transparent),transparent),radial-gradient(600px_360px_at_100%_100%,color-mix(in_oklab,var(--success)_14%,transparent),transparent)]"
+        />
+      )}
+      <div className="container-page relative">
         <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-brand">
+            <p
+              className={`mb-3 text-xs font-semibold uppercase tracking-widest ${
+                tone === "dark" ? "text-success" : "text-brand"
+              }`}
+            >
               Referenciák
             </p>
             <h2
               id="reference-preview-title"
-              className="text-[28px] font-bold leading-[1.15] text-ink md:text-4xl"
+              className={`text-[28px] font-bold leading-[1.15] md:text-4xl ${
+                tone === "dark" ? "text-white" : "text-ink"
+              }`}
             >
               {title}
             </h2>
             {description && (
-              <p className="mt-4 text-[15px] leading-relaxed text-ink-soft md:text-lg">
+              <p
+                className={`mt-4 text-[15px] leading-relaxed md:text-lg ${
+                  tone === "dark" ? "text-white/70" : "text-ink-soft"
+                }`}
+              >
                 {description}
               </p>
             )}
           </div>
-          <Button asChild variant="outline" className="self-start md:self-auto">
+          <Button
+            asChild
+            variant="outline"
+            className={`self-start md:self-auto ${
+              tone === "dark"
+                ? "border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                : ""
+            }`}
+          >
             <Link to="/referenciak">
               Összes munka <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </Button>
+        </div>
+
+        <div className="mb-7 flex flex-wrap gap-2">
+          {[
+            "Élő projektek",
+            "Ellenőrizhető URL-ek",
+            "Valós funkciók",
+          ].map((label) => (
+            <span
+              key={label}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                tone === "dark"
+                  ? "border-white/15 bg-white/5 text-white/80"
+                  : "bg-white text-ink-soft"
+              }`}
+            >
+              <Check className="h-3.5 w-3.5 text-success" aria-hidden="true" />
+              {label}
+            </span>
+          ))}
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
