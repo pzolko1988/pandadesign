@@ -1,0 +1,83 @@
+name: Production smoke test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "23 5 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Wait for production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://www.pandadesign.hu"
+          for attempt in {1..24}; do
+            if html="$(curl -fsSL --max-time 20 "$base/" 2>/dev/null)" &&
+               grep -Fq "Ügyfélszerző weboldalak magyar vállalkozásoknak" <<<"$html"; then
+              echo "Production is serving the expected release."
+              exit 0
+            fi
+            echo "Waiting for production deployment ($attempt/24)..."
+            sleep 10
+          done
+          echo "::error::Production did not serve the expected homepage within the retry window."
+          exit 1
+
+      - name: Check critical public routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://www.pandadesign.hu"
+          for path in "/" "/kapcsolat" "/ingyenes-weboldal-audit" "/arak" "/referenciak" "/blog"; do
+            code="$(curl -sSL -o /dev/null --max-time 20 -w "%{http_code}" "$base$path")"
+            echo "$path -> $code"
+            test "$code" = "200"
+          done
+
+      - name: Check SEO and social metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          html="$(curl -fsSL --max-time 20 https://www.pandadesign.hu/)"
+          grep -Fq 'rel="canonical"' <<<"$html"
+          grep -Fq 'https://www.pandadesign.hu/' <<<"$html"
+          grep -Fq 'og:image' <<<"$html"
+          grep -Fq 'twitter:image' <<<"$html"
+          grep -Fq 'Ingyenes weboldal-audit' <<<"$html"
+          grep -Fq 'Ajánlatot kérek' <<<"$html"
+
+      - name: Check production-only protections
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://www.pandadesign.hu"
+
+          test_code="$(curl -sSL -o /dev/null --max-time 20 -w "%{http_code}" "$base/supabase-test")"
+          echo "/supabase-test -> $test_code"
+          test "$test_code" = "404"
+
+          admin_headers="$(curl -sS -D - -o /dev/null --max-time 20 "$base/admin")"
+          grep -Eiq '^x-robots-tag:.*noindex' <<<"$admin_headers"
+
+      - name: Report apex redirect
+        shell: bash
+        run: |
+          set -euo pipefail
+          effective="$(curl -sSL -o /dev/null --max-time 20 -w "%{url_effective}" https://pandadesign.hu/)"
+          echo "Apex effective URL: $effective"
+          if [[ "$effective" != https://www.pandadesign.hu/* ]]; then
+            echo "::warning::Apex domain does not currently resolve to the canonical www host."
+          fi
