@@ -51,21 +51,66 @@ const CHECKS = [
 ];
 
 const DEEP_AUDIT_CATEGORIES = [
-  ["Üzleti cél és pozicionálás", "Ajánlat, célcsoport, differenciálás és üzleti fókusz."],
-  ["Első 5 másodperc és hero", "Érthetőség, vizuális hierarchia, fő ígéret és első benyomás."],
-  ["CTA és konverzió", "Következő lépések, CTA-elhelyezés, súrlódás és döntési út."],
-  ["UX és navigáció", "Információs architektúra, menü, útvonalak és használhatóság."],
-  ["Mobilélmény", "320–430 px nézetek, érintési célok, olvashatóság és mobil flow."],
-  ["Sebesség és Core Web Vitals", "Betöltés, LCP, CLS, INP, képek, fontok és JavaScript-terhelés."],
-  ["Technikai SEO", "Indexelhetőség, canonical, robots, sitemap, státuszkódok és strukturált adatok."],
-  ["On-page SEO és tartalom", "Title, description, H1–H3, keresési szándék és tartalmi lefedettség."],
-  ["Belső linkelés és struktúra", "Money page-ek, blog cluster, anchorok és crawl útvonalak."],
-  ["Bizalom és social proof", "Referenciák, bizonyítékok, vélemények, garanciák és hitelességi elemek."],
-  ["Űrlapok és lead funnel", "Validáció, mezők, spamvédelem, siker/hiba állapot és utánkövetés."],
-  ["Analitika és attribúció", "GA4, konverziók, UTM-ek, forrásmérés és eseményminőség."],
-  ["Akadálymentesség", "Billentyűzet, fókusz, kontraszt, label-ek, szemantika és reduced motion."],
-  ["Adatvédelem és jogi megfelelés", "Cookie, consent, adatkezelés, jogi oldalak és marketing consent."],
-  ["Biztonság és üzembiztonság", "Jogosultságok, adminvédelem, hibakezelés, frissítések és menthetőség."],
+  [
+    "Üzleti cél és pozicionálás",
+    "Ajánlat, célcsoport, differenciálás és üzleti fókusz.",
+  ],
+  [
+    "Első 5 másodperc és hero",
+    "Érthetőség, vizuális hierarchia, fő ígéret és első benyomás.",
+  ],
+  [
+    "CTA és konverzió",
+    "Következő lépések, CTA-elhelyezés, súrlódás és döntési út.",
+  ],
+  [
+    "UX és navigáció",
+    "Információs architektúra, menü, útvonalak és használhatóság.",
+  ],
+  [
+    "Mobilélmény",
+    "320–430 px nézetek, érintési célok, olvashatóság és mobil flow.",
+  ],
+  [
+    "Sebesség és Core Web Vitals",
+    "Betöltés, LCP, CLS, INP, képek, fontok és JavaScript-terhelés.",
+  ],
+  [
+    "Technikai SEO",
+    "Indexelhetőség, canonical, robots, sitemap, státuszkódok és strukturált adatok.",
+  ],
+  [
+    "On-page SEO és tartalom",
+    "Title, description, H1–H3, keresési szándék és tartalmi lefedettség.",
+  ],
+  [
+    "Belső linkelés és struktúra",
+    "Money page-ek, blog cluster, anchorok és crawl útvonalak.",
+  ],
+  [
+    "Bizalom és social proof",
+    "Referenciák, bizonyítékok, vélemények, garanciák és hitelességi elemek.",
+  ],
+  [
+    "Űrlapok és lead funnel",
+    "Validáció, mezők, spamvédelem, siker/hiba állapot és utánkövetés.",
+  ],
+  [
+    "Analitika és attribúció",
+    "GA4, konverziók, UTM-ek, forrásmérés és eseményminőség.",
+  ],
+  [
+    "Akadálymentesség",
+    "Billentyűzet, fókusz, kontraszt, label-ek, szemantika és reduced motion.",
+  ],
+  [
+    "Adatvédelem és jogi megfelelés",
+    "Cookie, consent, adatkezelés, jogi oldalak és marketing consent.",
+  ],
+  [
+    "Biztonság és üzembiztonság",
+    "Jogosultságok, adminvédelem, hibakezelés, frissítések és menthetőség.",
+  ],
 ] as const;
 
 function AuditPage() {
