@@ -211,7 +211,10 @@ export function Header() {
               chromeSettings.header_cta_text &&
               chromeSettings.header_cta_url && (
                 <Button asChild variant="cta" className="hidden sm:inline-flex">
-                  <a href={chromeSettings.header_cta_url}>
+                  <a
+                    href={chromeSettings.header_cta_url}
+                    data-track-placement="header"
+                  >
                     {chromeSettings.header_cta_text}
                     <ArrowRight className="h-4 w-4" />
                   </a>
@@ -278,7 +281,10 @@ export function Header() {
                     variant="cta"
                     className="mt-5 w-full"
                   >
-                    <a href={chromeSettings.header_cta_url}>
+                    <a
+                      href={chromeSettings.header_cta_url}
+                      data-track-placement="mobile_header"
+                    >
                       {chromeSettings.header_cta_text}
                       <ArrowRight className="h-4 w-4" />
                     </a>
