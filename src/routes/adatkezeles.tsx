@@ -19,6 +19,7 @@ export const Route = createFileRoute("/adatkezeles")({
 function PrivacyPage() {
   return (
     <LegalDocumentPage
+      slug="adatkezeles"
       page={Route.useLoaderData()}
       fallbackTitle={LEGAL_PAGE_DEFINITIONS.adatkezeles.fallbackTitle}
     />

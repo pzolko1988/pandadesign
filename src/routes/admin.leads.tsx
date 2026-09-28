@@ -630,7 +630,7 @@ function AdminLeadsPage() {
         <header className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Link
-              to="/admin/"
+              to="/admin"
               className="text-sm font-semibold text-brand hover:underline"
             >
               ← Vissza az áttekintéshez

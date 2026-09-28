@@ -3,15 +3,26 @@ import { useEffect, useState } from "react";
 import { ArrowRight, CalendarDays, Clock3, FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { buildSeoHead } from "@/lib/seo";
+import {
+  MIN_PUBLISHED_BLOG_POSTS_FOR_NAV,
+  countPublishedBlogPosts,
+} from "@/lib/site-navigation";
+import { AUDIT_PATH } from "@/lib/marketing-content";
 import { supabase } from "@/lib/supabase/client";
 
 export const Route = createFileRoute("/blog/")({
-  head: () =>
+  loader: () => countPublishedBlogPosts(),
+  head: ({ loaderData }) =>
     buildSeoHead({
       title: "Weboldal készítés és SEO tudástár — PandaDesign",
       description:
         "Weboldalkészítési, online marketing- és digitális üzleti útmutatók a PandaDesign blogján.",
       path: "/blog",
+      // Amíg nincs elég valódi cikk, a blog nem kerül a keresőkbe.
+      robots:
+        (loaderData ?? 0) >= MIN_PUBLISHED_BLOG_POSTS_FOR_NAV
+          ? undefined
+          : "noindex, follow",
     }),
   component: BlogIndexPage,
 });
@@ -69,7 +80,7 @@ function BlogIndexPage() {
   }, []);
 
   return (
-    <main>
+    <div>
       <section className="relative overflow-hidden border-b bg-secondary/35 py-16 md:py-24">
         <div
           aria-hidden="true"
@@ -115,12 +126,21 @@ function BlogIndexPage() {
             <FileText className="mx-auto h-12 w-12 text-ink-soft/30" />
 
             <h2 className="mt-5 text-xl font-bold text-ink">
-              Hamarosan érkeznek az első cikkek
+              Ez a rész még nincs kész
             </h2>
 
-            <p className="mt-2 text-ink-soft">
-              Jelenleg nincs publikált blogbejegyzés.
+            <p className="mx-auto mt-2 max-w-md text-ink-soft">
+              Addig is: ha a weboldaladdal kapcsolatban van kérdésed, kérj
+              ingyenes 15 perces auditot, és személyesen válaszolunk.
             </p>
+
+            <a
+              href={AUDIT_PATH}
+              data-track-placement="blog_empty"
+              className="mt-6 inline-flex min-h-11 items-center rounded-lg bg-success px-5 py-2 text-sm font-semibold text-success-foreground hover:bg-success/90"
+            >
+              Kérem az ingyenes auditot
+            </a>
           </div>
         )}
 
@@ -191,7 +211,7 @@ function BlogIndexPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

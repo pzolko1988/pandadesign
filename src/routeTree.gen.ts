@@ -14,16 +14,24 @@ import { Route as AdatkezelesRouteImport } from './routes/adatkezeles'
 import { Route as ArakRouteImport } from './routes/arak'
 import { Route as AszfRouteImport } from './routes/aszf'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as CegesWeboldalKeszitesRouteImport } from './routes/ceges-weboldal-keszites'
 import { Route as CookieRouteImport } from './routes/cookie'
 import { Route as CookieTajekoztatoRouteImport } from './routes/cookie-tajekoztato'
 import { Route as ImpresszumRouteImport } from './routes/impresszum'
+import { Route as IngyenesWeboldalAuditRouteImport } from './routes/ingyenes-weboldal-audit'
 import { Route as KapcsolatRouteImport } from './routes/kapcsolat'
+import { Route as LandingOldalKeszitesRouteImport } from './routes/landing-oldal-keszites'
 import { Route as ReferenciakRouteImport } from './routes/referenciak'
 import { Route as RolunkRouteImport } from './routes/rolunk'
+import { Route as SeoOptimalizalasRouteImport } from './routes/seo-optimalizalas'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SupabaseTestRouteImport } from './routes/supabase-test'
 import { Route as SutikRouteImport } from './routes/sutik'
 import { Route as SzolgaltatasokRouteImport } from './routes/szolgaltatasok'
+import { Route as WebalkalmazasFejlesztesRouteImport } from './routes/webalkalmazas-fejlesztes'
+import { Route as WeboldalKeszitesRouteImport } from './routes/weboldal-keszites'
+import { Route as WeboldalUjratervezesRouteImport } from './routes/weboldal-ujratervezes'
+import { Route as WebshopKeszitesRouteImport } from './routes/webshop-keszites'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminCtaRouteImport } from './routes/admin.cta'
@@ -74,6 +82,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CegesWeboldalKeszitesRoute = CegesWeboldalKeszitesRouteImport.update({
+  id: '/ceges-weboldal-keszites',
+  path: '/ceges-weboldal-keszites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CookieRoute = CookieRouteImport.update({
   id: '/cookie',
   path: '/cookie',
@@ -89,9 +102,19 @@ const ImpresszumRoute = ImpresszumRouteImport.update({
   path: '/impresszum',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IngyenesWeboldalAuditRoute = IngyenesWeboldalAuditRouteImport.update({
+  id: '/ingyenes-weboldal-audit',
+  path: '/ingyenes-weboldal-audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KapcsolatRoute = KapcsolatRouteImport.update({
   id: '/kapcsolat',
   path: '/kapcsolat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingOldalKeszitesRoute = LandingOldalKeszitesRouteImport.update({
+  id: '/landing-oldal-keszites',
+  path: '/landing-oldal-keszites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReferenciakRoute = ReferenciakRouteImport.update({
@@ -102,6 +125,11 @@ const ReferenciakRoute = ReferenciakRouteImport.update({
 const RolunkRoute = RolunkRouteImport.update({
   id: '/rolunk',
   path: '/rolunk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeoOptimalizalasRoute = SeoOptimalizalasRouteImport.update({
+  id: '/seo-optimalizalas',
+  path: '/seo-optimalizalas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -122,6 +150,26 @@ const SutikRoute = SutikRouteImport.update({
 const SzolgaltatasokRoute = SzolgaltatasokRouteImport.update({
   id: '/szolgaltatasok',
   path: '/szolgaltatasok',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebalkalmazasFejlesztesRoute = WebalkalmazasFejlesztesRouteImport.update({
+  id: '/webalkalmazas-fejlesztes',
+  path: '/webalkalmazas-fejlesztes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeboldalKeszitesRoute = WeboldalKeszitesRouteImport.update({
+  id: '/weboldal-keszites',
+  path: '/weboldal-keszites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeboldalUjratervezesRoute = WeboldalUjratervezesRouteImport.update({
+  id: '/weboldal-ujratervezes',
+  path: '/weboldal-ujratervezes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebshopKeszitesRoute = WebshopKeszitesRouteImport.update({
+  id: '/webshop-keszites',
+  path: '/webshop-keszites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -251,16 +299,24 @@ export interface FileRoutesByFullPath {
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
   '/blog': typeof BlogRouteWithChildren
+  '/ceges-weboldal-keszites': typeof CegesWeboldalKeszitesRoute
   '/cookie': typeof CookieRoute
   '/cookie-tajekoztato': typeof CookieTajekoztatoRoute
   '/impresszum': typeof ImpresszumRoute
+  '/ingyenes-weboldal-audit': typeof IngyenesWeboldalAuditRoute
   '/kapcsolat': typeof KapcsolatRoute
+  '/landing-oldal-keszites': typeof LandingOldalKeszitesRoute
   '/referenciak': typeof ReferenciakRouteWithChildren
   '/rolunk': typeof RolunkRoute
+  '/seo-optimalizalas': typeof SeoOptimalizalasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/webalkalmazas-fejlesztes': typeof WebalkalmazasFejlesztesRoute
+  '/weboldal-keszites': typeof WeboldalKeszitesRoute
+  '/weboldal-ujratervezes': typeof WeboldalUjratervezesRoute
+  '/webshop-keszites': typeof WebshopKeszitesRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/cta': typeof AdminCtaRoute
   '/admin/faq': typeof AdminFaqRoute
@@ -291,15 +347,23 @@ export interface FileRoutesByTo {
   '/adatkezeles': typeof AdatkezelesRoute
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
+  '/ceges-weboldal-keszites': typeof CegesWeboldalKeszitesRoute
   '/cookie': typeof CookieRoute
   '/cookie-tajekoztato': typeof CookieTajekoztatoRoute
   '/impresszum': typeof ImpresszumRoute
+  '/ingyenes-weboldal-audit': typeof IngyenesWeboldalAuditRoute
   '/kapcsolat': typeof KapcsolatRoute
+  '/landing-oldal-keszites': typeof LandingOldalKeszitesRoute
   '/rolunk': typeof RolunkRoute
+  '/seo-optimalizalas': typeof SeoOptimalizalasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/webalkalmazas-fejlesztes': typeof WebalkalmazasFejlesztesRoute
+  '/weboldal-keszites': typeof WeboldalKeszitesRoute
+  '/weboldal-ujratervezes': typeof WeboldalUjratervezesRoute
+  '/webshop-keszites': typeof WebshopKeszitesRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/cta': typeof AdminCtaRoute
   '/admin/faq': typeof AdminFaqRoute
@@ -332,16 +396,24 @@ export interface FileRoutesById {
   '/arak': typeof ArakRoute
   '/aszf': typeof AszfRoute
   '/blog': typeof BlogRouteWithChildren
+  '/ceges-weboldal-keszites': typeof CegesWeboldalKeszitesRoute
   '/cookie': typeof CookieRoute
   '/cookie-tajekoztato': typeof CookieTajekoztatoRoute
   '/impresszum': typeof ImpresszumRoute
+  '/ingyenes-weboldal-audit': typeof IngyenesWeboldalAuditRoute
   '/kapcsolat': typeof KapcsolatRoute
+  '/landing-oldal-keszites': typeof LandingOldalKeszitesRoute
   '/referenciak': typeof ReferenciakRouteWithChildren
   '/rolunk': typeof RolunkRoute
+  '/seo-optimalizalas': typeof SeoOptimalizalasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supabase-test': typeof SupabaseTestRoute
   '/sutik': typeof SutikRoute
   '/szolgaltatasok': typeof SzolgaltatasokRoute
+  '/webalkalmazas-fejlesztes': typeof WebalkalmazasFejlesztesRoute
+  '/weboldal-keszites': typeof WeboldalKeszitesRoute
+  '/weboldal-ujratervezes': typeof WeboldalUjratervezesRoute
+  '/webshop-keszites': typeof WebshopKeszitesRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/cta': typeof AdminCtaRoute
   '/admin/faq': typeof AdminFaqRoute
@@ -375,16 +447,24 @@ export interface FileRouteTypes {
     | '/arak'
     | '/aszf'
     | '/blog'
+    | '/ceges-weboldal-keszites'
     | '/cookie'
     | '/cookie-tajekoztato'
     | '/impresszum'
+    | '/ingyenes-weboldal-audit'
     | '/kapcsolat'
+    | '/landing-oldal-keszites'
     | '/referenciak'
     | '/rolunk'
+    | '/seo-optimalizalas'
     | '/sitemap.xml'
     | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/webalkalmazas-fejlesztes'
+    | '/weboldal-keszites'
+    | '/weboldal-ujratervezes'
+    | '/webshop-keszites'
     | '/admin/blog'
     | '/admin/cta'
     | '/admin/faq'
@@ -415,15 +495,23 @@ export interface FileRouteTypes {
     | '/adatkezeles'
     | '/arak'
     | '/aszf'
+    | '/ceges-weboldal-keszites'
     | '/cookie'
     | '/cookie-tajekoztato'
     | '/impresszum'
+    | '/ingyenes-weboldal-audit'
     | '/kapcsolat'
+    | '/landing-oldal-keszites'
     | '/rolunk'
+    | '/seo-optimalizalas'
     | '/sitemap.xml'
     | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/webalkalmazas-fejlesztes'
+    | '/weboldal-keszites'
+    | '/weboldal-ujratervezes'
+    | '/webshop-keszites'
     | '/admin/blog'
     | '/admin/cta'
     | '/admin/faq'
@@ -455,16 +543,24 @@ export interface FileRouteTypes {
     | '/arak'
     | '/aszf'
     | '/blog'
+    | '/ceges-weboldal-keszites'
     | '/cookie'
     | '/cookie-tajekoztato'
     | '/impresszum'
+    | '/ingyenes-weboldal-audit'
     | '/kapcsolat'
+    | '/landing-oldal-keszites'
     | '/referenciak'
     | '/rolunk'
+    | '/seo-optimalizalas'
     | '/sitemap.xml'
     | '/supabase-test'
     | '/sutik'
     | '/szolgaltatasok'
+    | '/webalkalmazas-fejlesztes'
+    | '/weboldal-keszites'
+    | '/weboldal-ujratervezes'
+    | '/webshop-keszites'
     | '/admin/blog'
     | '/admin/cta'
     | '/admin/faq'
@@ -497,16 +593,24 @@ export interface RootRouteChildren {
   ArakRoute: typeof ArakRoute
   AszfRoute: typeof AszfRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CegesWeboldalKeszitesRoute: typeof CegesWeboldalKeszitesRoute
   CookieRoute: typeof CookieRoute
   CookieTajekoztatoRoute: typeof CookieTajekoztatoRoute
   ImpresszumRoute: typeof ImpresszumRoute
+  IngyenesWeboldalAuditRoute: typeof IngyenesWeboldalAuditRoute
   KapcsolatRoute: typeof KapcsolatRoute
+  LandingOldalKeszitesRoute: typeof LandingOldalKeszitesRoute
   ReferenciakRoute: typeof ReferenciakRouteWithChildren
   RolunkRoute: typeof RolunkRoute
+  SeoOptimalizalasRoute: typeof SeoOptimalizalasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SupabaseTestRoute: typeof SupabaseTestRoute
   SutikRoute: typeof SutikRoute
   SzolgaltatasokRoute: typeof SzolgaltatasokRoute
+  WebalkalmazasFejlesztesRoute: typeof WebalkalmazasFejlesztesRoute
+  WeboldalKeszitesRoute: typeof WeboldalKeszitesRoute
+  WeboldalUjratervezesRoute: typeof WeboldalUjratervezesRoute
+  WebshopKeszitesRoute: typeof WebshopKeszitesRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCtaRoute: typeof AdminCtaRoute
   AdminFaqRoute: typeof AdminFaqRoute
@@ -566,6 +670,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ceges-weboldal-keszites': {
+      id: '/ceges-weboldal-keszites'
+      path: '/ceges-weboldal-keszites'
+      fullPath: '/ceges-weboldal-keszites'
+      preLoaderRoute: typeof CegesWeboldalKeszitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cookie': {
       id: '/cookie'
       path: '/cookie'
@@ -587,11 +698,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImpresszumRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ingyenes-weboldal-audit': {
+      id: '/ingyenes-weboldal-audit'
+      path: '/ingyenes-weboldal-audit'
+      fullPath: '/ingyenes-weboldal-audit'
+      preLoaderRoute: typeof IngyenesWeboldalAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kapcsolat': {
       id: '/kapcsolat'
       path: '/kapcsolat'
       fullPath: '/kapcsolat'
       preLoaderRoute: typeof KapcsolatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing-oldal-keszites': {
+      id: '/landing-oldal-keszites'
+      path: '/landing-oldal-keszites'
+      fullPath: '/landing-oldal-keszites'
+      preLoaderRoute: typeof LandingOldalKeszitesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/referenciak': {
@@ -606,6 +731,13 @@ declare module '@tanstack/react-router' {
       path: '/rolunk'
       fullPath: '/rolunk'
       preLoaderRoute: typeof RolunkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seo-optimalizalas': {
+      id: '/seo-optimalizalas'
+      path: '/seo-optimalizalas'
+      fullPath: '/seo-optimalizalas'
+      preLoaderRoute: typeof SeoOptimalizalasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -634,6 +766,34 @@ declare module '@tanstack/react-router' {
       path: '/szolgaltatasok'
       fullPath: '/szolgaltatasok'
       preLoaderRoute: typeof SzolgaltatasokRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/webalkalmazas-fejlesztes': {
+      id: '/webalkalmazas-fejlesztes'
+      path: '/webalkalmazas-fejlesztes'
+      fullPath: '/webalkalmazas-fejlesztes'
+      preLoaderRoute: typeof WebalkalmazasFejlesztesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weboldal-keszites': {
+      id: '/weboldal-keszites'
+      path: '/weboldal-keszites'
+      fullPath: '/weboldal-keszites'
+      preLoaderRoute: typeof WeboldalKeszitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weboldal-ujratervezes': {
+      id: '/weboldal-ujratervezes'
+      path: '/weboldal-ujratervezes'
+      fullPath: '/weboldal-ujratervezes'
+      preLoaderRoute: typeof WeboldalUjratervezesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/webshop-keszites': {
+      id: '/webshop-keszites'
+      path: '/webshop-keszites'
+      fullPath: '/webshop-keszites'
+      preLoaderRoute: typeof WebshopKeszitesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -839,16 +999,24 @@ const rootRouteChildren: RootRouteChildren = {
   ArakRoute: ArakRoute,
   AszfRoute: AszfRoute,
   BlogRoute: BlogRouteWithChildren,
+  CegesWeboldalKeszitesRoute: CegesWeboldalKeszitesRoute,
   CookieRoute: CookieRoute,
   CookieTajekoztatoRoute: CookieTajekoztatoRoute,
   ImpresszumRoute: ImpresszumRoute,
+  IngyenesWeboldalAuditRoute: IngyenesWeboldalAuditRoute,
   KapcsolatRoute: KapcsolatRoute,
+  LandingOldalKeszitesRoute: LandingOldalKeszitesRoute,
   ReferenciakRoute: ReferenciakRouteWithChildren,
   RolunkRoute: RolunkRoute,
+  SeoOptimalizalasRoute: SeoOptimalizalasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SupabaseTestRoute: SupabaseTestRoute,
   SutikRoute: SutikRoute,
   SzolgaltatasokRoute: SzolgaltatasokRoute,
+  WebalkalmazasFejlesztesRoute: WebalkalmazasFejlesztesRoute,
+  WeboldalKeszitesRoute: WeboldalKeszitesRoute,
+  WeboldalUjratervezesRoute: WeboldalUjratervezesRoute,
+  WebshopKeszitesRoute: WebshopKeszitesRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCtaRoute: AdminCtaRoute,
   AdminFaqRoute: AdminFaqRoute,

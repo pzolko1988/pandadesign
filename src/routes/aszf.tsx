@@ -19,6 +19,7 @@ export const Route = createFileRoute("/aszf")({
 function TermsPage() {
   return (
     <LegalDocumentPage
+      slug="aszf"
       page={Route.useLoaderData()}
       fallbackTitle={LEGAL_PAGE_DEFINITIONS.aszf.fallbackTitle}
     />

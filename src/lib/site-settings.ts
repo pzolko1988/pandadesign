@@ -31,7 +31,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   id: 1,
   site_name: "PandaDesign",
   legal_name: "",
-  tagline: "Modern weboldalak magyar vállalkozásoknak",
+  tagline: "Ügyfélszerző weboldalak vállalkozásoknak",
   email: "",
   phone: "",
   contact_recipient_email: "",
@@ -44,15 +44,14 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   instagram_url: "",
   linkedin_url: "",
   base_url: "https://pandadesign.hu",
-  default_meta_title:
-    "PandaDesign — Modern weboldalak, amelyek ügyfeleket szereznek",
+  default_meta_title: "Weboldal készítés vállalkozásoknak | PandaDesign",
   default_meta_description:
-    "Gyors, mobilbarát és átlátható weboldalakat készítünk magyar vállalkozásoknak – az első ötlettől a hosszú távú üzemeltetésig.",
+    "Ügyfélszerző weboldalak magyar vállalkozásoknak: gyors, mobilra optimalizált, mérhető és továbbfejleszthető rendszer, amely a te tulajdonod.",
   logo_path: null,
   favicon_path: null,
   og_image_path: null,
   footer_text:
-    "Modern, gyors és könnyen kezelhető weboldalak vállalkozásoknak.",
+    "Ügyfélszerző weboldalak magyar vállalkozásoknak – gyorsan, mérhetően, a te tulajdonodban.",
   copyright_text: "Minden jog fenntartva.",
   show_contact_details: true,
 };

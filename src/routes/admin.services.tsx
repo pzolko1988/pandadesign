@@ -11,6 +11,10 @@ type Service = {
   slug: string;
   title: string;
   description: string;
+  audience: string;
+  /** Szerkesztéskor soronként egy elem. */
+  highlights: string;
+  technology: string;
   icon_key: string;
   link_url: string;
   sort_order: number;
@@ -23,6 +27,9 @@ const emptyForm: ServiceForm = {
   slug: "",
   title: "",
   description: "",
+  audience: "",
+  highlights: "",
+  technology: "",
   icon_key: "layers",
   link_url: "/szolgaltatasok",
   sort_order: 1,
@@ -67,13 +74,14 @@ function AdminServicesPage() {
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  // Az új oszlopokat (célcsoport, célok, technológia) a 20260928120000
+  // migráció vezeti be; előtte a mentés nélkülük történik.
+  const [extendedSchema, setExtendedSchema] = useState(false);
 
   const loadServices = useCallback(async (): Promise<Service[] | null> => {
     const { data, error } = await supabase
       .from("services")
-      .select(
-        "id, slug, title, description, icon_key, link_url, sort_order, is_visible",
-      )
+      .select("*")
       .order("sort_order", { ascending: true });
 
     if (error) {
@@ -81,7 +89,19 @@ function AdminServicesPage() {
       return null;
     }
 
-    const items = (data ?? []) as Service[];
+    const rows = (data ?? []) as Record<string, unknown>[];
+    setExtendedSchema(rows.some((row) => "highlights" in row));
+
+    const items = rows.map((row) => ({
+      ...(row as unknown as Service),
+      audience: typeof row.audience === "string" ? row.audience : "",
+      technology: typeof row.technology === "string" ? row.technology : "",
+      highlights: Array.isArray(row.highlights)
+        ? (row.highlights as unknown[])
+            .filter((item): item is string => typeof item === "string")
+            .join("\n")
+        : "",
+    }));
 
     setServices(items);
 
@@ -157,6 +177,9 @@ function AdminServicesPage() {
       slug: service.slug,
       title: service.title,
       description: service.description,
+      audience: service.audience,
+      highlights: service.highlights,
+      technology: service.technology,
       icon_key: service.icon_key,
       link_url: service.link_url,
       sort_order: service.sort_order,
@@ -207,6 +230,16 @@ function AdminServicesPage() {
       slug,
       title: form.title.trim(),
       description: form.description.trim(),
+      ...(extendedSchema
+        ? {
+            audience: form.audience.trim(),
+            technology: form.technology.trim(),
+            highlights: form.highlights
+              .split("\n")
+              .map((item) => item.trim())
+              .filter(Boolean),
+          }
+        : {}),
       icon_key: form.icon_key,
       link_url: form.link_url.trim() || "/szolgaltatasok",
       sort_order: Number(form.sort_order),
@@ -316,7 +349,7 @@ function AdminServicesPage() {
       <div className="mx-auto max-w-6xl">
         <header className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez
@@ -383,6 +416,40 @@ function AdminServicesPage() {
                 className="w-full resize-y rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
+
+            {extendedSchema && (
+              <>
+                <FormField
+                  label="Kinek szól (célcsoport)"
+                  value={form.audience}
+                  onChange={(value) => updateField("audience", value)}
+                />
+
+                <div>
+                  <label
+                    htmlFor="service-highlights"
+                    className="mb-2 block text-sm font-semibold"
+                  >
+                    Célok / fő elemek (soronként egy)
+                  </label>
+                  <textarea
+                    id="service-highlights"
+                    rows={5}
+                    value={form.highlights}
+                    onChange={(event) =>
+                      updateField("highlights", event.target.value)
+                    }
+                    className="w-full resize-y rounded-xl border bg-background px-4 py-3 outline-none focus:ring-2 focus:ring-brand"
+                  />
+                </div>
+
+                <FormField
+                  label="Technológia (másodlagos információ)"
+                  value={form.technology}
+                  onChange={(value) => updateField("technology", value)}
+                />
+              </>
+            )}
 
             <div>
               <label className="mb-2 block text-sm font-semibold">Ikon</label>

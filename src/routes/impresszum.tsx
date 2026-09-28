@@ -19,6 +19,7 @@ export const Route = createFileRoute("/impresszum")({
 function ImprintPage() {
   return (
     <LegalDocumentPage
+      slug="impresszum"
       page={Route.useLoaderData()}
       fallbackTitle={LEGAL_PAGE_DEFINITIONS.impresszum.fallbackTitle}
     />

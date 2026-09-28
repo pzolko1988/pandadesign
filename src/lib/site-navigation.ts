@@ -33,8 +33,8 @@ export const DEFAULT_SITE_CHROME_SETTINGS: SiteChromeSettings = {
   announcement_text: "",
   announcement_url: "",
   announcement_visible: false,
-  header_cta_text: "Ajánlatot kérek",
-  header_cta_url: "/kapcsolat",
+  header_cta_text: "Ingyenes weboldal-audit",
+  header_cta_url: "/ingyenes-weboldal-audit",
   header_cta_visible: true,
   header_sticky: true,
   footer_show_navigation: true,
@@ -70,7 +70,7 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
     url: "/arak",
     placement: "both",
     group_label: "Navigáció",
-    sort_order: 30,
+    sort_order: 40,
     is_visible: true,
     open_in_new_tab: false,
   },
@@ -80,17 +80,7 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
     url: "/referenciak",
     placement: "both",
     group_label: "Navigáció",
-    sort_order: 40,
-    is_visible: true,
-    open_in_new_tab: false,
-  },
-  {
-    id: "fallback-blog",
-    label: "Blog",
-    url: "/blog",
-    placement: "both",
-    group_label: "Navigáció",
-    sort_order: 50,
+    sort_order: 30,
     is_visible: true,
     open_in_new_tab: false,
   },
@@ -116,7 +106,7 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
   },
   {
     id: "fallback-privacy",
-    label: "Adatkezelés",
+    label: "Adatkezelési tájékoztató",
     url: "/adatkezeles",
     placement: "footer",
     group_label: "Jogi információk",
@@ -156,10 +146,29 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
   },
 ];
 
+// A Blog menüpont csak akkor jelenik meg, ha legalább ennyi publikált cikk van.
+export const MIN_PUBLISHED_BLOG_POSTS_FOR_NAV = 3;
+
+export async function countPublishedBlogPosts() {
+  const { count, error } = await supabase
+    .from("blog_posts")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "published")
+    .lte("published_at", new Date().toISOString());
+
+  if (error) {
+    console.error("A blogbejegyzések száma nem kérdezhető le:", error);
+    return 0;
+  }
+
+  return count ?? 0;
+}
+
 export async function loadSiteChrome() {
   const [
     { data: settingsData, error: settingsError },
     { data: navigationData, error: navigationError },
+    publishedBlogPosts,
   ] = await Promise.all([
     supabase
       .from("site_chrome_settings")
@@ -177,6 +186,7 @@ export async function loadSiteChrome() {
       .order("sort_order", {
         ascending: true,
       }),
+    countPublishedBlogPosts(),
   ]);
 
   if (settingsError) {
@@ -192,8 +202,18 @@ export async function loadSiteChrome() {
       ...DEFAULT_SITE_CHROME_SETTINGS,
       ...(settingsData as Partial<SiteChromeSettings> | null),
     },
-    navigationItems: (navigationData ?? []) as NavigationItem[],
+    navigationItems: ((navigationData ?? []) as NavigationItem[]).filter(
+      (item) =>
+        publishedBlogPosts >= MIN_PUBLISHED_BLOG_POSTS_FOR_NAV ||
+        !isBlogUrl(item.url),
+    ),
   };
+}
+
+function isBlogUrl(url: string) {
+  return (
+    url === "/blog" || url.startsWith("/blog/") || url.startsWith("/blog?")
+  );
 }
 
 export function isExternalUrl(url: string) {

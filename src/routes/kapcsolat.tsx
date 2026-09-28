@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowRight,
   Building2,
   CheckCircle2,
+  Globe2,
+  Search,
+  UserRound,
   Clock3,
   Mail,
   MapPin,
@@ -13,6 +16,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { readableSubmitError } from "@/components/site/FormFields";
+import { trackEvent } from "@/lib/analytics";
+import { AUDIT_PATH } from "@/lib/marketing-content";
 import { buildSeoHead } from "@/lib/seo";
 import { supabase } from "@/lib/supabase/client";
 import {
@@ -24,9 +30,9 @@ import {
 export const Route = createFileRoute("/kapcsolat")({
   head: () =>
     buildSeoHead({
-      title: "Weboldal készítés ajánlatkérés — PandaDesign",
+      title: "Kapcsolat és ajánlatkérés | PandaDesign",
       description:
-        "Írd meg, milyen weboldalra van szükséged. A PandaDesign rövid időn belül felveszi veled a kapcsolatot.",
+        "Kérj ajánlatot weboldalra, landing oldalra, webshopra vagy egyedi rendszerre. A megkeresésed közvetlenül a projekt felelőséhez érkezik, 1 munkanapon belül válaszolunk.",
       path: "/kapcsolat",
     }),
   component: ContactPage,
@@ -50,7 +56,7 @@ const EMPTY_FORM: ContactForm = {
   email: "",
   phone: "",
   company: "",
-  serviceType: "Céges weboldal",
+  serviceType: "Ügyfélszerző céges weboldal",
   budgetRange: "Még nem tudom",
   message: "",
   privacyAccepted: false,
@@ -59,14 +65,25 @@ const EMPTY_FORM: ContactForm = {
 };
 
 const SERVICE_OPTIONS = [
-  "Landing oldal",
-  "Céges weboldal",
+  "Ügyfélszerző céges weboldal",
+  "Landing / kampányoldal",
+  "Business / Lead rendszer",
   "Webshop",
-  "Egyedi webalkalmazás",
-  "Meglévő oldal felújítása",
+  "Egyedi webalkalmazás / üzleti rendszer",
+  "Meglévő oldal újratervezése",
+  "SEO-optimalizálás",
   "Karbantartás és támogatás",
   "Egyéb",
 ];
+
+// Az árcsomagokból és a kalkulátorból érkező ?csomag= paraméter leképezése.
+const PACKAGE_TO_SERVICE: Record<string, string> = {
+  "landing-sprint": "Landing / kampányoldal",
+  "ugyfelszerzo-web": "Ügyfélszerző céges weboldal",
+  "business-lead": "Business / Lead rendszer",
+  webshop: "Webshop",
+  "egyedi-webapp": "Egyedi webalkalmazás / üzleti rendszer",
+};
 
 const BUDGET_OPTIONS = [
   "100 000 Ft alatt",
@@ -86,6 +103,43 @@ function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
+  const startedTracking = useRef(false);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  // Előtöltés az árcsomag- vagy kalkulátor-linkből (nem személyes adat).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const packageSlug = params.get("csomag") ?? "";
+    const estimate = (params.get("kalkulator") ?? "").slice(0, 1500);
+    const service = PACKAGE_TO_SERVICE[packageSlug];
+
+    if (!service && !estimate) {
+      return;
+    }
+
+    setForm((current) => ({
+      ...current,
+      serviceType: service ?? current.serviceType,
+      message:
+        current.message ||
+        (estimate
+          ? `Az árbecslőben ezt választottam:\n${estimate}\n\nTovábbi részletek: `
+          : ""),
+    }));
+  }, []);
+
+  function markStarted() {
+    if (!startedTracking.current) {
+      startedTracking.current = true;
+      trackEvent("contact_form_start");
+    }
+  }
+
+  useEffect(() => {
+    if (errorMessage) {
+      errorRef.current?.focus();
+    }
+  }, [errorMessage]);
 
   useEffect(() => {
     let active = true;
@@ -204,6 +258,7 @@ function ContactPage() {
         throw error;
       }
 
+      trackEvent("contact_form_submit", { service_type: form.serviceType });
       setSubmitted(true);
       setForm(EMPTY_FORM);
       window.scrollTo({
@@ -211,11 +266,8 @@ function ContactPage() {
         behavior: "smooth",
       });
     } catch (error: unknown) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Az üzenet elküldése nem sikerült. Kérjük, próbáld újra.",
-      );
+      console.error("Az ajánlatkérés beküldése sikertelen:", error);
+      setErrorMessage(readableSubmitError(error));
     } finally {
       setSubmitting(false);
     }
@@ -223,7 +275,7 @@ function ContactPage() {
 
   if (submitted) {
     return (
-      <main className="container-page py-20 md:py-28">
+      <div className="container-page py-20 md:py-28" role="status">
         <Card className="mx-auto max-w-2xl border shadow-elegant">
           <CardContent className="p-8 text-center md:p-12">
             <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success-soft text-success">
@@ -235,8 +287,8 @@ function ContactPage() {
             </h1>
 
             <p className="mx-auto mt-4 max-w-xl leading-relaxed text-ink-soft">
-              Az üzeneted sikeresen megérkezett. Átnézzük az igényeidet, és a
-              lehető leghamarabb felvesszük veled a kapcsolatot.
+              Az üzeneted sikeresen megérkezett. Átnézzük az igényeidet, és 1
+              munkanapon belül felvesszük veled a kapcsolatot.
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -254,13 +306,13 @@ function ContactPage() {
             </div>
           </CardContent>
         </Card>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main>
-      <section className="relative overflow-hidden border-b bg-secondary/35 py-16 md:py-24">
+    <>
+      <section className="relative overflow-hidden border-b bg-secondary/35 py-14 md:py-20">
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-[radial-gradient(800px_400px_at_90%_0%,color-mix(in_oklab,var(--brand)_10%,transparent),transparent)]"
@@ -272,13 +324,30 @@ function ContactPage() {
           </p>
 
           <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight text-ink md:text-5xl lg:text-6xl">
-            Mesélj az elképzelésedről
+            Kapcsolat és ajánlatkérés
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
-            Írd meg, milyen weboldalra vagy fejlesztésre van szükséged. Az első
-            egyeztetés díjmentes és nem jár kötelezettséggel.
+            Írd meg, milyen weboldalra vagy fejlesztésre van szükséged. A
+            megkeresésed közvetlenül a projekt felelőséhez érkezik – nem
+            ügyfélszolgálathoz. Az első egyeztetés díjmentes és nem jár
+            kötelezettséggel.
           </p>
+
+          <ul className="mt-8 grid gap-3 text-sm sm:grid-cols-3">
+            <li className="flex items-center gap-2 text-ink">
+              <UserRound className="h-4 w-4 text-success" aria-hidden="true" />
+              Közvetlenül a projekt felelősével
+            </li>
+            <li className="flex items-center gap-2 text-ink">
+              <Clock3 className="h-4 w-4 text-success" aria-hidden="true" />
+              Válasz 1 munkanapon belül
+            </li>
+            <li className="flex items-center gap-2 text-ink">
+              <Globe2 className="h-4 w-4 text-success" aria-hidden="true" />
+              Online egyeztetés, országosan
+            </li>
+          </ul>
         </div>
       </section>
 
@@ -295,6 +364,14 @@ function ContactPage() {
                 </p>
 
                 <div className="mt-6 space-y-4">
+                  {settings.legal_name && (
+                    <ContactItem
+                      icon={Building2}
+                      label="Vállalkozás"
+                      value={settings.legal_name}
+                    />
+                  )}
+
                   {settings.show_contact_details && settings.email && (
                     <ContactItem
                       icon={Mail}
@@ -358,6 +435,33 @@ function ContactPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="border border-brand/30 bg-brand-soft/40 shadow-soft">
+              <CardContent className="p-6 md:p-7">
+                <div className="flex gap-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand text-brand-foreground">
+                    <Search className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h2 className="font-bold text-ink">
+                      Még nem tudod, mire van szükséged?
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                      Kérj ingyenes 15 perces weboldal-auditot: megmutatjuk a 3
+                      legfontosabb javítási pontot.
+                    </p>
+                    <a
+                      href={AUDIT_PATH}
+                      data-track-placement="contact_sidebar"
+                      className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline"
+                    >
+                      Kérem az ingyenes auditot
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </aside>
 
           <Card className="border shadow-elegant">
@@ -372,14 +476,20 @@ function ContactPage() {
 
               {errorMessage && (
                 <div
+                  ref={errorRef}
                   role="alert"
-                  className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+                  tabIndex={-1}
+                  className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 outline-none"
                 >
                   {errorMessage}
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                onFocus={markStarted}
+                className="space-y-5"
+              >
                 <div
                   aria-hidden="true"
                   className="absolute -left-[10000px] h-px w-px overflow-hidden"
@@ -516,7 +626,8 @@ function ContactPage() {
 
                   <span className="text-sm leading-relaxed text-ink-soft">
                     Hozzájárulok, hogy a PandaDesign később hasznos szakmai
-                    tartalmakkal és ajánlatokkal megkeressen. Ez nem kötelező.
+                    tartalmakkal és ajánlatokkal megkeressen. Nem kötelező,
+                    bármikor visszavonható.
                   </span>
                 </label>
 
@@ -525,9 +636,12 @@ function ContactPage() {
                   size="lg"
                   variant="cta"
                   disabled={submitting}
+                  aria-busy={submitting}
                   className="w-full sm:w-auto"
                 >
-                  {submitting ? "Küldés..." : "Ajánlatkérés elküldése"}
+                  {submitting
+                    ? "Küldés folyamatban…"
+                    : "Ajánlatkérés elküldése"}
 
                   {submitting ? (
                     <Send className="h-4 w-4 animate-pulse" />
@@ -540,7 +654,7 @@ function ContactPage() {
           </Card>
         </div>
       </section>
-    </main>
+    </>
   );
 }
 

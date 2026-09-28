@@ -144,7 +144,7 @@ function AdminHeroPage() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez

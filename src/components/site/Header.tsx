@@ -147,7 +147,7 @@ export function Header() {
           <Link
             to="/"
             aria-label={`${siteSettings.site_name} főoldal`}
-            className="flex min-w-0 items-center gap-3"
+            className="flex min-w-0 shrink-0 items-center gap-3"
           >
             {logoUrl ? (
               <img
@@ -170,7 +170,7 @@ export function Header() {
                   </span>
 
                   {siteSettings.tagline && (
-                    <span className="hidden max-w-[240px] truncate text-[11px] text-ink-soft sm:block">
+                    <span className="hidden max-w-[240px] truncate text-[11px] text-ink-soft sm:block lg:hidden xl:block">
                       {siteSettings.tagline}
                     </span>
                   )}
@@ -181,7 +181,7 @@ export function Header() {
 
           <nav
             aria-label="Fő navigáció"
-            className="hidden items-center gap-1 lg:flex"
+            className="hidden items-center gap-0.5 lg:flex xl:gap-1"
           >
             {headerItems.map((item) => {
               const active = isActiveNavigationUrl(pathname, item.url);
@@ -193,7 +193,7 @@ export function Header() {
                   target={item.open_in_new_tab ? "_blank" : undefined}
                   rel={item.open_in_new_tab ? "noopener noreferrer" : undefined}
                   aria-current={active ? "page" : undefined}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  className={`rounded-lg px-2.5 py-2 text-sm font-medium transition xl:px-3 ${
                     active
                       ? "bg-brand/10 text-brand"
                       : "text-ink-soft hover:bg-secondary hover:text-ink"

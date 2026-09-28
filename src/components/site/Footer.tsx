@@ -9,6 +9,8 @@ import {
   Phone,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { openConsentSettings } from "@/lib/consent";
+import { AUDIT_PATH, SERVICE_CATEGORIES } from "@/lib/marketing-content";
 import {
   DEFAULT_SITE_SETTINGS,
   getSiteAssetUrl,
@@ -157,9 +159,16 @@ export function Footer() {
 
             <p className="mt-5 max-w-md text-sm leading-6 text-white/65">
               {siteSettings.footer_text ||
-                siteSettings.tagline ||
-                "Modern, gyors és könnyen kezelhető weboldalak vállalkozásoknak."}
+                "Ügyfélszerző weboldalak magyar vállalkozásoknak – gyorsan, mérhetően, a te tulajdonodban."}
             </p>
+
+            <a
+              href={AUDIT_PATH}
+              data-track-placement="footer"
+              className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground transition hover:bg-success/90"
+            >
+              Ingyenes weboldal-audit
+            </a>
 
             {chromeSettings.footer_show_social && socialLinks.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">
@@ -215,8 +224,42 @@ export function Footer() {
               )}
           </div>
 
-          {chromeSettings.footer_show_navigation && footerGroups.length > 0 && (
+          {chromeSettings.footer_show_navigation && (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <nav aria-label="Szolgáltatások">
+                <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
+                  Szolgáltatások
+                </h2>
+                <ul className="mt-4 space-y-3">
+                  {SERVICE_CATEGORIES.map((service) => (
+                    <li key={service.slug}>
+                      <a
+                        href={service.landingPath}
+                        className="text-sm text-white/65 transition hover:text-white"
+                      >
+                        {service.title}
+                      </a>
+                    </li>
+                  ))}
+                  <li>
+                    <a
+                      href="/weboldal-ujratervezes"
+                      className="text-sm text-white/65 transition hover:text-white"
+                    >
+                      Weboldal újratervezés
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/seo-optimalizalas"
+                      className="text-sm text-white/65 transition hover:text-white"
+                    >
+                      SEO-optimalizálás
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+
               {footerGroups.map(([groupLabel, items]) => (
                 <nav key={groupLabel} aria-label={groupLabel}>
                   <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
@@ -254,6 +297,14 @@ export function Footer() {
             © {currentYear} {siteSettings.legal_name || siteSettings.site_name}.{" "}
             {siteSettings.copyright_text || "Minden jog fenntartva."}
           </p>
+
+          <button
+            type="button"
+            onClick={openConsentSettings}
+            className="self-start font-semibold text-white/65 underline-offset-4 transition hover:text-white hover:underline sm:self-auto"
+          >
+            Süti-beállítások
+          </button>
 
           {chromeSettings.footer_show_back_to_top && (
             <button

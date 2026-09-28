@@ -1,21 +1,27 @@
 import { useEffect, useMemo } from "react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
-import type { PublicLegalPage } from "@/lib/legal-pages";
+import type { LegalPageSlug, PublicLegalPage } from "@/lib/legal-pages";
+import { LegalFallbackDocument } from "@/components/site/LegalFallbacks";
 import { sanitizeLegalHtml } from "@/lib/sanitize-legal-html";
 
 export function LegalDocumentPage({
+  slug,
   page,
   fallbackTitle,
 }: {
+  slug: LegalPageSlug;
   page: PublicLegalPage | null;
   fallbackTitle: string;
 }) {
+  // Közzétett admin-változat hiányában a tényszerű tartalék jelenik meg,
+  // így a jogi linkek (pl. az űrlapok adatkezelési checkboxa) mindig működő
+  // oldalra mutatnak.
   if (!page) {
-    return <LegalDocumentUnavailable title={fallbackTitle} />;
+    return <LegalFallbackDocument slug={slug} title={fallbackTitle} />;
   }
 
   return (
-    <main className="bg-secondary/30 py-14 md:py-20">
+    <div className="bg-secondary/30 py-14 md:py-20">
       <article className="container-page">
         <div className="mx-auto max-w-4xl rounded-3xl border bg-white px-5 py-8 shadow-soft sm:px-8 md:px-12 md:py-12">
           <header className="border-b pb-8">
@@ -31,7 +37,7 @@ export function LegalDocumentPage({
           <LegalDocumentRenderer html={page.content} className="mt-10" />
         </div>
       </article>
-    </main>
+    </div>
   );
 }
 
@@ -84,7 +90,7 @@ export function LegalDocumentError({ error }: { error: unknown }) {
   }, [error]);
 
   return (
-    <main className="min-h-[60vh] bg-secondary/30 px-4 py-20">
+    <div className="min-h-[60vh] bg-secondary/30 px-4 py-20">
       <div className="mx-auto max-w-xl rounded-2xl border bg-white p-8 text-center shadow-soft">
         <h1 className="text-2xl font-bold text-ink">
           A dokumentum átmenetileg nem érhető el
@@ -94,21 +100,7 @@ export function LegalDocumentError({ error }: { error: unknown }) {
           vedd fel velünk a kapcsolatot.
         </p>
       </div>
-    </main>
-  );
-}
-
-function LegalDocumentUnavailable({ title }: { title: string }) {
-  return (
-    <main className="min-h-[60vh] bg-secondary/30 px-4 py-20">
-      <div className="mx-auto max-w-xl rounded-2xl border bg-white p-8 text-center shadow-soft">
-        <h1 className="text-2xl font-bold text-ink">{title}</h1>
-        <p className="mt-3 text-ink-soft">
-          A dokumentum közzétett változata jelenleg nem érhető el. Kérjük,
-          látogass vissza később, vagy kérj tájékoztatást elérhetőségeinken.
-        </p>
-      </div>
-    </main>
+    </div>
   );
 }
 

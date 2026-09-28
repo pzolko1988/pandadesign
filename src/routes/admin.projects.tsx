@@ -32,6 +32,7 @@ type Project = {
   category: string;
   description: string;
   image_path: string | null;
+  mobile_image_path: string | null;
   project_url: string;
   sort_order: number;
   is_concept: boolean;
@@ -43,6 +44,7 @@ type Project = {
   challenge: string;
   solution: string;
   results: string[];
+  features: string[];
   services: string[];
   technologies: string[];
   content_html: string;
@@ -75,6 +77,7 @@ const EMPTY_FORM: ProjectForm = {
   category: "Céges oldal",
   description: "",
   image_path: null,
+  mobile_image_path: null,
   project_url: "",
   sort_order: 10,
   is_concept: true,
@@ -86,6 +89,7 @@ const EMPTY_FORM: ProjectForm = {
   challenge: "",
   solution: "",
   results: [],
+  features: [],
   services: [],
   technologies: [],
   content_html: "<p></p>",
@@ -121,6 +125,11 @@ function AdminProjectsPage() {
 
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [heroPreviewUrl, setHeroPreviewUrl] = useState("");
+  const [mobileFile, setMobileFile] = useState<File | null>(null);
+  const [mobilePreviewUrl, setMobilePreviewUrl] = useState("");
+  // A mobil képernyőkép és a "Fő funkciók" oszlopot a 20260928120000
+  // migráció vezeti be; előtte a mentés nélkülük történik.
+  const [extendedSchema, setExtendedSchema] = useState(false);
 
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [galleryDeletePaths, setGalleryDeletePaths] = useState<string[]>([]);
@@ -248,9 +257,7 @@ function AdminProjectsPage() {
   async function loadProjects() {
     const { data, error } = await supabase
       .from("projects")
-      .select(
-        "id, slug, title, industry, category, description, image_path, project_url, sort_order, is_concept, is_visible, client_name, location, completed_year, duration_label, challenge, solution, results, services, technologies, content_html, content_json, gallery_paths, seo_title, seo_description, cta_title, cta_text, cta_button_text, created_at, updated_at",
-      )
+      .select("*")
       .order("sort_order", {
         ascending: true,
       })
@@ -262,7 +269,25 @@ function AdminProjectsPage() {
       throw error;
     }
 
-    setProjects((data ?? []) as Project[]);
+    const rows = (data ?? []) as Record<string, unknown>[];
+    setExtendedSchema(
+      rows.length === 0 || rows.some((row) => "features" in row),
+    );
+
+    setProjects(
+      rows.map((row) => ({
+        ...(row as unknown as Project),
+        mobile_image_path:
+          typeof row.mobile_image_path === "string" && row.mobile_image_path
+            ? row.mobile_image_path
+            : null,
+        features: Array.isArray(row.features)
+          ? (row.features as unknown[]).filter(
+              (item): item is string => typeof item === "string",
+            )
+          : [],
+      })),
+    );
   }
 
   function updateField<K extends keyof ProjectForm>(
@@ -301,6 +326,8 @@ function AdminProjectsPage() {
     setSlugTouched(false);
     setHeroFile(null);
     setHeroPreviewUrl("");
+    setMobileFile(null);
+    setMobilePreviewUrl("");
     setGalleryFiles([]);
     setGalleryDeletePaths([]);
 
@@ -327,6 +354,8 @@ function AdminProjectsPage() {
     setSlugTouched(true);
     setHeroFile(null);
     setHeroPreviewUrl("");
+    setMobileFile(null);
+    setMobilePreviewUrl("");
     setGalleryFiles([]);
     setGalleryDeletePaths([]);
 
@@ -337,6 +366,7 @@ function AdminProjectsPage() {
       category: project.category,
       description: project.description,
       image_path: project.image_path,
+      mobile_image_path: project.mobile_image_path,
       project_url: project.project_url,
       sort_order: project.sort_order,
       is_concept: project.is_concept,
@@ -348,6 +378,7 @@ function AdminProjectsPage() {
       challenge: project.challenge,
       solution: project.solution,
       results: project.results ?? [],
+      features: project.features ?? [],
       services: project.services ?? [],
       technologies: project.technologies ?? [],
       content_html: project.content_html || "<p></p>",
@@ -405,6 +436,47 @@ function AdminProjectsPage() {
     setErrorMessage("");
   }
 
+  function handleMobileFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    const validationError = validateImage(file);
+
+    if (validationError) {
+      setErrorMessage(validationError);
+      return;
+    }
+
+    if (mobilePreviewUrl) {
+      URL.revokeObjectURL(mobilePreviewUrl);
+    }
+
+    setMobileFile(file);
+    setMobilePreviewUrl(URL.createObjectURL(file));
+    setErrorMessage("");
+  }
+
+  function removeStoredMobile() {
+    if (form.mobile_image_path) {
+      setGalleryDeletePaths((current) => [
+        ...current,
+        form.mobile_image_path as string,
+      ]);
+    }
+
+    if (mobilePreviewUrl) {
+      URL.revokeObjectURL(mobilePreviewUrl);
+    }
+
+    setMobileFile(null);
+    setMobilePreviewUrl("");
+    updateField("mobile_image_path", null);
+  }
+
   function handleGalleryFiles(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
     event.target.value = "";
@@ -455,7 +527,10 @@ function AdminProjectsPage() {
     setGalleryDeletePaths((current) => [...current, path]);
   }
 
-  async function uploadImage(file: File, folder: "hero" | "gallery") {
+  async function uploadImage(
+    file: File,
+    folder: "hero" | "mobile" | "gallery",
+  ) {
     const extension = file.name.split(".").pop()?.toLowerCase() || "webp";
 
     const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
@@ -539,12 +614,18 @@ function AdminProjectsPage() {
 
     const uploadedPaths: string[] = [];
     let nextHeroPath = form.image_path;
+    let nextMobilePath = form.mobile_image_path;
     const nextGalleryPaths = [...form.gallery_paths];
 
     try {
       if (heroFile) {
         nextHeroPath = await uploadImage(heroFile, "hero");
         uploadedPaths.push(nextHeroPath);
+      }
+
+      if (mobileFile && extendedSchema) {
+        nextMobilePath = await uploadImage(mobileFile, "mobile");
+        uploadedPaths.push(nextMobilePath);
       }
 
       for (const file of galleryFiles) {
@@ -561,6 +642,12 @@ function AdminProjectsPage() {
         category: form.category.trim() || "Egyéb",
         description,
         image_path: nextHeroPath,
+        ...(extendedSchema
+          ? {
+              mobile_image_path: nextMobilePath,
+              features: cleanList(form.features),
+            }
+          : {}),
         project_url: normalizeExternalUrl(form.project_url),
         sort_order: Number(form.sort_order),
         is_concept: form.is_concept,
@@ -611,6 +698,14 @@ function AdminProjectsPage() {
         deletionCandidates.push(form.image_path);
       }
 
+      if (
+        mobileFile &&
+        form.mobile_image_path &&
+        form.mobile_image_path !== nextMobilePath
+      ) {
+        deletionCandidates.push(form.mobile_image_path);
+      }
+
       await removeStorageFiles(deletionCandidates);
 
       await loadProjects();
@@ -624,6 +719,13 @@ function AdminProjectsPage() {
       }
 
       setHeroPreviewUrl("");
+      setMobileFile(null);
+
+      if (mobilePreviewUrl) {
+        URL.revokeObjectURL(mobilePreviewUrl);
+      }
+
+      setMobilePreviewUrl("");
       setGalleryFiles([]);
       setGalleryDeletePaths([]);
       setForm({
@@ -737,7 +839,7 @@ function AdminProjectsPage() {
         <header className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Link
-              to="/admin/"
+              to="/admin"
               className="text-sm font-semibold text-brand hover:underline"
             >
               ← Vissza az áttekintéshez
@@ -1005,9 +1107,69 @@ function AdminProjectsPage() {
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">
                   PNG, JPG vagy WebP, maximum 8 MB. Ajánlott képarány: 16:9.
                 </p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Fontos: képernyőkép nélküli referencia nem jelenik meg a
+                  nyilvános oldalon.
+                </p>
               </div>
             </div>
           </EditorSection>
+
+          {extendedSchema && (
+            <EditorSection
+              title="Mobil képernyőkép"
+              description="Álló mobilnézet a referenciakártyán és az esettanulmányban. Nem kötelező."
+            >
+              <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
+                <div className="flex aspect-[9/19] items-center justify-center overflow-hidden rounded-2xl border bg-muted/30">
+                  {mobilePreviewUrl || form.mobile_image_path ? (
+                    <img
+                      src={
+                        mobilePreviewUrl ||
+                        getPortfolioUrl(form.mobile_image_path as string)
+                      }
+                      alt="Projekt mobil képernyőképe"
+                      className="h-full w-full object-cover object-top"
+                    />
+                  ) : (
+                    <ImageIcon className="h-10 w-10 text-muted-foreground/30" />
+                  )}
+                </div>
+
+                <div className="flex flex-col justify-center">
+                  <div className="flex flex-wrap gap-2">
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold hover:bg-muted">
+                      <Upload className="h-4 w-4" />
+                      {mobilePreviewUrl || form.mobile_image_path
+                        ? "Kép cseréje"
+                        : "Kép feltöltése"}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        disabled={uploading}
+                        onChange={handleMobileFile}
+                        className="sr-only"
+                      />
+                    </label>
+
+                    {(mobilePreviewUrl || form.mobile_image_path) && (
+                      <button
+                        type="button"
+                        disabled={uploading}
+                        onClick={removeStoredMobile}
+                        className="rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50"
+                      >
+                        Kép eltávolítása
+                      </button>
+                    )}
+                  </div>
+                  <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                    PNG, JPG vagy WebP, maximum 8 MB. Ajánlott képarány: 9:19.
+                  </p>
+                </div>
+              </div>
+            </EditorSection>
+          )}
 
           <EditorSection
             title="Esettanulmány összefoglaló"
@@ -1016,7 +1178,7 @@ function AdminProjectsPage() {
             <div className="grid gap-5 lg:grid-cols-2">
               <LongTextField
                 id="project-challenge"
-                label="A kihívás"
+                label="Kiindulási probléma"
                 value={form.challenge}
                 onChange={(value) => updateField("challenge", value)}
                 placeholder="Milyen problémával érkezett az ügyfél?"
@@ -1024,7 +1186,7 @@ function AdminProjectsPage() {
 
               <LongTextField
                 id="project-solution"
-                label="A megoldás"
+                label="Mit készítettünk?"
                 value={form.solution}
                 onChange={(value) => updateField("solution", value)}
                 placeholder="Milyen megoldást terveztünk és valósítottunk meg?"
@@ -1032,13 +1194,25 @@ function AdminProjectsPage() {
 
               <ArrayTextarea
                 id="project-results"
-                label="Eredmények"
+                label="Eredmény (csak valós, igazolható állítás!)"
                 value={form.results}
                 onChange={(value) => updateField("results", value)}
                 placeholder={
-                  "Gyorsabb betöltés\nTöbb ajánlatkérés\nKönnyebb tartalomkezelés"
+                  "Pl. elkészült az online ajánlatkérő\nMérés beállítva\n(Számot csak mérésből!)"
                 }
               />
+
+              {extendedSchema && (
+                <ArrayTextarea
+                  id="project-features"
+                  label="Fő funkciók"
+                  value={form.features}
+                  onChange={(value) => updateField("features", value)}
+                  placeholder={
+                    "Online időpontfoglalás\nAjánlatkérő űrlap\nAdminfelület"
+                  }
+                />
+              )}
 
               <ArrayTextarea
                 id="project-services"

@@ -20,6 +20,7 @@ export const Route = createFileRoute("/cookie-tajekoztato")({
 function CookiePolicyPage() {
   return (
     <LegalDocumentPage
+      slug="cookie-tajekoztato"
       page={Route.useLoaderData()}
       fallbackTitle={LEGAL_PAGE_DEFINITIONS["cookie-tajekoztato"].fallbackTitle}
     />

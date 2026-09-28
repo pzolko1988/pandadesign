@@ -8,6 +8,7 @@ export type PublicProject = {
   category: string;
   description: string;
   image_path: string | null;
+  mobile_image_path: string | null;
   project_url: string;
   is_concept: boolean;
   client_name: string;
@@ -17,6 +18,7 @@ export type PublicProject = {
   challenge: string;
   solution: string;
   results: string[];
+  features: string[];
   services: string[];
   technologies: string[];
   content_html: string;
@@ -33,9 +35,7 @@ export async function fetchPublishedProject(
 ): Promise<PublicProject | null> {
   const { data, error } = await supabase
     .from("projects")
-    .select(
-      "id, slug, title, industry, category, description, image_path, project_url, is_concept, client_name, location, completed_year, duration_label, challenge, solution, results, services, technologies, content_html, gallery_paths, seo_title, seo_description, cta_title, cta_text, cta_button_text",
-    )
+    .select("*")
     .eq("slug", slug)
     .eq("is_visible", true)
     .eq("status", "published")
@@ -49,7 +49,61 @@ export async function fetchPublishedProject(
     return null;
   }
 
-  return normalizePublicProject(data as Record<string, unknown>);
+  const project = normalizePublicProject(data as Record<string, unknown>);
+
+  return isPublishableProject(project) ? project : null;
+}
+
+// Csak az a referencia jelenik meg nyilvánosan, amelyhez legalább egy valódi
+// képernyőkép tartozik – kép nélküli, üres vázak nem kerülnek a látogató elé.
+export function isPublishableProject(
+  project: Pick<PublicProject, "image_path" | "mobile_image_path">,
+) {
+  if (
+    project.image_path &&
+    BLOCKED_PROJECT_IMAGE_PATHS.includes(project.image_path)
+  ) {
+    return false;
+  }
+
+  return Boolean(project.image_path || project.mobile_image_path);
+}
+
+// A "Fogorvosi rendelő" referenciához feltöltött kép valójában egy generált
+// PandaDesign-oldal makett, kitalált statisztikákkal, referenciákkal és
+// elérhetőségekkel – nem jelenhet meg. A 20260928120000 migráció a projektet
+// is elrejti; ez a lista addig is véd. Valódi képernyőkép feltöltése után
+// az útvonal automatikusan megváltozik, így a szűrés nem akadályozza.
+const BLOCKED_PROJECT_IMAGE_PATHS = [
+  "f1c91ab0-0f89-4f76-8a7b-975e37edc0a7.png",
+];
+
+export async function fetchPublishedProjects(
+  limit?: number,
+): Promise<PublicProject[]> {
+  let query = supabase
+    .from("projects")
+    .select("*")
+    .eq("is_visible", true)
+    .eq("status", "published")
+    .order("sort_order", { ascending: true });
+
+  if (limit) {
+    // A minőségi szűrés miatt több sort kérünk le, mint amennyit megjelenítünk.
+    query = query.limit(limit * 3);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  const projects = (data ?? [])
+    .map((item) => normalizePublicProject(item as Record<string, unknown>))
+    .filter(isPublishableProject);
+
+  return limit ? projects.slice(0, limit) : projects;
 }
 
 export function getPortfolioImageUrl(path: string) {
@@ -67,6 +121,7 @@ function normalizePublicProject(
     category: normalizeText(project.category),
     description: normalizeText(project.description),
     image_path: normalizeNullableText(project.image_path),
+    mobile_image_path: normalizeNullableText(project.mobile_image_path),
     project_url: normalizeText(project.project_url),
     is_concept: project.is_concept === true,
     client_name: normalizeText(project.client_name),
@@ -76,6 +131,7 @@ function normalizePublicProject(
     challenge: normalizeText(project.challenge),
     solution: normalizeText(project.solution),
     results: normalizeTextList(project.results),
+    features: normalizeTextList(project.features),
     services: normalizeTextList(project.services),
     technologies: normalizeTextList(project.technologies),
     content_html: normalizeText(project.content_html),

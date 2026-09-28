@@ -12,6 +12,8 @@ type FaqItem = {
   answer: string;
   sort_order: number;
   is_active: boolean;
+  /** "general" = főoldal, "pricing" = Árak oldal (scope és feltételek). */
+  category: string;
 };
 
 type FaqForm = Omit<FaqItem, "id">;
@@ -21,6 +23,7 @@ const emptyForm: FaqForm = {
   answer: "",
   sort_order: 10,
   is_active: true,
+  category: "general",
 };
 
 function getNextSortOrder(items: FaqItem[]) {
@@ -44,11 +47,13 @@ function AdminFaqPage() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  // A "category" oszlopot a 20260928120000 migráció vezeti be.
+  const [categorySchema, setCategorySchema] = useState(false);
 
   const loadFaqItems = useCallback(async (): Promise<FaqItem[] | null> => {
     const { data, error } = await supabase
       .from("faq_items")
-      .select("id, question, answer, sort_order, is_active")
+      .select("*")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true });
 
@@ -57,7 +62,13 @@ function AdminFaqPage() {
       return null;
     }
 
-    const items = (data ?? []) as FaqItem[];
+    const rows = (data ?? []) as Record<string, unknown>[];
+    setCategorySchema(rows.some((row) => "category" in row));
+
+    const items = rows.map((row) => ({
+      ...(row as unknown as FaqItem),
+      category: typeof row.category === "string" ? row.category : "general",
+    }));
 
     setFaqItems(items);
 
@@ -139,6 +150,7 @@ function AdminFaqPage() {
       answer: item.answer,
       sort_order: item.sort_order,
       is_active: item.is_active,
+      category: item.category,
     });
 
     setErrorMessage("");
@@ -198,6 +210,7 @@ function AdminFaqPage() {
       answer,
       sort_order: sortOrder,
       is_active: form.is_active,
+      ...(categorySchema ? { category: form.category } : {}),
     };
 
     try {
@@ -397,7 +410,7 @@ function AdminFaqPage() {
       <div className="mx-auto max-w-6xl">
         <header className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez
@@ -475,6 +488,30 @@ function AdminFaqPage() {
                 Legalább 3 karakter.
               </p>
             </div>
+
+            {categorySchema && (
+              <div>
+                <label
+                  htmlFor="faq-category"
+                  className="mb-2 block text-sm font-semibold"
+                >
+                  Megjelenés helye
+                </label>
+                <select
+                  id="faq-category"
+                  value={form.category}
+                  onChange={(event) =>
+                    updateField("category", event.target.value)
+                  }
+                  className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-brand"
+                >
+                  <option value="general">Főoldal – általános kérdések</option>
+                  <option value="pricing">
+                    Árak oldal – scope és feltételek
+                  </option>
+                </select>
+              </div>
+            )}
 
             <div>
               <label
@@ -610,6 +647,11 @@ function AdminFaqPage() {
 
                           <h3 className="mt-4 text-lg font-bold">
                             {item.question}
+                            {item.category === "pricing" && (
+                              <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-800">
+                                Árak
+                              </span>
+                            )}
                           </h3>
 
                           <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">

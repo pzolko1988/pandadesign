@@ -502,7 +502,7 @@ function AdminNavigationPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez

@@ -275,3 +275,34 @@
     font: inherit;
   }
 }
+
+/*
+ * Oldalszintű tartalomkonténer. Egy korábbi commit (8d666d91) véletlenül
+ * törölte, ezért az oldal mobilon oldalsó margó nélkül jelent meg.
+ */
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  max-width: 80rem;
+
+  @media (width >= 640px) {
+    padding-inline: 1.5rem;
+  }
+
+  @media (width >= 1024px) {
+    padding-inline: 2rem;
+  }
+}
+
+/* A mozgáscsökkentést kérő látogatóknál az animációk és átmenetek kikapcsolnak. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

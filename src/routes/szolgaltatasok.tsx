@@ -1,21 +1,43 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
-import { fetchVisibleServices } from "@/lib/public-services";
+import {
+  AuditCtaBlock,
+  BenefitGrid,
+  ReferencePreview,
+} from "@/components/site/Marketing";
+import { DEFAULT_SERVICES, fetchVisibleServices } from "@/lib/public-services";
 import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/szolgaltatasok")({
-  loader: () => fetchVisibleServices(),
+  loader: () =>
+    fetchVisibleServices().catch((error: unknown) => {
+      console.error("A szolgáltatások nem tölthetők be:", error);
+      return DEFAULT_SERVICES;
+    }),
   head: () =>
     buildSeoHead({
-      title: "Weboldal-készítési szolgáltatások — PandaDesign",
+      title: "Szolgáltatások: weboldal, landing, webshop, webapp | PandaDesign",
       description:
-        "Prémium weboldalak, webshopok, WordPress karbantartás és egyedi Next.js fejlesztés magyar vállalkozásoknak.",
+        "Ügyfélszerző céges weboldal, kampány landing oldal, webshop és egyedi üzleti rendszer – üzleti cél szerint tervezve, mérhetően, a te tulajdonodban.",
       path: "/szolgaltatasok",
     }),
   component: Services,
 });
+
+const MORE_SERVICES = [
+  {
+    title: "Weboldal újratervezés",
+    text: "Meglévő, elavult vagy lassú oldal modernizálása, a működő tartalmak megtartásával.",
+    href: "/weboldal-ujratervezes",
+  },
+  {
+    title: "SEO-optimalizálás",
+    text: "Technikai SEO-alapok, oldalszerkezet és tartalmi javaslatok meglévő weboldalhoz.",
+    href: "/seo-optimalizalas",
+  },
+];
 
 function Services() {
   const services = Route.useLoaderData();
@@ -24,67 +46,109 @@ function Services() {
     <>
       <Section
         eyebrow="Szolgáltatások"
-        title="Amit kínálunk"
-        description="Egy csapat, egy folyamat – minden, amire egy modern online jelenléthez szükséged lehet."
+        title="Üzleti cél szerint építünk, nem technológia szerint"
+        description="Először azt tisztázzuk, mit kell elérnie az oldalnak. A technológiát ehhez választjuk – nem fordítva."
+        titleAs="h1"
       >
-        {services.length === 0 ? (
-          <div className="rounded-2xl border bg-white p-10 text-center text-ink-soft shadow-soft">
-            Jelenleg nincs megjeleníthető szolgáltatás.
-          </div>
-        ) : (
-          <div className="grid gap-5 md:gap-6">
-            {services.map((service) => (
-              <article
-                key={service.id}
-                className="rounded-2xl border bg-white p-6 shadow-soft transition-shadow hover:shadow-elegant md:p-8"
-              >
-                <div className="grid gap-6 lg:grid-cols-4 lg:gap-8">
-                  <div className="lg:col-span-1">
-                    <h2 className="text-xl font-bold text-ink">
-                      {service.title}
-                    </h2>
+        <div className="grid gap-5 md:gap-6">
+          {services.map((service, index) => (
+            <article
+              key={service.id}
+              className="grid gap-6 rounded-2xl border bg-white p-6 shadow-soft transition hover:shadow-elegant md:p-8 lg:grid-cols-[1fr_1.4fr] lg:gap-10"
+            >
+              <div>
+                <span className="font-mono text-xs font-bold tracking-widest text-success">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h2 className="mt-2 text-2xl font-bold text-ink">
+                  {service.title}
+                </h2>
+                {service.audience && (
+                  <p className="mt-1 font-medium text-brand">
+                    {service.audience}
+                  </p>
+                )}
+                <p className="mt-3 whitespace-pre-line leading-relaxed text-ink-soft">
+                  {service.description}
+                </p>
+                {service.link_url && service.link_url !== "/szolgaltatasok" && (
+                  <Button asChild variant="outline" className="mt-5">
+                    <a href={service.link_url}>
+                      Részletek
+                      <span className="sr-only">: {service.title}</span>
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  </Button>
+                )}
+              </div>
 
-                    {service.link_url && (
-                      <Button asChild variant="cta" className="mt-5">
-                        <a href={service.link_url}>
-                          Ajánlatot kérek <ArrowRight className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-
-                  <div className="lg:col-span-3 lg:border-l lg:pl-8">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-brand">
-                      A szolgáltatásról
+              <div className="lg:border-l lg:pl-10">
+                {service.highlights.length > 0 && (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-ink-soft">
+                      Cél
                     </p>
-                    <p className="mt-3 whitespace-pre-line text-sm leading-7 text-ink-soft">
-                      {service.description}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </Section>
-      <section className="py-16 md:py-24">
-        <div className="container-page">
-          <div className="relative overflow-hidden rounded-3xl bg-brand text-brand-foreground p-8 md:p-14 shadow-elegant text-center">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Nem találod amit keresel?
-            </h2>
-            <p className="mt-3 text-brand-foreground/80 max-w-xl mx-auto">
-              Írd le pár mondatban a projektedet – 1 munkanapon belül
-              válaszolunk konkrét lépésekkel.
-            </p>
-            <Button asChild size="lg" variant="cta" className="mt-7">
-              <Link to="/kapcsolat">
-                Beszéljünk <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+                    <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {service.highlights.map((item) => (
+                        <li key={item} className="flex gap-2 text-sm text-ink">
+                          <Check
+                            className="mt-0.5 h-4 w-4 shrink-0 text-success"
+                            aria-hidden="true"
+                          />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {service.technology && (
+                  <p className="mt-5 text-sm text-ink-soft">
+                    <span className="font-semibold text-ink">
+                      Technológia:{" "}
+                    </span>
+                    {service.technology}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
-      </section>
+      </Section>
+
+      <Section
+        eyebrow="További szolgáltatások"
+        title="Meglévő weboldalad van?"
+        tone="muted"
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          {MORE_SERVICES.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="group rounded-2xl border bg-white p-6 shadow-soft transition hover:shadow-elegant"
+            >
+              <h3 className="text-lg font-semibold text-ink">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                {item.text}
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand transition-all group-hover:gap-2">
+                Részletek <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </span>
+            </a>
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        eyebrow="Minden projektnél"
+        title="Amit bármelyik szolgáltatás mellé megkapsz"
+      >
+        <BenefitGrid />
+      </Section>
+
+      <ReferencePreview title="Munkáink" tone="muted" />
+
+      <AuditCtaBlock placement="services" />
     </>
   );
 }

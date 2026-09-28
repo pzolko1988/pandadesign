@@ -60,7 +60,7 @@ function BlogPostPage() {
   const imageUrl = getPublicBlogImageUrl(post.featured_image_path);
 
   return (
-    <main>
+    <div>
       <article>
         <header className="border-b bg-secondary/30 py-14 md:py-20">
           <div className="container-page">
@@ -120,7 +120,7 @@ function BlogPostPage() {
           />
         </div>
       </article>
-    </main>
+    </div>
   );
 }
 

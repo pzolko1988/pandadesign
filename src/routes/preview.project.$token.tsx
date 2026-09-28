@@ -115,19 +115,19 @@ function ProjectPreviewPage() {
 
   if (loading) {
     return (
-      <main className="container-page py-20">
+      <div className="container-page py-20">
         <div className="mx-auto max-w-5xl animate-pulse space-y-6">
           <div className="h-14 rounded bg-muted" />
           <div className="h-6 w-2/3 rounded bg-muted" />
           <div className="aspect-video rounded-3xl bg-muted" />
         </div>
-      </main>
+      </div>
     );
   }
 
   if (errorMessage || !project) {
     return (
-      <main className="container-page py-20">
+      <div className="container-page py-20">
         <div className="mx-auto max-w-2xl rounded-2xl border border-amber-200 bg-amber-50 p-10 text-center">
           <AlertTriangle className="mx-auto h-10 w-10 text-amber-700" />
 
@@ -145,7 +145,7 @@ function ProjectPreviewPage() {
             Vissza a főoldalra
           </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -157,7 +157,7 @@ function ProjectPreviewPage() {
     project.content_html.replace(/<[^>]*>/g, " ").trim().length > 0;
 
   return (
-    <main>
+    <div>
       <div className="sticky top-0 z-50 border-b border-amber-200 bg-amber-50/95 px-4 py-3 backdrop-blur">
         <div className="container-page flex flex-col gap-2 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
           <span className="inline-flex items-center gap-2 font-semibold">
@@ -375,7 +375,7 @@ function ProjectPreviewPage() {
           </div>
         </section>
       </article>
-    </main>
+    </div>
   );
 }
 

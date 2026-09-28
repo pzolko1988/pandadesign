@@ -5,17 +5,28 @@ import {
   fetchPublishedLegalPagesForSitemap,
   fetchPublishedProjectsForSitemap,
 } from "@/lib/public-sitemap";
+import { LEGAL_PAGE_DEFINITIONS } from "@/lib/legal-pages";
+import { AUDIT_PATH } from "@/lib/marketing-content";
+import { LANDING_PAGE_PATHS } from "@/lib/seo-landing-pages";
+import { MIN_PUBLISHED_BLOG_POSTS_FOR_NAV } from "@/lib/site-navigation";
 import { absoluteUrl } from "@/lib/seo";
 
 const STATIC_PATHS = [
   "/",
   "/szolgaltatasok",
-  "/arak",
+  ...LANDING_PAGE_PATHS,
   "/referenciak",
-  "/blog",
+  "/arak",
+  AUDIT_PATH,
   "/rolunk",
   "/kapcsolat",
-] as const;
+];
+
+// A jogi oldalak közzétett admin-változat nélkül is tényszerű tartalommal
+// jelennek meg, ezért mindig bekerülnek.
+const LEGAL_PATHS = Object.values(LEGAL_PAGE_DEFINITIONS).map(
+  (definition) => definition.path,
+);
 
 type SitemapEntry = {
   loc: string;
@@ -32,10 +43,16 @@ export const Route = createFileRoute("/sitemap.xml")({
           fetchPublishedLegalPagesForSitemap(),
         ]);
 
+        const showBlog = blogPosts.length >= MIN_PUBLISHED_BLOG_POSTS_FOR_NAV;
+        const legalUpdatedAt = new Map(
+          legalPages.map((page) => [`/${page.slug}`, page.updated_at]),
+        );
+
         const entries: SitemapEntry[] = [
           ...STATIC_PATHS.map((path) => ({
             loc: absoluteUrl(path),
           })),
+          ...(showBlog ? [{ loc: absoluteUrl("/blog") }] : []),
           ...blogPosts.map((post) => ({
             loc: absoluteUrl(`/blog/${post.slug}`),
             lastmod: toIsoDate(post.updated_at) ?? toIsoDate(post.published_at),
@@ -44,9 +61,9 @@ export const Route = createFileRoute("/sitemap.xml")({
             loc: absoluteUrl(`/referenciak/${project.slug}`),
             lastmod: toIsoDate(project.updated_at),
           })),
-          ...legalPages.map((page) => ({
-            loc: absoluteUrl(`/${page.slug}`),
-            lastmod: toIsoDate(page.updated_at),
+          ...LEGAL_PATHS.map((path) => ({
+            loc: absoluteUrl(path),
+            lastmod: toIsoDate(legalUpdatedAt.get(path)),
           })),
         ];
 

@@ -1,5 +1,41 @@
 import { DEFAULT_SITE_SETTINGS } from "@/lib/site-settings";
 import { supabase } from "@/lib/supabase/client";
+import { AUDIT_PATH, DEFAULT_PRICING_PACKAGES } from "@/lib/marketing-content";
+import {
+  fetchVisiblePricingPackages,
+  type PublicPricingPackage,
+} from "@/lib/public-pricing";
+import {
+  DEFAULT_SERVICES,
+  fetchVisibleServices,
+  type PublicService,
+} from "@/lib/public-services";
+
+export type HeroContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryButtonText: string;
+  primaryButtonUrl: string;
+  secondaryButtonText: string;
+  secondaryButtonUrl: string;
+};
+
+// A hero tartalma az adminból szerkeszthető (page_sections.content).
+// A 2-es tartalomverziót a 20260928120000 migráció állítja be; a régebbi,
+// pozicionálás előtti hero-szöveg helyett addig ez a tartalék jelenik meg.
+export const HERO_CONTENT_VERSION = 2;
+
+export const DEFAULT_HERO: HeroContent = {
+  eyebrow: "Weboldal készítés vállalkozásoknak",
+  title: "Ügyfélszerző weboldalak magyar vállalkozásoknak",
+  description:
+    "Gyors, modern és mérhető weboldalakat készítünk, amelyek nem csak jól néznek ki, hanem segítenek érdeklődőket és ügyfeleket szerezni.",
+  primaryButtonText: "Kérek ingyenes weboldal-auditot",
+  primaryButtonUrl: AUDIT_PATH,
+  secondaryButtonText: "Megnézem a munkákat",
+  secondaryButtonUrl: "/referenciak",
+};
 
 export type PublicHomeSeoSettings = {
   site_name: string;
@@ -14,12 +50,16 @@ export type PublicHomeSeoFaq = {
   question: string;
   answer: string;
   sort_order: number;
+  category: string;
 };
 
 export type PublicHomeSeoData = {
   settings: PublicHomeSeoSettings;
   faqs: PublicHomeSeoFaq[];
   ogImageUrl: string;
+  hero: HeroContent;
+  services: PublicService[];
+  pricing: PublicPricingPackage[];
 };
 
 const FALLBACK_SETTINGS: PublicHomeSeoSettings = {
@@ -31,20 +71,36 @@ const FALLBACK_SETTINGS: PublicHomeSeoSettings = {
 };
 
 export async function fetchPublicHomeSeoData(): Promise<PublicHomeSeoData> {
-  const [settingsResult, faqResult] = await Promise.all([
-    supabase
-      .from("site_settings")
-      .select(
-        "site_name, base_url, default_meta_title, default_meta_description, og_image_path",
-      )
-      .eq("id", 1)
-      .maybeSingle(),
-    supabase
-      .from("faq_items")
-      .select("id, question, answer, sort_order")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true }),
-  ]);
+  const [settingsResult, faqResult, heroResult, servicesResult, pricingResult] =
+    await Promise.all([
+      supabase
+        .from("site_settings")
+        .select(
+          "site_name, base_url, default_meta_title, default_meta_description, og_image_path",
+        )
+        .eq("id", 1)
+        .maybeSingle(),
+      supabase
+        .from("faq_items")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("page_sections")
+        .select("content")
+        .eq("page_slug", "home")
+        .eq("section_key", "hero")
+        .maybeSingle(),
+      // A nem kritikus blokkok hibája nem döntheti el a főoldalt.
+      fetchVisibleServices().catch((error: unknown) => {
+        console.error("A szolgáltatások nem tölthetők be:", error);
+        return DEFAULT_SERVICES;
+      }),
+      fetchVisiblePricingPackages().catch((error: unknown) => {
+        console.error("Az árcsomagok nem tölthetők be:", error);
+        return DEFAULT_PRICING_PACKAGES;
+      }),
+    ]);
 
   if (settingsResult.error) {
     throw settingsResult.error;
@@ -65,7 +121,44 @@ export async function fetchPublicHomeSeoData(): Promise<PublicHomeSeoData> {
         .data.publicUrl
     : "";
 
-  return { settings, faqs, ogImageUrl };
+  return {
+    settings,
+    faqs,
+    ogImageUrl,
+    hero: normalizeHero(heroResult.error ? null : heroResult.data?.content),
+    services: servicesResult,
+    pricing: pricingResult,
+  };
+}
+
+function normalizeHero(content: unknown): HeroContent {
+  if (!content || typeof content !== "object") {
+    return DEFAULT_HERO;
+  }
+
+  const record = content as Record<string, unknown>;
+
+  if (
+    typeof record.version !== "number" ||
+    record.version < HERO_CONTENT_VERSION
+  ) {
+    return DEFAULT_HERO;
+  }
+
+  const pick = (key: keyof HeroContent) =>
+    typeof record[key] === "string" && (record[key] as string).trim()
+      ? (record[key] as string)
+      : DEFAULT_HERO[key];
+
+  return {
+    eyebrow: pick("eyebrow"),
+    title: pick("title"),
+    description: pick("description"),
+    primaryButtonText: pick("primaryButtonText"),
+    primaryButtonUrl: pick("primaryButtonUrl"),
+    secondaryButtonText: pick("secondaryButtonText"),
+    secondaryButtonUrl: pick("secondaryButtonUrl"),
+  };
 }
 
 function normalizeSettings(
@@ -90,6 +183,7 @@ function normalizeFaq(faq: Record<string, unknown>): PublicHomeSeoFaq {
     question: normalizeText(faq.question),
     answer: normalizeText(faq.answer),
     sort_order: typeof faq.sort_order === "number" ? faq.sort_order : 0,
+    category: typeof faq.category === "string" ? faq.category : "general",
   };
 }
 

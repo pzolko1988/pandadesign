@@ -245,7 +245,7 @@ function AdminCtaPage() {
       <div className="mx-auto max-w-6xl">
         <header className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez

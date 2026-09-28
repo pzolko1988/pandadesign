@@ -22,6 +22,7 @@ type Testimonial = {
   testimonial_text: string;
   rating: number;
   is_sample: boolean;
+  is_verified: boolean;
   sort_order: number;
   is_visible: boolean;
 };
@@ -42,6 +43,7 @@ const EMPTY_FORM: TestimonialForm = {
   testimonial_text: "",
   rating: 5,
   is_sample: false,
+  is_verified: false,
   sort_order: 10,
   is_visible: true,
 };
@@ -62,6 +64,8 @@ function AdminTestimonialsPage() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  // Az "is_verified" oszlopot a 20260928120000 migráció vezeti be.
+  const [verifiedSchema, setVerifiedSchema] = useState(false);
 
   useEffect(() => {
     void initializePage();
@@ -141,9 +145,7 @@ function AdminTestimonialsPage() {
         .maybeSingle(),
       supabase
         .from("testimonials")
-        .select(
-          "id, name, role, testimonial_text, rating, is_sample, sort_order, is_visible",
-        )
+        .select("*")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true }),
     ]);
@@ -160,7 +162,15 @@ function AdminTestimonialsPage() {
       setSettings(settingsData as TestimonialSectionSettings);
     }
 
-    const loadedItems = (itemsData ?? []) as Testimonial[];
+    const rows = (itemsData ?? []) as Record<string, unknown>[];
+    setVerifiedSchema(
+      rows.length === 0 || rows.some((row) => "is_verified" in row),
+    );
+
+    const loadedItems = rows.map((row) => ({
+      ...(row as unknown as Testimonial),
+      is_verified: row.is_verified === true,
+    }));
 
     setTestimonials(loadedItems);
 
@@ -260,6 +270,7 @@ function AdminTestimonialsPage() {
       testimonial_text: item.testimonial_text,
       rating: item.rating,
       is_sample: item.is_sample,
+      is_verified: item.is_verified,
       sort_order: item.sort_order,
       is_visible: item.is_visible,
     });
@@ -326,6 +337,7 @@ function AdminTestimonialsPage() {
       testimonial_text: testimonialText,
       rating,
       is_sample: form.is_sample,
+      ...(verifiedSchema ? { is_verified: form.is_verified } : {}),
       sort_order: sortOrder,
       is_visible: form.is_visible,
     };
@@ -521,7 +533,7 @@ function AdminTestimonialsPage() {
       <div className="mx-auto max-w-6xl">
         <header className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez
@@ -778,6 +790,38 @@ function AdminTestimonialsPage() {
               </div>
             </div>
 
+            {verifiedSchema ? (
+              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.is_verified}
+                  onChange={(event) =>
+                    updateField("is_verified", event.target.checked)
+                  }
+                  className="h-4 w-4"
+                />
+
+                <span>
+                  <span className="block text-sm font-semibold">
+                    Igazolt, valós ügyfélvélemény
+                  </span>
+
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Csak akkor kapcsold be, ha a vélemény valós ügyféltől
+                    származik, és hozzájárult a névvel együtt történő
+                    közzétételhez. A főoldalon kizárólag igazolt vélemény
+                    jelenik meg.
+                  </span>
+                </span>
+              </label>
+            ) : (
+              <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
+                A vélemények publikálásához futtasd le a
+                20260928120000_conversion_repositioning.sql migrációt (igazolt
+                vélemény jelölés).
+              </p>
+            )}
+
             <label className="flex cursor-pointer items-center gap-3 rounded-xl border p-4">
               <input
                 type="checkbox"
@@ -883,6 +927,16 @@ function AdminTestimonialsPage() {
                             {item.is_sample && (
                               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
                                 Minta
+                              </span>
+                            )}
+
+                            {item.is_verified ? (
+                              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+                                Igazolt
+                              </span>
+                            ) : (
+                              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                                Nem igazolt – nem jelenik meg
                               </span>
                             )}
                           </div>

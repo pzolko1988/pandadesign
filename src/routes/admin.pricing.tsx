@@ -12,6 +12,9 @@ type PricingPackage = {
   slug: string;
   name: string;
   description: string;
+  audience: string;
+  outcome: string;
+  scope_note: string;
   price_label: string;
   currency: string;
   price_suffix: string;
@@ -30,10 +33,13 @@ const emptyForm: PricingForm = {
   slug: "",
   name: "",
   description: "",
+  audience: "",
+  outcome: "",
+  scope_note: "",
   price_label: "",
   currency: "Ft",
-  price_suffix: "-tól, +ÁFA",
-  badge_text: "Legnépszerűbb",
+  price_suffix: "-tól",
+  badge_text: "",
   cta_text: "Ajánlatot kérek",
   cta_url: "/kapcsolat",
   features: [""],
@@ -52,6 +58,9 @@ function AdminPricingPage() {
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  // A bővített oszlopokat (kinek, eredmény, scope) a 20260928120000 migráció
+  // vezeti be. Előtte a mentés ezek nélkül történik, hogy ne legyen hiba.
+  const [extendedSchema, setExtendedSchema] = useState(false);
 
   useEffect(() => {
     void initializePage();
@@ -100,9 +109,7 @@ function AdminPricingPage() {
   async function loadPackages() {
     const { data, error } = await supabase
       .from("pricing_packages")
-      .select(
-        "id, slug, name, description, price_label, currency, price_suffix, badge_text, cta_text, cta_url, features, sort_order, is_featured, is_visible",
-      )
+      .select("*")
       .order("sort_order", { ascending: true });
 
     if (error) {
@@ -111,9 +118,15 @@ function AdminPricingPage() {
       return;
     }
 
+    const rows = (data ?? []) as Record<string, unknown>[];
+    setExtendedSchema(rows.some((row) => "audience" in row));
+
     setPackages(
-      (data ?? []).map((item) => ({
+      rows.map((item) => ({
         ...item,
+        audience: typeof item.audience === "string" ? item.audience : "",
+        outcome: typeof item.outcome === "string" ? item.outcome : "",
+        scope_note: typeof item.scope_note === "string" ? item.scope_note : "",
         features: Array.isArray(item.features)
           ? (item.features as string[])
           : [],
@@ -198,6 +211,9 @@ function AdminPricingPage() {
       slug: item.slug,
       name: item.name,
       description: item.description,
+      audience: item.audience,
+      outcome: item.outcome,
+      scope_note: item.scope_note,
       price_label: item.price_label,
       currency: item.currency,
       price_suffix: item.price_suffix,
@@ -220,6 +236,9 @@ function AdminPricingPage() {
       slug: `${item.slug}-masolat`,
       name: `${item.name} másolat`,
       description: item.description,
+      audience: item.audience,
+      outcome: item.outcome,
+      scope_note: item.scope_note,
       price_label: item.price_label,
       currency: item.currency,
       price_suffix: item.price_suffix,
@@ -307,6 +326,13 @@ function AdminPricingPage() {
       slug,
       name: form.name.trim(),
       description: form.description.trim(),
+      ...(extendedSchema
+        ? {
+            audience: form.audience.trim(),
+            outcome: form.outcome.trim(),
+            scope_note: form.scope_note.trim(),
+          }
+        : {}),
       price_label: form.price_label.trim(),
       currency: form.currency.trim(),
       price_suffix: form.price_suffix.trim(),
@@ -418,7 +444,7 @@ function AdminPricingPage() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-8">
           <Link
-            to="/admin/"
+            to="/admin"
             className="text-sm font-semibold text-brand hover:underline"
           >
             ← Vissza az áttekintéshez
@@ -486,6 +512,34 @@ function AdminPricingPage() {
               />
             </div>
 
+            {extendedSchema ? (
+              <>
+                <FormField
+                  label="Kinek ajánljuk"
+                  value={form.audience}
+                  placeholder="Pl. szolgáltató vállalkozásoknak, akiknek…"
+                  onChange={(value) => updateField("audience", value)}
+                />
+                <FormField
+                  label="Fő eredmény"
+                  value={form.outcome}
+                  placeholder="Mit kap a megrendelő a csomag végén?"
+                  onChange={(value) => updateField("outcome", value)}
+                />
+                <FormField
+                  label="Rövid scope"
+                  value={form.scope_note}
+                  placeholder="Pl. egy oldal, egy ajánlat, egy fő konverziós cél."
+                  onChange={(value) => updateField("scope_note", value)}
+                />
+              </>
+            ) : (
+              <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                A „Kinek ajánljuk”, „Fő eredmény” és „Scope” mezőkhöz futtasd le
+                a 20260928120000_conversion_repositioning.sql migrációt.
+              </p>
+            )}
+
             <div className="grid grid-cols-[1fr_100px] gap-3">
               <FormField
                 label="Ár vagy ármegnevezés"
@@ -506,7 +560,7 @@ function AdminPricingPage() {
             <FormField
               label="Ár alatti megjegyzés"
               value={form.price_suffix}
-              placeholder="-tól, +ÁFA"
+              placeholder="-tól"
               onChange={(value) => updateField("price_suffix", value)}
             />
 

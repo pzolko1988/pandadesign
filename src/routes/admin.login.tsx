@@ -32,7 +32,7 @@ function AdminLoginPage() {
     }
 
     await navigate({
-      to: "/admin/",
+      to: "/admin",
     });
   }
 

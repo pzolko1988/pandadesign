@@ -9,6 +9,7 @@ export function Section({
   className = "",
   align = "left",
   tone = "default",
+  titleAs = "h2",
 }: {
   id?: string;
   eyebrow?: string;
@@ -18,7 +19,10 @@ export function Section({
   className?: string;
   align?: "left" | "center";
   tone?: "default" | "muted" | "brand";
+  /** Az oldal fő szekciójánál "h1", hogy minden oldalnak legyen H1 címsora. */
+  titleAs?: "h1" | "h2";
 }) {
+  const Heading = titleAs;
   const bg =
     tone === "muted"
       ? "bg-secondary/50"
@@ -40,11 +44,11 @@ export function Section({
               </p>
             )}
             {title && (
-              <h2
+              <Heading
                 className={`text-[28px] leading-[1.15] md:text-4xl lg:text-[44px] font-bold ${tone === "brand" ? "" : "text-ink"}`}
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {description && (
               <p

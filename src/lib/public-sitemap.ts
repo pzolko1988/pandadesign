@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase/client";
 import { LEGAL_PAGE_SLUGS } from "@/lib/legal-pages";
+import { isPublishableProject } from "@/lib/public-project";
 
 export type SitemapBlogPost = {
   slug: string;
@@ -42,9 +43,11 @@ export async function fetchPublishedBlogPostsForSitemap(): Promise<
 export async function fetchPublishedProjectsForSitemap(): Promise<
   SitemapProject[]
 > {
+  // A "*" a mobil képernyőkép oszlop bevezetése előtt és után is működik;
+  // csak a nyilvánosan is megjelenő (képpel rendelkező) referenciák kerülnek be.
   const { data, error } = await supabase
     .from("projects")
-    .select("slug, updated_at")
+    .select("*")
     .eq("status", "published")
     .eq("is_visible", true);
 
@@ -52,7 +55,17 @@ export async function fetchPublishedProjectsForSitemap(): Promise<
     throw error;
   }
 
-  return (data ?? [])
+  return ((data ?? []) as Record<string, unknown>[])
+    .filter((project) =>
+      isPublishableProject({
+        image_path:
+          typeof project.image_path === "string" ? project.image_path : null,
+        mobile_image_path:
+          typeof project.mobile_image_path === "string"
+            ? project.mobile_image_path
+            : null,
+      }),
+    )
     .map((project) => ({
       slug: normalizeText(project.slug),
       updated_at: normalizeNullableText(project.updated_at),

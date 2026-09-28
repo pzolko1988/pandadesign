@@ -1,173 +1,192 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Section } from "@/components/site/Section";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Compass,
-  Handshake,
-  HeartHandshake,
-  Rocket,
-  ShieldCheck,
-  Sparkles,
+  Eye,
+  MessageSquare,
+  Users,
+  type LucideIcon,
 } from "lucide-react";
+import { Section } from "@/components/site/Section";
+import { Button } from "@/components/ui/button";
+import { OwnershipBlock } from "@/components/site/Marketing";
+import { AUDIT_PATH } from "@/lib/marketing-content";
 import { buildSeoHead } from "@/lib/seo";
+import {
+  DEFAULT_SITE_SETTINGS,
+  loadSiteSettings,
+  type SiteSettings,
+} from "@/lib/site-settings";
 
 export const Route = createFileRoute("/rolunk")({
   head: () =>
     buildSeoHead({
-      title: "PandaDesign weboldal-készítő csapat",
+      title: "Rólunk – közvetlen együttműködés | PandaDesign",
       description:
-        "PandaDesign egy modern magyar web ügynökség, amely a vállalkozások üzleti céljait támogató weboldalakat készít.",
+        "A PandaDesignnál közvetlenül azzal dolgozol, aki megtervezi és megvalósítja a weboldaladat. Nincs közvetítői lánc, speciális feladatoknál bevált szakemberekkel dolgozunk.",
       path: "/rolunk",
     }),
   component: About,
 });
 
-const VALUES = [
+const PRINCIPLES: { icon: LucideIcon; title: string; text: string }[] = [
   {
-    icon: ShieldCheck,
-    title: "Megbízhatóság",
-    desc: "Amit vállalunk, azt határidőre és minőségben átadjuk.",
-  },
-  {
-    icon: Sparkles,
-    title: "Igényes megjelenés",
-    desc: "Minden projekt egyedi és a márka jellegéhez igazodik.",
-  },
-  {
-    icon: Rocket,
-    title: "Gyorsaság",
-    desc: "Fókuszált munkafolyamat rövid átfutási időkkel.",
-  },
-  {
-    icon: Handshake,
-    title: "Átláthatóság",
-    desc: "Tiszta árajánlat, egyértelmű kommunikáció minden szakaszban.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Hosszú távú együttműködés",
-    desc: "Nem eltűnünk átadás után – támogatunk üzemeltetésben és fejlesztésben is.",
+    icon: MessageSquare,
+    title: "Közvetlen kommunikáció",
+    text: "Nincs account manager, ticketrendszer vagy call center. Azzal beszélsz, aki a projekteden dolgozik.",
   },
   {
     icon: Compass,
-    title: "Üzleti szemlélet",
-    desc: "A weboldal nem cél, hanem eszköz – az üzleti eredmény számít.",
+    title: "Először az üzleti cél",
+    text: "Előbb azt tisztázzuk, mit kell elérnie az oldalnak – érdeklődőt, foglalást, vásárlást –, és csak utána választunk technológiát.",
+  },
+  {
+    icon: Eye,
+    title: "Átláthatóság",
+    text: "Írásos ajánlat, világos tartalom és ütemezés. Mindig tudod, hol tart a munka, és mi a következő lépés.",
+  },
+  {
+    icon: Users,
+    title: "Specialisták, ha kell",
+    text: "Speciális feladatoknál – például szövegírás, fotózás vagy összetett integráció – bevált szakemberekkel dolgozunk együtt.",
   },
 ];
 
 function About() {
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+
+  useEffect(() => {
+    let active = true;
+
+    loadSiteSettings()
+      .then((loaded) => {
+        if (active) {
+          setSettings(loaded);
+        }
+      })
+      .catch((error: unknown) => {
+        console.error("A vállalkozási adatok nem tölthetők be:", error);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const facts = [
+    settings.legal_name && { label: "Vállalkozás", value: settings.legal_name },
+    {
+      label: "Munkavégzés",
+      value:
+        "Online egyeztetés – az ország bármely pontjáról dolgozhatunk együtt",
+    },
+    settings.show_contact_details &&
+      settings.phone && { label: "Telefon", value: settings.phone },
+    settings.show_contact_details &&
+      settings.email && { label: "E-mail", value: settings.email },
+    settings.opening_hours && {
+      label: "Elérhetőség",
+      value: settings.opening_hours,
+    },
+  ].filter(Boolean) as { label: string; value: string }[];
+
   return (
     <>
       <Section
         eyebrow="Rólunk"
-        title="Weboldalak, amelyek üzleti eredményt hoznak"
+        title="Közvetlenül azzal dolgozol, aki megépíti a rendszered"
+        titleAs="h1"
       >
-        <div className="max-w-3xl text-base md:text-lg text-ink-soft leading-relaxed">
-          <p className="text-2xl md:text-3xl font-semibold text-ink leading-snug tracking-tight">
-            Hisszük, hogy egy jó weboldal nem csupán szépen néz ki, hanem
-            támogatja a vállalkozás üzleti céljait is.
-          </p>
-          <p className="mt-6">
-            A PandaDesign egy modern magyar web ügynökség kis- és
-            középvállalkozásoknak. A célunk, hogy minden ügyfelünk
-            professzionális, gyors és könnyen kezelhető online jelenlétet kapjon
-            – az ötlettől a hosszú távú üzemeltetésig.
-          </p>
-        </div>
-      </Section>
-
-      <Section eyebrow="Küldetés" title="Miért vagyunk itt?" tone="muted">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-          <div className="space-y-4 text-ink-soft leading-relaxed">
-            <p>
-              Sok magyar vállalkozás online jelenléte évek óta nem újult meg.
-              Ezt szeretnénk megváltoztatni: modern, mobilra optimalizált és jól
-              szerkeszthető oldalakat építünk, amelyek a valós vásárlási döntést
-              támogatják.
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-14">
+          <div className="space-y-5 text-base leading-relaxed text-ink-soft md:text-lg">
+            <p className="text-xl font-semibold leading-snug text-ink md:text-2xl">
+              Nincs felesleges közvetítői lánc. Közvetlenül azzal dolgozol, aki
+              megtervezi és megvalósítja a rendszeredet.
             </p>
             <p>
-              Hiszünk az egyszerűségben, a letisztult designban és az őszinte
-              kommunikációban. Nem ígérünk lehetetlent – amit vállalunk, azt
-              magas színvonalon szállítjuk.
+              A PandaDesign nem nagy ügynökség, és nem is akar annak látszani.
+              Kis- és középvállalkozásoknak építünk olyan weboldalakat, amelyek
+              érdeklődőket hoznak, mérhetők, és később továbbfejleszthetők.
+            </p>
+            <p>
+              Speciális feladatoknál bevált szakemberekkel dolgozunk együtt – de
+              a projekt felelőse és a kapcsolattartód végig ugyanaz marad.
             </p>
           </div>
-          <div className="relative">
-            <div className="aspect-[4/5] max-w-sm mx-auto rounded-2xl bg-gradient-to-br from-brand/12 to-success/10 border shadow-elegant grid place-items-center p-8 text-center relative overflow-hidden">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-40 bg-[radial-gradient(400px_200px_at_50%_0%,color-mix(in_oklab,var(--brand)_15%,transparent),transparent)]"
-              />
-              <div className="relative">
-                <div className="mx-auto h-28 w-28 rounded-full bg-white border shadow-elegant grid place-items-center text-3xl font-bold text-brand">
-                  PD
+
+          <aside className="h-fit rounded-2xl border bg-white p-6 shadow-soft md:p-7">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-brand">
+              Tények röviden
+            </h2>
+            <dl className="mt-5 space-y-4">
+              {facts.map((fact) => (
+                <div key={fact.label}>
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    {fact.label}
+                  </dt>
+                  <dd className="mt-1 text-sm font-medium text-ink">
+                    {fact.value}
+                  </dd>
                 </div>
-                <p className="mt-6 text-sm font-semibold text-ink">Alapító</p>
-                <p className="text-xs text-ink-soft mt-1">
-                  Professzionális fotó – helyőrző
-                </p>
-              </div>
-            </div>
-          </div>
+              ))}
+            </dl>
+          </aside>
         </div>
       </Section>
 
-      <Section eyebrow="Értékeink" title="Amiben hiszünk">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {VALUES.map((v) => (
+      <Section eyebrow="Így dolgozunk" title="Amire számíthatsz" tone="muted">
+        <div className="grid gap-4 sm:grid-cols-2 md:gap-5">
+          {PRINCIPLES.map((principle) => (
             <div
-              key={v.title}
-              className="rounded-2xl border bg-white p-7 shadow-soft h-full"
+              key={principle.title}
+              className="h-full rounded-2xl border bg-white p-6 shadow-soft md:p-7"
             >
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-soft text-brand">
-                <v.icon className="h-5 w-5" />
+                <principle.icon className="h-5 w-5" aria-hidden="true" />
               </span>
-              <h3 className="mt-5 text-lg font-semibold text-ink">{v.title}</h3>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
-                {v.desc}
+              <h3 className="mt-5 text-lg font-semibold text-ink">
+                {principle.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                {principle.text}
               </p>
             </div>
           ))}
         </div>
       </Section>
 
-      <Section eyebrow="Munkamódszer" title="Hogyan dolgozunk?" tone="muted">
-        <div className="grid sm:grid-cols-2 gap-4 md:gap-5 max-w-4xl">
-          {[
-            {
-              t: "Személyes kommunikáció",
-              d: "Nincs call center és ticket rendszer – közvetlenül azzal beszélsz, aki a projekten dolgozik.",
-            },
-            {
-              t: "Modern technológiák",
-              d: "WordPress a rugalmas tartalomkezeléshez, Next.js a prémium egyedi alkalmazásokhoz.",
-            },
-            {
-              t: "Támogatás átadás után",
-              d: "Karbantartás, apró javítások és hosszú távú együttműködés az élesítés után is.",
-            },
-            {
-              t: "Világos, magyar szakmai nyelv",
-              d: "Kerüljük a felesleges szakzsargont – érthetően magyarázzuk el a döntéseket.",
-            },
-          ].map((x) => (
-            <div
-              key={x.t}
-              className="rounded-2xl bg-white border p-7 shadow-soft h-full"
+      <OwnershipBlock />
+
+      <Section>
+        <div className="flex flex-col items-start gap-6 rounded-3xl border bg-white p-8 shadow-soft md:flex-row md:items-center md:justify-between md:p-10">
+          <div className="max-w-xl">
+            <h2 className="text-2xl font-bold text-ink md:text-3xl">
+              Ismerkedjünk meg egy rövid audittal
+            </h2>
+            <p className="mt-3 text-ink-soft">
+              15 perc alatt megmutatjuk, hol veszít érdeklődőket a mostani
+              weboldalad. Kötelezettség nélkül.
+            </p>
+          </div>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Button
+              asChild
+              size="lg"
+              variant="cta"
+              className="h-auto min-h-12 whitespace-normal py-3"
             >
-              <h3 className="text-lg font-semibold text-ink">{x.t}</h3>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
-                {x.d}
-              </p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12">
-          <Button asChild size="lg" variant="cta">
-            <Link to="/kapcsolat">
-              Beszéljünk a projektedről <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+              <a href={AUDIT_PATH} data-track-placement="about">
+                Kérem az ingyenes auditot
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/kapcsolat" data-track-placement="about">
+                Kapcsolat
+              </Link>
+            </Button>
+          </div>
         </div>
       </Section>
     </>
