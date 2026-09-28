@@ -86,6 +86,22 @@ jobs:
           grep -Fq 'Ingyenes weboldal-audit' <<<"$html"
           grep -Fq 'Ajánlatot kérek' <<<"$html"
 
+      - name: Check crawler endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://www.pandadesign.hu"
+
+          robots="$(curl -fsSL --max-time 20 "$base/robots.txt")"
+          grep -Fq "Sitemap: https://www.pandadesign.hu/sitemap.xml" <<<"$robots"
+          grep -Fq "Disallow: /admin" <<<"$robots"
+
+          sitemap="$(curl -fsSL --max-time 20 "$base/sitemap.xml")"
+          grep -Fq "<loc>https://www.pandadesign.hu/</loc>" <<<"$sitemap"
+          grep -Fq "<loc>https://www.pandadesign.hu/arak</loc>" <<<"$sitemap"
+          grep -Fq "<loc>https://www.pandadesign.hu/referenciak</loc>" <<<"$sitemap"
+          grep -Fq "<loc>https://www.pandadesign.hu/ingyenes-weboldal-audit</loc>" <<<"$sitemap"
+
       - name: Check compiled GA4 configuration
         shell: bash
         run: |
