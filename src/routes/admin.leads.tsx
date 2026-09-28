@@ -26,7 +26,13 @@ export const Route = createFileRoute("/admin/leads")({
 });
 
 type LeadStatus =
-  "new" | "contacted" | "qualified" | "proposal_sent" | "won" | "lost" | "spam";
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "proposal_sent"
+  | "won"
+  | "lost"
+  | "spam";
 
 type LeadPriority = "low" | "normal" | "high";
 
