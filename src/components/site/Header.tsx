@@ -106,7 +106,8 @@ export function Header() {
     [navigationItems],
   );
 
-  const logoUrl = getSiteAssetUrl(siteSettings.logo_path);
+  const logoUrl =
+    getSiteAssetUrl(siteSettings.logo_path) || "/pandadesign-logo.svg";
 
   const announcementContent = chromeSettings.announcement_text.trim();
 
