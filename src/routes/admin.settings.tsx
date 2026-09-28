@@ -498,7 +498,7 @@ function AdminSettingsPage() {
               <AssetUploader
                 label="Logó"
                 description="PNG, WebP vagy SVG. Átlátszó háttér ajánlott."
-                imageUrl={logoUrl}
+                imageUrl={logoUrl || "/pandadesign-logo.svg"}
                 busy={uploadingField === "logo_path"}
                 onUpload={(event) => void uploadAsset("logo_path", event)}
                 onRemove={() => void removeAsset("logo_path")}
@@ -507,7 +507,7 @@ function AdminSettingsPage() {
               <AssetUploader
                 label="Favicon"
                 description="Négyzetes PNG, ICO vagy SVG. Ajánlott legalább 64×64 px."
-                imageUrl={faviconUrl}
+                imageUrl={faviconUrl || "/favicon.svg"}
                 busy={uploadingField === "favicon_path"}
                 contain
                 onUpload={(event) => void uploadAsset("favicon_path", event)}
@@ -517,7 +517,7 @@ function AdminSettingsPage() {
               <AssetUploader
                 label="Közösségi megosztási kép"
                 description="Facebookhoz és más megosztásokhoz. Ajánlott: 1200×630 px."
-                imageUrl={ogImageUrl}
+                imageUrl={ogImageUrl || "/og-pandadesign.svg"}
                 busy={uploadingField === "og_image_path"}
                 onUpload={(event) => void uploadAsset("og_image_path", event)}
                 onRemove={() => void removeAsset("og_image_path")}
