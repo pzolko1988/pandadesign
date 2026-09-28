@@ -75,7 +75,9 @@ export function isPublishableProject(
     return false;
   }
 
-  const hasRealVisual = Boolean(project.image_path || project.mobile_image_path);
+  const hasRealVisual = Boolean(
+    project.image_path || project.mobile_image_path,
+  );
   const hasVerifiedCaseStudy =
     !project.is_concept &&
     /^https?:\/\//.test(project.project_url) &&
