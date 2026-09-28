@@ -1114,8 +1114,9 @@ function AdminProjectsPage() {
                 </p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   Valódi ügyfélprojekt képernyőkép nélkül is megjelenhet, ha van élő URL,
-                  valamint kitöltött „Kiindulási probléma” és „Mit készítettünk?” rész.
-                  Koncepcióprojektnél továbbra is szükséges valódi projektkép.
+                  valamint kitöltött „Kiindulási probléma” és „Mit
+                  készítettünk?” rész. Koncepcióprojektnél továbbra is szükséges
+                  valódi projektkép.
                 </p>
               </div>
             </div>
