@@ -80,7 +80,7 @@ Deno.serve(async (request) => {
       Deno.env.get("LEAD_NOTIFICATION_FROM")?.trim() ||
       "PandaDesign <leads@mail.pandadesign.hu>";
     const publicSiteUrl =
-      Deno.env.get("PUBLIC_SITE_URL")?.trim() || "https://pandadesign.hu";
+      Deno.env.get("PUBLIC_SITE_URL")?.trim() || "https://www.pandadesign.hu";
 
     const supabaseUrl = requiredEnv("SUPABASE_URL");
     const secretKey = getSupabaseKey(
