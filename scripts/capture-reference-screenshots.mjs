@@ -5,7 +5,10 @@ import path from "node:path";
 const references = [
   { slug: "klimaflow", url: "https://klima-rendszer.hu/" },
   { slug: "berbeadva", url: "https://berbeadva.hu/" },
-  { slug: "tetojavitas-mesterfokon", url: "https://tetojavitasmesterfokon.hu/" },
+  {
+    slug: "tetojavitas-mesterfokon",
+    url: "https://tetojavitasmesterfokon.hu/",
+  },
 ];
 
 const outputDir = path.resolve("public/references");
