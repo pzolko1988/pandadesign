@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -17,6 +17,7 @@ import { trackEvent } from "@/lib/analytics";
 import { AUDIT_PATH } from "@/lib/marketing-content";
 import {
   fetchPublishedProject,
+  getCapturedReferenceImageUrl,
   getPortfolioImageUrl,
 } from "@/lib/public-project";
 import { absoluteUrl, buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
@@ -109,12 +110,21 @@ function ReferenceDetailPage() {
     });
   }, [project.slug, project.category]);
 
+  const [capturedDesktopFailed, setCapturedDesktopFailed] =
+    useState(false);
+  const [capturedMobileFailed, setCapturedMobileFailed] = useState(false);
+  const capturedDesktop = getCapturedReferenceImageUrl(project.slug, "desktop");
+  const capturedMobile = getCapturedReferenceImageUrl(project.slug, "mobile");
   const desktopUrl = project.image_path
     ? getPortfolioImageUrl(project.image_path)
-    : "";
+    : capturedDesktopFailed
+      ? ""
+      : capturedDesktop;
   const mobileUrl = project.mobile_image_path
     ? getPortfolioImageUrl(project.mobile_image_path)
-    : "";
+    : capturedMobileFailed
+      ? ""
+      : capturedMobile;
 
   const galleryUrls = useMemo(
     () =>
@@ -220,6 +230,11 @@ function ReferenceDetailPage() {
                 <img
                   src={desktopUrl}
                   alt={`${project.title} – asztali nézet`}
+                  onError={() => {
+                    if (!project.image_path) {
+                      setCapturedDesktopFailed(true);
+                    }
+                  }}
                   className="aspect-[16/10] w-full object-cover object-top"
                 />
               </figure>
@@ -235,6 +250,11 @@ function ReferenceDetailPage() {
                 <img
                   src={mobileUrl}
                   alt={`${project.title} – mobil nézet`}
+                  onError={() => {
+                    if (!project.mobile_image_path) {
+                      setCapturedMobileFailed(true);
+                    }
+                  }}
                   className="aspect-[9/19] w-full rounded-[1.25rem] object-cover object-top"
                 />
               </figure>
